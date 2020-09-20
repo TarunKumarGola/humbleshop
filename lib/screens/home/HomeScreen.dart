@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/homepage_widget/upload_icon.dart';
+import 'package:shop_app/screens/complete_profile/components/profilefirst.dart';
 
 import 'package:shop_app/theme/colors.dart';
 import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
@@ -49,11 +50,7 @@ class _RootAppState extends State<HomeScreen> {
           ),
         ),
         Center(
-          child: Text(
-            "Profile",
-            style: TextStyle(
-                color: black, fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+          child: ProfileFirst(),
         )
       ],
     );
