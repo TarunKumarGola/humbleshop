@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage>
             likes: items[index]['likes'],
             comments: items[index]['comments'],
             shares: items[index]['shares'],
-            albumImg: items[index]['albumImg'],
+            shopnow: items[index]['shopnow'],
           );
         }),
       ),
@@ -69,7 +69,7 @@ class VideoPlayerItem extends StatefulWidget {
   final String likes;
   final String comments;
   final String shares;
-  final String albumImg;
+  final String shopnow;
   VideoPlayerItem(
       {Key key,
       @required this.size,
@@ -80,7 +80,7 @@ class VideoPlayerItem extends StatefulWidget {
       this.likes,
       this.comments,
       this.shares,
-      this.albumImg,
+      this.shopnow,
       this.videoUrl})
       : super(key: key);
 
@@ -184,7 +184,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                                 comments: "${widget.comments}",
                                 shares: "${widget.shares}",
                                 profileImg: "${widget.profileImg}",
-                                albumImg: "${widget.albumImg}",
+                                shopnow: "${widget.shopnow}",
                               )
                             ],
                           ))
@@ -206,15 +206,17 @@ class RightPanel extends StatelessWidget {
   final String shares;
   final String profileImg;
   final String albumImg;
-  const RightPanel({
-    Key key,
-    @required this.size,
-    this.likes,
-    this.comments,
-    this.shares,
-    this.profileImg,
-    this.albumImg,
-  }) : super(key: key);
+  final String shopnow;
+  const RightPanel(
+      {Key key,
+      @required this.size,
+      this.likes,
+      this.comments,
+      this.shares,
+      this.profileImg,
+      this.albumImg,
+      this.shopnow})
+      : super(key: key);
 
   final Size size;
 
@@ -236,7 +238,7 @@ class RightPanel extends StatelessWidget {
                 getIcons(TikTokIcons.heart, likes, 35.0),
                 getIcons(TikTokIcons.chat_bubble, comments, 35.0),
                 getIcons(TikTokIcons.reply, shares, 25.0),
-                getAlbum(albumImg)
+                getshopnow(shopnow)
               ],
             ))
           ],

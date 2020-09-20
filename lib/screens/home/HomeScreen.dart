@@ -72,7 +72,7 @@ class _RootAppState extends State<HomeScreen> {
       width: double.infinity,
       decoration: BoxDecoration(color: appBgColor),
       child: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+        padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

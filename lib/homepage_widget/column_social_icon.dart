@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/theme/colors.dart';
 
-Widget getAlbum(albumImg) {
+Widget getshopnow(albumImg) {
   return Container(
     width: 50,
     height: 50,
@@ -18,12 +18,13 @@ Widget getAlbum(albumImg) {
         ),
         Center(
           child: Container(
-            width: 30,
-            height: 30,
+            width: 55,
+            height: 55,
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                    image: NetworkImage(albumImg), fit: BoxFit.cover)),
+                  image: AssetImage("assets/images/shopping_cart.png"),
+                )),
           ),
         )
       ],
@@ -82,3 +83,13 @@ Widget getProfile(img) {
     ),
   );
 }
+
+// Here we will add Shopnow widget which will first if user has already resgistered or not
+// if already register nevigate to selling page
+// else first register the candidates shop and profile for selling
+// registering the candidates profile will ask for name of shop
+// addhar card number pan card number email id etc.
+// Then nevigate to selling page
+// Selling page ask for category then it will ask for
+// Selling page will ask for product photo, 15 second video , price , locations of sharing
+// phone number check phone number by otp and then finally add the product for selling
