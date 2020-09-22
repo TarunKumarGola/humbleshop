@@ -25,8 +25,8 @@ class CategoryCard extends StatelessWidget {
               padding: EdgeInsets.all(kDefaultPaddin),
               // For  demo we use fixed height  and width
               // Now we dont need them
-              // height: 180,
-              // width: 160,
+              //height: 80,
+              ///width: 90,
               decoration: BoxDecoration(
                 color: category.color,
                 borderRadius: BorderRadius.circular(16),

@@ -37,37 +37,24 @@ class _RootAppState extends State<HomeScreen> {
           child: Expanded(
             child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: ListView(
-                  children: [
-                    Text(
-                      'Category',
-                      style: TextStyle(fontSize: 20.0),
+                child: Container(
+                  child: GridView.builder(
+                    itemCount: category.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 10.0,
+                      crossAxisSpacing: 10.0,
+                      childAspectRatio: 0.75,
                     ),
-                    Text(
-                      'Select desired category',
-                      style: TextStyle(fontSize: 20.0),
-                    ),
-                    GridView.builder(
-                      itemCount: category.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        mainAxisSpacing: 20.0,
-                        crossAxisSpacing: 20.0,
-                        childAspectRatio: 0.75,
-                      ),
-                      itemBuilder: (context, index) => CategoryCard(
-                          category: category[index],
-                          press: () => print('${category[index].title})')),
-                    ),
-                  ],
+                    itemBuilder: (context, index) => CategoryCard(
+                        category: category[index],
+                        press: () => print('${category[index].title})')),
+                  ),
                 )),
           ),
         )),
         Center(
-          child: GestureDetector(
-            child: Text("hello"),
-            onTap: () => gotoregisterpage(),
-          ),
+          child: SellerRegistration(),
         ),
         Center(
           child: Text(
@@ -94,7 +81,7 @@ class _RootAppState extends State<HomeScreen> {
     return Container(
       height: 80,
       width: double.infinity,
-      decoration: BoxDecoration(color: appBgColor),
+      decoration: BoxDecoration(color: primary),
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 0),
         child: Row(
@@ -144,6 +131,6 @@ class _RootAppState extends State<HomeScreen> {
 
   gotoregisterpage() {
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => SellerRegistration()));
+        .push(MaterialPageRoute(builder: (contexts) => SellerRegistration()));
   }
 }

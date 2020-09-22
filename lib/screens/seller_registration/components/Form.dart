@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart' show DragStartBehavior;
+import 'package:shop_app/theme/colors.dart';
 
 //import 'package:gallery/l10n/gallery_localizations.dart';
 
@@ -156,137 +157,143 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
     const sizedBoxSpace = SizedBox(height: 24);
 
     return Scaffold(
-      key: _scaffoldKey,
-      body: Form(
-        key: _formKey,
-        autovalidateMode: _autoValidateMode,
-        child: Scrollbar(
-          child: SingleChildScrollView(
-            dragStartBehavior: DragStartBehavior.down,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                sizedBoxSpace,
-                TextFormField(
-                  textCapitalization: TextCapitalization.words,
-                  cursorColor: cursorColor,
-                  decoration: InputDecoration(
-                    filled: true,
-                    icon: const Icon(Icons.person),
-                    hintText: "Enter your Name",
-                    labelText: "Name*",
+        key: _scaffoldKey,
+        body: Form(
+            key: _formKey,
+            autovalidateMode: _autoValidateMode,
+            child: Container(
+              padding: EdgeInsets.only(right: 8.0, left: 8.0),
+              child: ListView(
+                children: [
+                  sizedBoxSpace,
+                  TextFormField(
+                    textCapitalization: TextCapitalization.words,
+                    cursorColor: cursorColor,
+                    decoration: InputDecoration(
+                      filled: true,
+                      icon: const Icon(Icons.person),
+                      hintText: "Enter your Name",
+                      labelText: "Name*",
+                    ),
+                    onSaved: (value) {
+                      person.name = value;
+                    },
+                    validator: _validateName,
                   ),
-                  onSaved: (value) {
-                    person.name = value;
-                  },
-                  validator: _validateName,
-                ),
-                sizedBoxSpace,
-                TextFormField(
-                  cursorColor: cursorColor,
-                  decoration: InputDecoration(
-                    filled: true,
-                    icon: const Icon(Icons.phone),
-                    hintText: "98XXXXXXXX",
-                    labelText: "Phone number*",
-                    prefixText: '+1 91',
+                  sizedBoxSpace,
+                  TextFormField(
+                    textCapitalization: TextCapitalization.words,
+                    cursorColor: cursorColor,
+                    decoration: InputDecoration(
+                      filled: true,
+                      icon: const Icon(Icons.home),
+                      hintText: "Enter your Shop Name",
+                      labelText: "Shop Name*",
+                    ),
                   ),
-                  keyboardType: TextInputType.phone,
-                  onSaved: (value) {
-                    person.phoneNumber = value;
-                  },
-                  maxLength: 10,
-                  maxLengthEnforced: true,
-                  validator: _validatePhoneNumber,
-                  // TextInputFormatters are applied in sequence.
-                ),
-                sizedBoxSpace,
-                TextFormField(
-                  cursorColor: cursorColor,
-                  decoration: InputDecoration(
-                    filled: true,
-                    icon: const Icon(Icons.email),
-                    hintText: "Your email address",
-                    labelText: "Email*",
+                  sizedBoxSpace,
+                  TextFormField(
+                    cursorColor: cursorColor,
+                    decoration: InputDecoration(
+                      filled: true,
+                      icon: const Icon(Icons.phone),
+                      hintText: "98XXXXXXXX",
+                      labelText: "Phone number*",
+                      prefixText: '+1 91',
+                    ),
+                    keyboardType: TextInputType.phone,
+                    onSaved: (value) {
+                      person.phoneNumber = value;
+                    },
+                    maxLength: 10,
+                    maxLengthEnforced: true,
+                    validator: _validatePhoneNumber,
+                    // TextInputFormatters are applied in sequence.
                   ),
-                  keyboardType: TextInputType.emailAddress,
-                  onSaved: (value) {
-                    person.email = value;
-                  },
-                ),
-                sizedBoxSpace,
-                TextFormField(
-                  cursorColor: cursorColor,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    hintText: "Tell Us about your Shop",
-                    helperText: "Keep it short",
-                    labelText: "Description",
+                  sizedBoxSpace,
+                  TextFormField(
+                    cursorColor: cursorColor,
+                    decoration: InputDecoration(
+                      filled: true,
+                      icon: const Icon(Icons.email),
+                      hintText: "Your email address",
+                      labelText: "Email*",
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    onSaved: (value) {
+                      person.email = value;
+                    },
                   ),
-                  maxLines: 3,
-                ),
-                sizedBoxSpace,
-                TextFormField(
-                  cursorColor: cursorColor,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
+                  sizedBoxSpace,
+                  TextFormField(
+                    cursorColor: cursorColor,
+                    decoration: InputDecoration(
                       border: const OutlineInputBorder(),
-                      labelText: "PAN number*",
-                      hintText: "Enter your 10 digit Pan"),
-                  maxLines: 1,
-                ),
-                sizedBoxSpace,
-                TextFormField(
-                  cursorColor: cursorColor,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: "AAdhar number*",
-                      hintText: "Enter your 12 digit Pan"),
-                  maxLines: 1,
-                ),
-                sizedBoxSpace,
-                PasswordField(
-                  fieldKey: _passwordFieldKey,
-                  helperText: "No more than 8 characters",
-                  labelText: "Password*",
-                  onFieldSubmitted: (value) {
-                    setState(() {
-                      person.password = value;
-                    });
-                  },
-                ),
-                sizedBoxSpace,
-                TextFormField(
-                  cursorColor: cursorColor,
-                  decoration: InputDecoration(
-                    filled: true,
-                    labelText: "Re-type password*",
+                      hintText: "Tell Us about your Shop",
+                      helperText: "Keep it short",
+                      labelText: "Description",
+                    ),
+                    maxLines: 3,
                   ),
-                  maxLength: 8,
-                  obscureText: true,
-                  validator: _validatePassword,
-                ),
-                sizedBoxSpace,
-                Center(
-                  child: RaisedButton(
-                    child: Text("Register"),
-                    onPressed: _handleSubmitted,
+                  sizedBoxSpace,
+                  TextFormField(
+                    cursorColor: cursorColor,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: "PAN number*",
+                        hintText: "Enter your 10 digit Pan"),
+                    maxLines: 1,
                   ),
-                ),
-                sizedBoxSpace,
-                Text(
-                  "indicates required field",
-                  style: Theme.of(context).textTheme.caption,
-                ),
-                sizedBoxSpace,
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+                  sizedBoxSpace,
+                  TextFormField(
+                    cursorColor: cursorColor,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: "AAdhar number*",
+                        hintText: "Enter your 12 digit Pan"),
+                    maxLines: 1,
+                  ),
+                  sizedBoxSpace,
+                  PasswordField(
+                    fieldKey: _passwordFieldKey,
+                    helperText: "No more than 8 characters",
+                    labelText: "Password*",
+                    onFieldSubmitted: (value) {
+                      setState(() {
+                        person.password = value;
+                      });
+                    },
+                  ),
+                  sizedBoxSpace,
+                  TextFormField(
+                    cursorColor: cursorColor,
+                    decoration: InputDecoration(
+                      filled: true,
+                      labelText: "Re-type password*",
+                    ),
+                    maxLength: 8,
+                    obscureText: true,
+                    validator: _validatePassword,
+                  ),
+                  sizedBoxSpace,
+                  Center(
+                    child: RaisedButton(
+                      child: Text("Register"),
+                      onPressed: _handleSubmitted,
+                      color: primary,
+                    ),
+                  ),
+                  sizedBoxSpace,
+                  Text(
+                    "indicates required field",
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                  sizedBoxSpace,
+                ],
+              ),
+            )));
   }
 }
 
