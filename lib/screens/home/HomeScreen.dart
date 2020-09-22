@@ -8,6 +8,7 @@ import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'home_page.dart';
 import 'package:shop_app/models/Categories.dart';
 import 'package:shop_app/screens/home/categorycard.dart';
+import 'package:shop_app/screens/seller_registration/seller_registration_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static String routeName = "\HomeScreen";
@@ -32,28 +33,40 @@ class _RootAppState extends State<HomeScreen> {
         HomePage(),
         Center(
             child: Container(
+          padding: EdgeInsets.all(6.0),
           child: Expanded(
             child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: GridView.builder(
-                  itemCount: category.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 20.0,
-                    crossAxisSpacing: 20.0,
-                    childAspectRatio: 0.75,
-                  ),
-                  itemBuilder: (context, index) => CategoryCard(
-                      category: category[index],
-                      press: () => print('${category[index].title})')),
+                child: Column(
+                  children: [
+                    Text(
+                      'Category',
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                    Text(
+                      'Select desired category',
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                    GridView.builder(
+                      itemCount: category.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 20.0,
+                        crossAxisSpacing: 20.0,
+                        childAspectRatio: 0.75,
+                      ),
+                      itemBuilder: (context, index) => CategoryCard(
+                          category: category[index],
+                          press: () => print('${category[index].title})')),
+                    ),
+                  ],
                 )),
           ),
         )),
         Center(
-          child: Text(
-            "Upload",
-            style: TextStyle(
-                color: black, fontSize: 20, fontWeight: FontWeight.bold),
+          child: GestureDetector(
+            child: Text("hello"),
+            onTap: () => gotoregisterpage(),
           ),
         ),
         Center(
@@ -127,5 +140,10 @@ class _RootAppState extends State<HomeScreen> {
     setState(() {
       pageIndex = index;
     });
+  }
+
+  gotoregisterpage() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => SellerRegistration()));
   }
 }
