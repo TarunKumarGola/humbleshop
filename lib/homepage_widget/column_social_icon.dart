@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/screens/addtocartpage/addtocart.dart';
 import 'package:shop_app/theme/colors.dart';
 
 Widget getshopnow(albumImg, context) {
@@ -18,8 +19,8 @@ Widget getshopnow(albumImg, context) {
         ),
         Center(
           child: Container(
-            width: 55,
-            height: 55,
+            width: 60,
+            height: 60,
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
@@ -27,6 +28,14 @@ Widget getshopnow(albumImg, context) {
                 )),
           ),
         ),
+        InkWell(
+            splashColor: Colors.cyan,
+            onTap: () async {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddToCart()),
+              );
+            })
       ],
     ),
   );
