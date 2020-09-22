@@ -22,7 +22,7 @@ class _HeaderHomePageState extends State<HeaderHomePage> {
       children: <Widget>[
         GestureDetector(
           child: Text(
-            "NearMe",
+            "Near by",
             style: TextStyle(
               color: (nearMepressed) ? white : white.withOpacity(0.7),
               fontSize: 16,

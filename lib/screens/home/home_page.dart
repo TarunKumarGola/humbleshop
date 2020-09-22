@@ -238,7 +238,7 @@ class RightPanel extends StatelessWidget {
                 getIcons(TikTokIcons.heart, likes, 35.0),
                 getIcons(TikTokIcons.chat_bubble, comments, 35.0),
                 getIcons(TikTokIcons.reply, shares, 25.0),
-                getshopnow(shopnow)
+                getshopnow(shopnow, context)
               ],
             ))
           ],

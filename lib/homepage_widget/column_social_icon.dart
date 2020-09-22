@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/theme/colors.dart';
 
-Widget getshopnow(albumImg) {
+Widget getshopnow(albumImg, context) {
   return Container(
     width: 50,
     height: 50,
@@ -26,7 +26,7 @@ Widget getshopnow(albumImg) {
                   image: AssetImage("assets/images/shopping_cart.png"),
                 )),
           ),
-        )
+        ),
       ],
     ),
   );
