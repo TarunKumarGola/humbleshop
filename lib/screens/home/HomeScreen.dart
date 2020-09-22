@@ -37,7 +37,7 @@ class _RootAppState extends State<HomeScreen> {
           child: Expanded(
             child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
+                child: ListView(
                   children: [
                     Text(
                       'Category',
@@ -50,7 +50,7 @@ class _RootAppState extends State<HomeScreen> {
                     GridView.builder(
                       itemCount: category.length,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
+                        crossAxisCount: 3,
                         mainAxisSpacing: 20.0,
                         crossAxisSpacing: 20.0,
                         childAspectRatio: 0.75,
