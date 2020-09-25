@@ -81,7 +81,7 @@ class _RootAppState extends State<HomeScreen> {
     return Container(
       height: 80,
       width: double.infinity,
-      decoration: BoxDecoration(color: primary),
+      decoration: BoxDecoration(color: Colors.redAccent),
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 0),
         child: Row(

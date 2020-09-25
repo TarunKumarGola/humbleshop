@@ -96,6 +96,26 @@ class _HeaderHomePageState extends State<HeaderHomePage> {
               followpressed = true;
             });
           },
+        ),
+        SizedBox(
+          width: 6,
+        ),
+        GestureDetector(
+          child: Text(
+            "National",
+            style: TextStyle(
+                color: (followpressed ? white : white.withOpacity(0.7)),
+                fontSize: 17,
+                fontWeight: FontWeight.w500),
+          ),
+          onTap: () {
+            print("Follow pressed");
+            setState(() {
+              followingpresseed = false;
+              nearMepressed = false;
+              followpressed = true;
+            });
+          },
         )
       ],
     );

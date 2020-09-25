@@ -23,7 +23,6 @@ class _ProfileFirstState extends State<ProfileFirst> {
             return Scaffold(
               backgroundColor: Color(0xffF8F8FA),
               body: Stack(
-                overflow: Overflow.visible,
                 children: <Widget>[
                   Container(
                     color: Colors.blue[600],
@@ -361,7 +360,6 @@ class _ProfileFirstState extends State<ProfileFirst> {
                   ),
                   Spacer(),
                   Stack(
-                    overflow: Overflow.visible,
                     children: <Widget>[
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10.0),

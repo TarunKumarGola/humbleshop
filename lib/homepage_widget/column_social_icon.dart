@@ -13,8 +13,8 @@ Widget getshopnow(albumImg, context) {
     child: Stack(
       children: <Widget>[
         Container(
-          width: 50,
-          height: 50,
+          width: 70,
+          height: 70,
           decoration: BoxDecoration(shape: BoxShape.circle, color: black),
         ),
         Center(
