@@ -27,7 +27,7 @@ a) kitchen Products b)Fashion c)Footwear
 - The seller can post his short video just 60 seconds video without any filter about the presentation of his products
 - The seller can also give 100 characters an explanation about his product price, brand name, and size.
 -
-4. Profile page addition , photo change and verification.
+4. Profile page edit , photo change and verification.
 
 5: Admin Section
 - admin can approve the seller's accounts
