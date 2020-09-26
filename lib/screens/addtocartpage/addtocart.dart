@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/screens/cartpage/cartpage.dart';
 import 'package:shop_app/theme/colors.dart';
 
 class AddToCart extends StatelessWidget {
@@ -287,9 +288,18 @@ class _MyHomePageState extends State<MyHomePage> {
                         height: 50.0,
                         width: 50.0,
                         color: Colors.white,
-                        child: Icon(
-                          Icons.shopping_cart,
-                          color: Colors.grey,
+                        child: GestureDetector(
+                          child: Icon(
+                            Icons.shopping_cart,
+                            color: Colors.grey,
+                          ),
+                          onTap: () {
+                            print('Cart button pressed');
+                            Navigator.push(
+                                context,
+                                new MaterialPageRoute(
+                                    builder: (context) => CartPage()));
+                          },
                         ),
                       ),
                     ),
@@ -308,15 +318,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     Container(
                         color: primary,
                         width: MediaQuery.of(context).size.width - 130.0,
-                        child: Center(
-                            child: Text(
-                          'Add to Cart',
-                          style: TextStyle(
-                              fontFamily: 'Montserrat',
-                              fontSize: 18.0,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        )))
+                        child: GestureDetector(
+                          child: Center(
+                              child: Text(
+                            'Add to Cart',
+                            style: TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontSize: 18.0,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          )),
+                          onTap: () {
+                            print('Add to cart pressed');
+                          },
+                        ))
                   ]))),
     );
   }
