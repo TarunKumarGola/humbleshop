@@ -17,6 +17,12 @@ class _OtpFormState extends State<OtpForm> {
   FocusNode pin2FocusNode;
   FocusNode pin3FocusNode;
   FocusNode pin4FocusNode;
+  String v1 = "";
+  String v2 = "";
+  String v3 = "";
+  String v4 = "";
+  String v5 = "";
+  String v6 = "";
 
   @override
   void initState() {
@@ -59,6 +65,7 @@ class _OtpFormState extends State<OtpForm> {
                   textAlign: TextAlign.center,
                   decoration: otpInputDecoration,
                   onChanged: (value) {
+                    v1 = value;
                     nextField(value, pin2FocusNode);
                   },
                 ),
@@ -72,7 +79,10 @@ class _OtpFormState extends State<OtpForm> {
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
                   decoration: otpInputDecoration,
-                  onChanged: (value) => nextField(value, pin3FocusNode),
+                  onChanged: (value) {
+                    v2 = value;
+                    nextField(value, pin2FocusNode);
+                  },
                 ),
               ),
               SizedBox(
@@ -84,7 +94,10 @@ class _OtpFormState extends State<OtpForm> {
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
                   decoration: otpInputDecoration,
-                  onChanged: (value) => nextField(value, pin4FocusNode),
+                  onChanged: (value) {
+                    v3 = value;
+                    nextField(value, pin2FocusNode);
+                  },
                 ),
               ),
               SizedBox(
@@ -97,10 +110,35 @@ class _OtpFormState extends State<OtpForm> {
                   textAlign: TextAlign.center,
                   decoration: otpInputDecoration,
                   onChanged: (value) {
-                    if (value.length == 1) {
-                      pin4FocusNode.unfocus();
-                      // Then you need to check is the code is correct or not
-                    }
+                    v4 = value;
+                  },
+                ),
+              ),
+              SizedBox(
+                width: getProportionateScreenWidth(60),
+                child: TextFormField(
+                  focusNode: pin4FocusNode,
+                  obscureText: true,
+                  style: TextStyle(fontSize: 24),
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  decoration: otpInputDecoration,
+                  onChanged: (value) {
+                    v5 = value;
+                  },
+                ),
+              ),
+              SizedBox(
+                width: getProportionateScreenWidth(60),
+                child: TextFormField(
+                  focusNode: pin4FocusNode,
+                  obscureText: true,
+                  style: TextStyle(fontSize: 24),
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  decoration: otpInputDecoration,
+                  onChanged: (value) {
+                    v6 = value;
                   },
                 ),
               ),
@@ -109,7 +147,10 @@ class _OtpFormState extends State<OtpForm> {
           SizedBox(height: SizeConfig.screenHeight * 0.15),
           DefaultButton(
             text: "Continue",
-            press: () {},
+            press: () {
+              String otp = v1 + v2 + v3 + v4 + v5 + v6;
+              if (otp.length == 6) Navigator.pop(context, otp);
+            },
           )
         ],
       ),

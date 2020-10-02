@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:shop_app/screens/authenticate/authenticate.dart';
 import 'package:shop_app/screens/complete_profile/complete_profile_screen.dart';
 import 'package:shop_app/screens/complete_profile/components/profilefirst.dart';
 import 'package:shop_app/screens/forgot_password/forgot_password_screen.dart';
@@ -12,8 +13,8 @@ import 'package:shop_app/screens/splash/splash_screen.dart';
 // We use name route
 // All our routes will be available here
 final Map<String, WidgetBuilder> routes = {
-  SplashScreen.routeName: (context) => SplashScreen(),
   SignInScreen.routeName: (context) => SignInScreen(),
+  SplashScreen.routeName: (context) => SplashScreen(),
   ForgotPasswordScreen.routeName: (context) => ForgotPasswordScreen(),
   LoginSuccessScreen.routeName: (context) => LoginSuccessScreen(),
   SignUpScreen.routeName: (context) => SignUpScreen(),
@@ -21,4 +22,5 @@ final Map<String, WidgetBuilder> routes = {
   OtpScreen.routeName: (context) => OtpScreen(),
   HomeScreen.routeName: (context) => HomeScreen(),
   ProfileFirst.routeName: (context) => ProfileFirst(),
+  Authenticate.routeName: (context) => Authenticate(),
 };

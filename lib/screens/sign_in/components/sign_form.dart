@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/form_error.dart';
 import 'package:shop_app/screens/forgot_password/forgot_password_screen.dart';
 import 'package:shop_app/screens/login_success/login_success_screen.dart';
+import 'package:shop_app/services/auth.dart';
 
 import '../../../components/default_button.dart';
 import '../../../constants.dart';
@@ -19,6 +21,7 @@ class _SignFormState extends State<SignForm> {
   String password;
   bool remember = false;
   final List<String> errors = [];
+  final AuthServices _auth = AuthServices();
 
   void addError({String error}) {
     if (!errors.contains(error))
@@ -71,11 +74,18 @@ class _SignFormState extends State<SignForm> {
           SizedBox(height: getProportionateScreenHeight(20)),
           DefaultButton(
             text: "Continue",
-            press: () {
+            press: () async {
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
                 // if all are valid then go to success screen
-                Navigator.pushNamed(context, LoginSuccessScreen.routeName);
+                // here we are signing in using email id and password;
+                dynamic result = await _auth.signInEmail(email, password);
+                if (result == null)
+                  print('error signing in ');
+                else {
+                  print("signed in ");
+                  Navigator.pushNamed(context, LoginSuccessScreen.routeName);
+                }
               }
             },
           ),

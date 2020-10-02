@@ -6,7 +6,7 @@
     <!-- You can insert your own image assets here -->
     <item>
         <bitmap
-            android:gravity="center"
-            android:src="@drawable/humble_logo_name_small" />
+            android:gravity="fill"
+            android:src="@drawable/splashmainfinal" />
     </item>
 </layer-list>

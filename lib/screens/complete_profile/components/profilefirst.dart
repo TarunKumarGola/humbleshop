@@ -1,5 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/screens/complete_profile/components/SizeConfig.dart';
+import 'package:shop_app/services/auth.dart';
 
 class ProfileFirst extends StatefulWidget {
   static String routeName = "\profilefirst";
@@ -13,6 +15,7 @@ class ProfileFirst extends StatefulWidget {
 }
 
 class _ProfileFirstState extends State<ProfileFirst> {
+  final AuthServices _auth = AuthServices();
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -168,12 +171,15 @@ class _ProfileFirstState extends State<ProfileFirst> {
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    "EDIT PROFILE",
-                                    style: TextStyle(
-                                        color: Colors.white60,
-                                        fontSize:
-                                            1.8 * SizeConfig.textMultiplier),
+                                  child: RichText(
+                                    text: TextSpan(
+                                        text: "Sign Out",
+                                        style: TextStyle(
+                                            color: Colors.white60,
+                                            fontSize: 1.8 *
+                                                SizeConfig.textMultiplier),
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () => _auth.signOut()),
                                   ),
                                 ),
                               ),
