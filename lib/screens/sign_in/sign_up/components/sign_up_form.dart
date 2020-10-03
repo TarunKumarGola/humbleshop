@@ -76,7 +76,7 @@ class _SignUpFormState extends State<SignUpForm> {
                     checkdata = true;
                   } else {
                     print("this phone number does not exist");
-                    checkdata=false;
+                    checkdata = false;
                   }
                 });
 
