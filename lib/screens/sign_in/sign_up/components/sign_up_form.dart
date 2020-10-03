@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/default_button.dart';
@@ -63,8 +64,23 @@ class _SignUpFormState extends State<SignUpForm> {
             press: () async {
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
+                bool checkdata = false;
 
-                if (!checkdata()) {
+                await FirebaseFirestore.instance
+                    .collection("PhoneNumbers")
+                    .doc("+91$phoneNumber")
+                    .get()
+                    .then((DocumentSnapshot documentSnapshot) {
+                  if (documentSnapshot.exists) {
+                    print("inside true block");
+                    checkdata = true;
+                  } else {
+                    print("this phone number does not exist");
+                    checkdata=false;
+                  }
+                });
+
+                if (!checkdata) {
                   try {
                     UserCredential userCredential = await FirebaseAuth.instance
                         .createUserWithEmailAndPassword(
@@ -96,51 +112,24 @@ class _SignUpFormState extends State<SignUpForm> {
                         });
                         FirebaseFirestore.instance
                             .collection("PhoneNumbers")
-                            .doc(phoneNumber)
-                            .set({
-                          "Present": "True",
-                        });
-                        print('verification auto completed');
-                        print('updating phone number');
-                        try {
-                          print(
-                              "inside updatephonenumber varificationCompleted");
-                          firebaseuser.updatePhoneNumber(credential);
-                        } catch (e) {
-                          if (e.code ==
-                              "ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL") {
-                            print(e.code);
-                            try {
-                              print("deleting user");
-                              firebaseuser.delete();
-                            } catch (e) {
-                              print(e);
-                            }
-                          }
-                          print(e);
-                        }
-                        //print('linking with credential');
-                        try {
-                          print(
-                              "inside linkwithCredential varificationCompleted");
-                          firebaseuser.linkWithCredential(credential);
+                            .doc("+91$phoneNumber")
+                            .set({});
 
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SignInScreen()));
-                        } catch (e) {
-                          if (e.code == "credential-already-in-use") {
-                            firebaseuser.delete();
-                          }
-                          print(e);
-                        }
-                        print("verification auto completed");
+                        firebaseuser.updatePhoneNumber(credential);
+
+                        //print('linking with credential');
+
+                        firebaseuser.linkWithCredential(credential);
+
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SignInScreen()));
+
                         // await auth.signInWithCredential(credential);
                       },
                       verificationFailed: (FirebaseAuthException e) {
                         if (e.code == 'invalid-phone-number') {
-                          print('The provided phone number is not valid.');
                           print('The provided phone number is not valid.');
                         } else {
                           print(e);
@@ -162,7 +151,8 @@ class _SignUpFormState extends State<SignUpForm> {
 
                         PhoneAuthCredential phoneAuthCredential =
                             PhoneAuthProvider.credential(
-                                verificationId: null, smsCode: null);
+                                verificationId: verificationId,
+                                smsCode: smsCode);
                         FirebaseFirestore.instance
                             .collection("USERS")
                             .doc(firebaseuser.uid)
@@ -179,36 +169,17 @@ class _SignUpFormState extends State<SignUpForm> {
                         FirebaseFirestore.instance
                             .collection("PhoneNumbers")
                             .doc(phoneNumber)
-                            .set({
-                          "Present": "True",
-                        });
+                            .set({});
                         // Sign the user in (or link) with the credential
-                        try {
-                          firebaseuser.updatePhoneNumber(phoneAuthCredential);
-                        } catch (e) {
-                          if (e.code ==
-                              "ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL") {
-                            print(e.code);
-                            try {
-                              print("deleting user");
-                              firebaseuser.delete();
-                            } catch (e) {
-                              print(e);
-                            }
-                          }
-                        }
-                        try {
-                          firebaseuser.linkWithCredential(phoneAuthCredential);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SignInScreen()));
-                        } catch (e) {
-                          if (e.code == "credential-already-in-use") {
-                            firebaseuser.delete();
-                          }
-                          print(e.code);
-                        }
+
+                        firebaseuser.updatePhoneNumber(phoneAuthCredential);
+
+                        firebaseuser.linkWithCredential(phoneAuthCredential);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SignInScreen()));
+
                         //await auth.signInWithCredential(phoneAuthCredential);
                       },
                       codeAutoRetrievalTimeout: (String verificationId) {},
@@ -223,12 +194,10 @@ class _SignUpFormState extends State<SignUpForm> {
                   } catch (e) {
                     print(e.toString());
                   }
+                } else {
+                  print(
+                      "Phone number already exits please try some other phone number");
                 }
-                 else 
-                 {
-                print(
-                    "Phone number already exits please try some other phone number");
-                  }
               }
             },
           ),
@@ -356,6 +325,7 @@ class _SignUpFormState extends State<SignUpForm> {
       decoration: InputDecoration(
         labelText: "Phone Number",
         hintText: "Enter your phone number",
+        prefixText: "+91",
         // If  you are using latest version of flutter then lable text and hint text shown like this
         // if you r using flutter less then 1.20.* then maybe this is not working properly
         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -393,14 +363,20 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   bool checkdata() {
-    bool ans = false;
-    DocumentReference collectionReference =
-        FirebaseFirestore.instance.collection("PhoneNumbers").doc(phoneNumber);
-    collectionReference.get().then(
-        (value) => {if (value.exists) return true; else print(phoneNumber)});
-        print(ans);
-        print(phoneNumber);
-    return ans;
+    FirebaseFirestore.instance
+        .collection("PhoneNumbers")
+        .doc("+91$phoneNumber")
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        print("inside true block");
+      } else {
+        print("this phone number does not exist");
+      }
+    });
+    // print(ans);
+    // print(phoneNumber);
+    // return ans;
   }
 
   TextFormField buildFirstNameFormField() {
