@@ -95,9 +95,9 @@ class _SignUpFormState extends State<SignUpForm> {
                           (PhoneAuthCredential credential) async {
                         // ANDROID ONLY!
                         // Sign the user in (or link) with the auto-generated credential
-                        UserModel userm = new UserModel(
-                            name, email, password, phoneNumber, address, 0, 0);
-                        FirebaseFirestore.instance
+                        // UserModel userm = new UserModel(
+                        //     name, email, password, phoneNumber, address, 0, 0);
+                        await FirebaseFirestore.instance
                             .collection("USERS")
                             .doc(firebaseuser.uid)
                             .set({
@@ -110,7 +110,7 @@ class _SignUpFormState extends State<SignUpForm> {
                           "following": 0,
                           "imageurl": "image",
                         });
-                        FirebaseFirestore.instance
+                        await FirebaseFirestore.instance
                             .collection("PhoneNumbers")
                             .doc("+91$phoneNumber")
                             .set({});

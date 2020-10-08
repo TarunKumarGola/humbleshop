@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/form_error.dart';
+import 'package:shop_app/models/usermodel.dart';
+import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/forgot_password/forgot_password_screen.dart';
 import 'package:shop_app/screens/login_success/login_success_screen.dart';
 import 'package:shop_app/services/auth.dart';
@@ -47,28 +50,13 @@ class _SignFormState extends State<SignForm> {
           SizedBox(height: getProportionateScreenHeight(30)),
           buildPasswordFormField(),
           SizedBox(height: getProportionateScreenHeight(30)),
-          Row(
-            children: [
-              Checkbox(
-                value: remember,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    remember = value;
-                  });
-                },
-              ),
-              Text("Remember me"),
-              Spacer(),
-              GestureDetector(
-                onTap: () => Navigator.pushNamed(
-                    context, ForgotPasswordScreen.routeName),
-                child: Text(
-                  "Forgot Password",
-                  style: TextStyle(decoration: TextDecoration.underline),
-                ),
-              )
-            ],
+          GestureDetector(
+            onTap: () =>
+                Navigator.pushNamed(context, ForgotPasswordScreen.routeName),
+            child: Text(
+              "Forgot Password",
+              style: TextStyle(decoration: TextDecoration.underline),
+            ),
           ),
           FormError(errors: errors),
           SizedBox(height: getProportionateScreenHeight(20)),
@@ -77,14 +65,69 @@ class _SignFormState extends State<SignForm> {
             press: () async {
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
+                // try {
+                //   AuthServices obj = new AuthServices();
+                //   obj.signInEmail(email, password, context);
+                // } catch (e) {
+                //   print(e);
+                // }
                 // if all are valid then go to success screen
                 // here we are signing in using email id and password;
-                dynamic result = await _auth.signInEmail(email, password);
-                if (result == null)
-                  print('error signing in ');
-                else {
-                  print("signed in ");
-                  Navigator.pushNamed(context, LoginSuccessScreen.routeName);
+                // try {
+                //   dynamic result = await _auth.signInEmail(email, password);
+                //   if (result == null)
+                //     print('error signing in ');
+                //   else {
+                //     print("signed in ");
+                //     Navigator.pushNamed(context, LoginSuccessScreen.routeName);
+                //   }
+                // } on FirebaseAuthException catch (e) {
+                //   if (e.code == 'user-not-found') {
+                //     print('No user found for that email.');
+                //   } else if (e.code == 'wrong-password') {
+                //     print('Wrong password provided for that user.');
+                //   }
+                // }
+                try {
+                  UserCredential userCredential = await FirebaseAuth.instance
+                      .signInWithEmailAndPassword(
+                          email: email, password: password);
+                  print("user signed in");
+                  getuser(userCredential.user.uid);
+                  // UserModel obj;
+
+                  // await FirebaseFirestore.instance
+                  //     .collection("USERS")
+                  //     .doc(userCredential.user.uid)
+                  //     .get()
+                  //     .then((querySnapshot) {
+                  //   print("string ${querySnapshot.data().toString()}");
+                  //   Map<String, dynamic> data = querySnapshot.data();
+                  //   obj = UserModel(
+                  //       uid: userCredential.user.uid,
+                  //       name: data['name'],
+                  //       phonenumber: data['phonenumber'],
+                  //       address: data['address'],
+                  //       email: data['email'],
+                  //       follower: data['follower'],
+                  //       following: data['following'],
+                  //       imageurl: data['imageurl']);
+                  //   // print("userdata is ${obj.name} ${obj.address} ${user.phoneNumber}");
+                  // });
+                  // AuthServices authobj = new AuthServices(currentUser: obj);
+                  // print(
+                  //     "user uid=${authobj.currentUser.uid} name=${authobj.currentUser.name} phonenumber=${authobj.currentUser} address=${authobj.currentUser.address} email=${authobj.currentUser.email} imageurl=${authobj.currentUser.imageurl}");
+
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => LoginSuccessScreen()));
+                } on FirebaseAuthException catch (e) {
+                  if (e.code == 'user-not-found') {
+                    print('No user found for that email.');
+                  } else if (e.code == 'wrong-password') {
+                    print('Wrong password provided for that user.');
+                  }
                 }
               }
             },

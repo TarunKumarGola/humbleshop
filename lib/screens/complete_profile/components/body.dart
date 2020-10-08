@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/size_config.dart';
 
-import 'complete_profile_form.dart';
+//import 'complete_profile_form.dart';
 
 class Body extends StatelessWidget {
   @override
@@ -23,7 +23,7 @@ class Body extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: SizeConfig.screenHeight * 0.06),
-                CompleteProfileForm(),
+                //CompleteProfileForm(),
                 SizedBox(height: getProportionateScreenHeight(30)),
                 Text(
                   "By continuing your confirm that you agree \nwith our Term and Condition",

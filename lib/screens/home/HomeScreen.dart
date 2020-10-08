@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/homepage_widget/upload_icon.dart';
+import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/complete_profile/components/profilefirst.dart';
+import 'package:shop_app/services/auth.dart';
 
 import 'package:shop_app/theme/colors.dart';
 import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
@@ -12,12 +14,18 @@ import 'package:shop_app/screens/seller_registration/seller_registration_screen.
 
 class HomeScreen extends StatefulWidget {
   static String routeName = "\HomeScreen";
+
   @override
   _RootAppState createState() => _RootAppState();
 }
 
 class _RootAppState extends State<HomeScreen> {
   int pageIndex = 0;
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +72,9 @@ class _RootAppState extends State<HomeScreen> {
           ),
         ),
         Center(
-          child: ProfileFirst(),
+          child: ProfilePage(
+            authobj: authobj,
+          ),
         )
       ],
     );
