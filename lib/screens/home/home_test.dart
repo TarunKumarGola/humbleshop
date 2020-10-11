@@ -6,15 +6,19 @@ import 'package:shop_app/homepage_widget/column_social_icon.dart';
 import 'package:shop_app/homepage_widget/left_panel.dart';
 import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:video_player/video_player.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 
-class HomePage extends StatefulWidget {
+class HomePageTest extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePageTest> with TickerProviderStateMixin {
   TabController _tabController;
+  CollectionReference users =
+      FirebaseFirestore.instance.collection('videoproducts');
+
   @override
   void initState() {
     // TODO: implement initState
@@ -37,26 +41,40 @@ class _HomePageState extends State<HomePage>
 
   Widget getBody() {
     var size = MediaQuery.of(context).size;
-    return RotatedBox(
-      quarterTurns: 1,
-      child: TabBarView(
-        controller: _tabController,
-        children: List.generate(items.length, (index) {
-          return VideoPlayerItem(
-            videoUrl: items[index]['videoUrl'],
-            size: size,
-            name: items[index]['name'],
-            caption: items[index]['caption'],
-            songName: items[index]['songName'],
-            profileImg: items[index]['profileImg'],
-            likes: items[index]['likes'],
-            comments: items[index]['comments'],
-            shares: items[index]['shares'],
-            shopnow: items[index]['shopnow'],
+    return StreamBuilder<QuerySnapshot>(
+        stream: users.snapshots(),
+        builder: (BuildContext context, stream) {
+          if (stream.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (stream.hasError) {
+            return Center(child: Text(stream.error.toString()));
+          }
+          QuerySnapshot querySnapshot = stream.data;
+
+          return RotatedBox(
+            quarterTurns: 1,
+            child: TabBarView(
+              controller:
+                  TabController(length: querySnapshot.size, vsync: this),
+              children: List.generate(querySnapshot.size, (index) {
+                return VideoPlayerItem(
+                  videoUrl: querySnapshot.docs[index].data()['videoUrl'],
+                  size: size,
+                  name: querySnapshot.docs[index].data()['name'],
+                  caption: querySnapshot.docs[index].data()['caption'],
+                  songName: querySnapshot.docs[index].data()['songName'],
+                  profileImg: querySnapshot.docs[index].data()['profileImg'],
+                  likes: querySnapshot.docs[index].data()['likes'],
+                  comments: querySnapshot.docs[index].data()['comments'],
+                  shares: querySnapshot.docs[index].data()['shares'],
+                  shopnow: querySnapshot.docs[index].data()['shopnow'],
+                );
+              }),
+            ),
           );
-        }),
-      ),
-    );
+        });
   }
 }
 

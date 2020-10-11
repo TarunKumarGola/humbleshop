@@ -94,29 +94,6 @@ class _SignFormState extends State<SignForm> {
                           email: email, password: password);
                   print("user signed in");
                   getuser(userCredential.user.uid);
-                  // UserModel obj;
-
-                  // await FirebaseFirestore.instance
-                  //     .collection("USERS")
-                  //     .doc(userCredential.user.uid)
-                  //     .get()
-                  //     .then((querySnapshot) {
-                  //   print("string ${querySnapshot.data().toString()}");
-                  //   Map<String, dynamic> data = querySnapshot.data();
-                  //   obj = UserModel(
-                  //       uid: userCredential.user.uid,
-                  //       name: data['name'],
-                  //       phonenumber: data['phonenumber'],
-                  //       address: data['address'],
-                  //       email: data['email'],
-                  //       follower: data['follower'],
-                  //       following: data['following'],
-                  //       imageurl: data['imageurl']);
-                  //   // print("userdata is ${obj.name} ${obj.address} ${user.phoneNumber}");
-                  // });
-                  // AuthServices authobj = new AuthServices(currentUser: obj);
-                  // print(
-                  //     "user uid=${authobj.currentUser.uid} name=${authobj.currentUser.name} phonenumber=${authobj.currentUser} address=${authobj.currentUser.address} email=${authobj.currentUser.email} imageurl=${authobj.currentUser.imageurl}");
 
                   Navigator.push(
                       context,
