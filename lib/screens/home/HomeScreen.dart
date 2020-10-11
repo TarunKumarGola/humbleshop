@@ -72,9 +72,7 @@ class _RootAppState extends State<HomeScreen> {
           ),
         ),
         Center(
-          child: ProfilePage(
-            authobj: authobj,
-          ),
+          child: ProfilePage(),
         )
       ],
     );

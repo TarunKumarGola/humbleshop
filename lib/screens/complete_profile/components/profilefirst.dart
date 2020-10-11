@@ -5,12 +5,11 @@ import 'package:shop_app/models/usermodel.dart';
 import 'package:shop_app/services/auth.dart';
 //import 'package:shop_app/theme.dart';
 import 'package:shop_app/theme/colors.dart';
-
+import 'package:shop_app/screens/authenticate/getuser.dart';
 //import 'package:url_launcher/url_launcher.dart' as launcher;
 
 class ProfilePage extends StatefulWidget {
-  AuthServices authobj;
-  ProfilePage({@required this.authobj});
+  ProfilePage();
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -21,21 +20,19 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController controller_address = new TextEditingController();
   @override
   Widget build(BuildContext context) {
-    AuthServices authobj = widget.authobj;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 1,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: primary,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
+        // leading: IconButton(
+        //   // icon: Icon(
+        //   //   Icons.arrow_back,
+        //   //   color: primary,
+        //   // ),
+        //   // onPressed: () {
+        //   //   Navigator.of(context).pop();
+        //   // },
+        // ),
         // actions: [
         //   IconButton(
         //     icon: Icon(
@@ -186,35 +183,43 @@ class _ProfilePageState extends State<ProfilePage> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 35.0),
       child: Container(
-        child: Stack(
-          alignment: Alignment.centerRight,
-          children: <Widget>[
-            TextField(
-              readOnly: false,
-              controller: controller,
-              decoration: InputDecoration(
-                  contentPadding: EdgeInsets.only(bottom: 3),
-                  labelText: labelText,
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  //hintText: controller.text,
-                  hintStyle: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  )),
+        child: TextField(
+          readOnly: enabled,
+
+          controller: controller,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.only(bottom: 3),
+            labelText: labelText,
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            //hintText: controller.text,
+            hintStyle: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
             ),
-            IconButton(
-              icon: Icon(Icons.edit, color: primary),
-              onPressed: () {
+            suffixIcon: GestureDetector(
+              child: Icon(
+                Icons.edit,
+                color: primary,
+              ),
+              onTap: () {
                 setState(() {
                   enabled = false;
                 });
-
-                print('tap');
-                print(enabled);
               },
             ),
-          ],
+          ),
+          // IconButton(
+          //   icon: Icon(Icons.edit, color: primary),
+          //   onPressed: () {
+          //     setState(() {
+          //       enabled = false;
+          //     });
+
+          //     print('tap');
+          //     print(enabled);
+          //   },
+          // ),
         ),
       ),
       // child: TextField(
