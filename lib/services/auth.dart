@@ -41,6 +41,7 @@ class AuthServices {
   Future signOut() async {
     try {
       return await _auth.signOut();
+      // ignore: dead_code
       currentUser.address = null;
       currentUser.email = null;
       currentUser.follower = null;

@@ -7,7 +7,6 @@ import 'package:shop_app/homepage_widget/left_panel.dart';
 import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 class HomePageTest extends StatefulWidget {
   @override
@@ -21,7 +20,6 @@ class _HomePageState extends State<HomePageTest> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     _tabController = TabController(length: items.length, vsync: this);
@@ -29,7 +27,6 @@ class _HomePageState extends State<HomePageTest> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _tabController.dispose();
   }
@@ -114,7 +111,6 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     _videoController = VideoPlayerController.network(widget.videoUrl)
@@ -128,7 +124,6 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _videoController.dispose();
   }

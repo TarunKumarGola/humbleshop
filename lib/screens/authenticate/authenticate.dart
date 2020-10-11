@@ -4,11 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/home/HomeScreen.dart';
 import 'package:shop_app/screens/splash/splash_screen.dart';
-import 'package:shop_app/services/auth.dart';
-import 'dart:async';
-import 'package:shop_app/models/usermodel.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class Authenticate extends StatefulWidget {
   static String routeName = "/Authenticate";

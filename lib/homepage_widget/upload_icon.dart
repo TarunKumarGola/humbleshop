@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/theme/colors.dart';
 
 class UploadIcon extends StatelessWidget {
   const UploadIcon({

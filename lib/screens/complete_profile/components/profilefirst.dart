@@ -1,12 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-//import 'package:shop_app/helpers/style.dart';
-import 'package:shop_app/models/usermodel.dart';
-import 'package:shop_app/services/auth.dart';
-//import 'package:shop_app/theme.dart';
 import 'package:shop_app/theme/colors.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
-//import 'package:url_launcher/url_launcher.dart' as launcher;
 
 class ProfilePage extends StatefulWidget {
   ProfilePage();
@@ -15,8 +9,11 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  // ignore: non_constant_identifier_names
   TextEditingController controller_name = new TextEditingController();
+  // ignore: non_constant_identifier_names
   TextEditingController controller_email = new TextEditingController();
+  // ignore: non_constant_identifier_names
   TextEditingController controller_address = new TextEditingController();
   @override
   Widget build(BuildContext context) {

@@ -3,18 +3,18 @@ import 'package:shop_app/helpers/style.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class commentscreen extends StatefulWidget {
+class Commentscreen extends StatefulWidget {
   final String productid;
-  commentscreen({Key key, this.productid}) : super(key: key);
+  Commentscreen({Key key, this.productid}) : super(key: key);
 
   @override
-  _commentscreenState createState() =>
-      _commentscreenState(productid: productid);
+  _CommentscreenState createState() =>
+      _CommentscreenState(productid: productid);
 }
 
-class _commentscreenState extends State<commentscreen> {
+class _CommentscreenState extends State<Commentscreen> {
   final String productid;
-  _commentscreenState({this.productid});
+  _CommentscreenState({this.productid});
   List<Comment> products = []; // stores fetched products
 
   bool isLoading = false; // track if products fetching

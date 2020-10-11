@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/homepage_widget/upload_icon.dart';
-import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/complete_profile/components/profilefirst.dart';
 import 'package:shop_app/screens/home/home_test.dart';
-import 'package:shop_app/services/auth.dart';
-
 import 'package:shop_app/theme/colors.dart';
 import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
-//import 'home_page.dart';
 import 'package:shop_app/models/Categories.dart';
 import 'package:shop_app/screens/home/categorycard.dart';
 import 'package:shop_app/screens/seller_registration/seller_registration_screen.dart';
