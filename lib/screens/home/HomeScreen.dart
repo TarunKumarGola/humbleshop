@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/homepage_widget/upload_icon.dart';
 import 'package:shop_app/screens/complete_profile/components/profilefirst.dart';
-import 'package:shop_app/screens/home/home_test.dart';
+import 'package:shop_app/screens/home/home_page.dart';
 import 'package:shop_app/theme/colors.dart';
 import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:shop_app/models/Categories.dart';
@@ -34,7 +34,7 @@ class _RootAppState extends State<HomeScreen> {
     return IndexedStack(
       index: pageIndex,
       children: <Widget>[
-        HomePageTest(),
+        HomePage(),
         Center(
             child: Container(
           padding: EdgeInsets.all(6.0),
