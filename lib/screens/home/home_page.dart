@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/constant/data_json.dart';
+//import 'package:shop_app/screens/commentspage/commentscreen.dart';
+import 'package:shop_app/screens/commentspage/commentscreen2.dart';
 import 'package:shop_app/theme/colors.dart';
 import 'package:shop_app/homepage_widget/header_home_page.dart';
 import 'package:shop_app/homepage_widget/column_social_icon.dart';
@@ -219,7 +221,7 @@ class RightPanel extends StatelessWidget {
       : super(key: key);
 
   final Size size;
-
+  final String productid = "bWJLO2jCGw7rfIslImEp";
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -236,7 +238,17 @@ class RightPanel extends StatelessWidget {
               children: <Widget>[
                 getProfile(profileImg),
                 getIcons(TikTokIcons.heart, likes, 35.0),
-                getIcons(TikTokIcons.chat_bubble, comments, 35.0),
+                GestureDetector(
+                  child: getIcons(TikTokIcons.chat_bubble, comments, 35.0),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) => commentscreen(
+                                  productid: productid,
+                                )));
+                  },
+                ),
                 getIcons(TikTokIcons.reply, shares, 25.0),
                 getshopnow(shopnow, context)
               ],
