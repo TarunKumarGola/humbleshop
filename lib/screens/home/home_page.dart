@@ -9,6 +9,8 @@ import 'package:shop_app/homepage_widget/left_panel.dart';
 import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:video_player/video_player.dart';
 
+VideoPlayerController videoController;
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -93,7 +95,6 @@ class VideoPlayerItem extends StatefulWidget {
 }
 
 class _VideoPlayerItemState extends State<VideoPlayerItem> {
-  VideoPlayerController _videoController;
   bool isShowPlaying = false;
 
   @override
@@ -101,9 +102,9 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
     // TODO: implement initState
     super.initState();
 
-    _videoController = VideoPlayerController.asset(widget.videoUrl)
+    videoController = VideoPlayerController.asset(widget.videoUrl)
       ..initialize().then((value) {
-        _videoController.play();
+        videoController.play();
         setState(() {
           isShowPlaying = false;
         });
@@ -114,11 +115,11 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    _videoController.dispose();
+    videoController.dispose();
   }
 
   Widget isPlaying() {
-    return _videoController.value.isPlaying && !isShowPlaying
+    return videoController.value.isPlaying && !isShowPlaying
         ? Container()
         : Icon(
             Icons.play_arrow,
@@ -132,9 +133,9 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
     return InkWell(
       onTap: () {
         setState(() {
-          _videoController.value.isPlaying
-              ? _videoController.pause()
-              : _videoController.play();
+          videoController.value.isPlaying
+              ? videoController.pause()
+              : videoController.play();
         });
       },
       child: RotatedBox(
@@ -150,7 +151,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                   decoration: BoxDecoration(color: black),
                   child: Stack(
                     children: <Widget>[
-                      VideoPlayer(_videoController),
+                      VideoPlayer(videoController),
                       Center(
                         child: Container(
                           decoration: BoxDecoration(),
@@ -241,6 +242,7 @@ class RightPanel extends StatelessWidget {
                 GestureDetector(
                   child: getIcons(TikTokIcons.chat_bubble, comments, 35.0),
                   onTap: () {
+                    videoController.pause();
                     Navigator.push(
                         context,
                         new MaterialPageRoute(

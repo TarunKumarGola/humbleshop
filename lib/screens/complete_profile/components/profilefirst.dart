@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 //import 'package:shop_app/helpers/style.dart';
 import 'package:shop_app/models/usermodel.dart';
@@ -6,6 +8,9 @@ import 'package:shop_app/services/auth.dart';
 //import 'package:shop_app/theme.dart';
 import 'package:shop_app/theme/colors.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:async';
+import 'dart:io';
 //import 'package:url_launcher/url_launcher.dart' as launcher;
 
 class ProfilePage extends StatefulWidget {
@@ -15,15 +20,30 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  File _image;
   TextEditingController controller_name = new TextEditingController();
   TextEditingController controller_email = new TextEditingController();
   TextEditingController controller_address = new TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 1,
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            onSelected: handleClick,
+            itemBuilder: (BuildContext context) {
+              return {'Logout'}.map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            },
+          ),
+        ],
         // leading: IconButton(
         //   // icon: Icon(
         //   //   Icons.arrow_back,
@@ -99,9 +119,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             color: primary,
                           ),
-                          child: Icon(
-                            Icons.edit,
+                          child: IconButton(
+                            icon: Icon(Icons.edit),
                             color: Colors.white,
+                            onPressed: () async {
+                              await showpicker(context);
+                            },
                           ),
                         )),
                   ],
@@ -188,7 +211,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
           controller: controller,
           decoration: InputDecoration(
-            contentPadding: EdgeInsets.only(bottom: 3),
+            contentPadding: EdgeInsets.only(bottom: 3, left: 3.0),
             labelText: labelText,
             floatingLabelBehavior: FloatingLabelBehavior.always,
             //hintText: controller.text,
@@ -259,5 +282,97 @@ class _ProfilePageState extends State<ProfilePage> {
       //   },
       // ),
     );
+  }
+
+  showpicker(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Photo Library'),
+                      onTap: () async {
+                        await _imgFromGallery();
+                        if (_image != null) {
+                          await uploadImageToFirebase(context);
+
+                          _image = null;
+                        }
+                        Navigator.of(context).pop();
+                      }),
+                  new ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Camera'),
+                    onTap: () async {
+                      await _imgFromCamera();
+                      if (_image != null) {
+                        await uploadImageToFirebase(context);
+
+                        _image = null;
+                      }
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  Future uploadImageToFirebase(BuildContext context) async {
+    String fileName = "${authobj.currentUser.uid}_profileimage";
+    StorageReference firebaseStorageRef =
+        FirebaseStorage.instance.ref().child('profilepictures/$fileName');
+    StorageUploadTask uploadTask = firebaseStorageRef.putFile(_image);
+    StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+    taskSnapshot.ref.getDownloadURL().then(
+      (value) async {
+        print("Done: $value");
+
+        await FirebaseFirestore.instance
+            .collection('USERS')
+            .doc(authobj.currentUser.uid)
+            .update({'imageurl': '$value'}).then((value) {
+          print("User Updated");
+        }).catchError((error) {
+          print("Failed to update user: $error");
+          return;
+        });
+        setState(() {
+          authobj.currentUser.imageurl = value;
+        });
+      },
+    );
+  }
+
+  _imgFromCamera() async {
+    PickedFile image = await ImagePicker()
+        .getImage(source: ImageSource.camera, imageQuality: 50);
+
+    setState(() {
+      _image = File(image.path);
+    });
+  }
+
+  _imgFromGallery() async {
+    PickedFile image = await ImagePicker()
+        .getImage(source: ImageSource.gallery, imageQuality: 50);
+
+    setState(() {
+      _image = File(image.path);
+    });
+  }
+
+  Future<void> handleClick(String value) async {
+    switch (value) {
+      case 'Logout':
+        await FirebaseAuth.instance.signOut();
+        break;
+    }
   }
 }

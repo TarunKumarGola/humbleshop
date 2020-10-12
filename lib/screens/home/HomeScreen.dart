@@ -100,6 +100,11 @@ class _RootAppState extends State<HomeScreen> {
                 ? InkWell(
                     onTap: () {
                       selectedTab(index);
+                      if (index != 0) {
+                        videoController.pause();
+                      } else {
+                        videoController.play();
+                      }
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -138,6 +143,7 @@ class _RootAppState extends State<HomeScreen> {
   }
 
   gotoregisterpage() {
+    //videoController.pause();
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (contexts) => SellerRegistration()));
   }

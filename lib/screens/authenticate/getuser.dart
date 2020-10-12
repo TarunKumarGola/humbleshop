@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:shop_app/models/usermodel.dart';
 import 'package:shop_app/services/auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 AuthServices authobj;
 
@@ -28,5 +29,6 @@ Future<void> getuser(String uid) async {
 
     // print("userdata is ${obj.name} ${obj.address} ${user.phoneNumber}");
   });
+
   authobj = AuthServices(currentUser: obj);
 }

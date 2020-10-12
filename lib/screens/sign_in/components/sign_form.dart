@@ -65,58 +65,14 @@ class _SignFormState extends State<SignForm> {
             press: () async {
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
-                // try {
-                //   AuthServices obj = new AuthServices();
-                //   obj.signInEmail(email, password, context);
-                // } catch (e) {
-                //   print(e);
-                // }
-                // if all are valid then go to success screen
-                // here we are signing in using email id and password;
-                // try {
-                //   dynamic result = await _auth.signInEmail(email, password);
-                //   if (result == null)
-                //     print('error signing in ');
-                //   else {
-                //     print("signed in ");
-                //     Navigator.pushNamed(context, LoginSuccessScreen.routeName);
-                //   }
-                // } on FirebaseAuthException catch (e) {
-                //   if (e.code == 'user-not-found') {
-                //     print('No user found for that email.');
-                //   } else if (e.code == 'wrong-password') {
-                //     print('Wrong password provided for that user.');
-                //   }
-                // }
+
                 try {
                   UserCredential userCredential = await FirebaseAuth.instance
                       .signInWithEmailAndPassword(
                           email: email, password: password);
                   print("user signed in");
-                  getuser(userCredential.user.uid);
-                  // UserModel obj;
 
-                  // await FirebaseFirestore.instance
-                  //     .collection("USERS")
-                  //     .doc(userCredential.user.uid)
-                  //     .get()
-                  //     .then((querySnapshot) {
-                  //   print("string ${querySnapshot.data().toString()}");
-                  //   Map<String, dynamic> data = querySnapshot.data();
-                  //   obj = UserModel(
-                  //       uid: userCredential.user.uid,
-                  //       name: data['name'],
-                  //       phonenumber: data['phonenumber'],
-                  //       address: data['address'],
-                  //       email: data['email'],
-                  //       follower: data['follower'],
-                  //       following: data['following'],
-                  //       imageurl: data['imageurl']);
-                  //   // print("userdata is ${obj.name} ${obj.address} ${user.phoneNumber}");
-                  // });
-                  // AuthServices authobj = new AuthServices(currentUser: obj);
-                  // print(
-                  //     "user uid=${authobj.currentUser.uid} name=${authobj.currentUser.name} phonenumber=${authobj.currentUser} address=${authobj.currentUser.address} email=${authobj.currentUser.email} imageurl=${authobj.currentUser.imageurl}");
+                  getuser(userCredential.user.uid);
 
                   Navigator.push(
                       context,
