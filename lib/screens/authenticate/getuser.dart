@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:shop_app/models/usermodel.dart';
 import 'package:shop_app/services/auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 AuthServices authobj;
 
