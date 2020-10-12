@@ -1,13 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/default_button.dart';
-
-import 'package:shop_app/models/usermodel.dart';
-import 'package:shop_app/screens/otp/otp_screen.dart';
-
 import '../../../../constants.dart';
 import '../../../../size_config.dart';
 import '../../sign_in_screen.dart';
@@ -21,12 +16,14 @@ class _SignUpFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
   String email;
   String password;
+  // ignore: non_constant_identifier_names
   String conform_password;
   bool remember = false;
   String address;
   String name;
   final List<String> errors = [];
   String phoneNumber;
+  final _codeController = TextEditingController();
   void addError({String error}) {
     if (!errors.contains(error))
       setState(() {
@@ -82,6 +79,7 @@ class _SignUpFormState extends State<SignUpForm> {
 
                 if (!checkdata) {
                   try {
+                    // ignore: unused_local_variable
                     UserCredential userCredential = await FirebaseAuth.instance
                         .createUserWithEmailAndPassword(
                             email: email, password: password);
@@ -93,17 +91,13 @@ class _SignUpFormState extends State<SignUpForm> {
                       timeout: const Duration(minutes: 2),
                       verificationCompleted:
                           (PhoneAuthCredential credential) async {
-                        // ANDROID ONLY!
-                        // Sign the user in (or link) with the auto-generated credential
-                        // UserModel userm = new UserModel(
-                        //     name, email, password, phoneNumber, address, 0, 0);
                         await FirebaseFirestore.instance
                             .collection("USERS")
                             .doc(firebaseuser.uid)
                             .set({
                           "name": name,
                           "email": email,
-                          "phonenumber": phoneNumber,
+                          "phonenumber": "+91$phoneNumber",
                           "password": password,
                           "address": address,
                           "follower": 0,
@@ -120,7 +114,7 @@ class _SignUpFormState extends State<SignUpForm> {
                         //print('linking with credential');
 
                         firebaseuser.linkWithCredential(credential);
-
+                        await FirebaseAuth.instance.signOut();
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -141,46 +135,72 @@ class _SignUpFormState extends State<SignUpForm> {
                           print(e);
                         }
                       },
-                      codeSent: (String verificationId, int resendToken) async {
-                        String smsCode = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => OtpScreen()));
+                      codeSent: (String verificationId,
+                          [int forceResendingToken]) {
+                        //show dialog to take input from the user
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => AlertDialog(
+                                  title: Text("Enter SMS Code"),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      TextField(
+                                        controller: _codeController,
+                                      ),
+                                    ],
+                                  ),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      child: Text("Done"),
+                                      textColor: Colors.white,
+                                      color: Colors.redAccent,
+                                      onPressed: () async {
+                                        // ignore: unused_local_variable
+                                        FirebaseAuth auth =
+                                            FirebaseAuth.instance;
+                                        String smsCode =
+                                            _codeController.text.trim();
+                                        PhoneAuthCredential
+                                            phoneAuthCredential =
+                                            PhoneAuthProvider.credential(
+                                                verificationId: verificationId,
+                                                smsCode: smsCode);
+                                        FirebaseFirestore.instance
+                                            .collection("USERS")
+                                            .doc(firebaseuser.uid)
+                                            .set({
+                                          "name": name,
+                                          "email": email,
+                                          "phonenumber": "+91$phoneNumber",
+                                          "password": password,
+                                          "address": address,
+                                          "follower": 0,
+                                          "following": 0,
+                                          "imageurl": "image",
+                                        });
+                                        FirebaseFirestore.instance
+                                            .collection("PhoneNumbers")
+                                            .doc(phoneNumber)
+                                            .set({});
+                                        // Sign the user in (or link) with the credential
 
-                        // Create a PhoneAuthCredential with the code
+                                        firebaseuser.updatePhoneNumber(
+                                            phoneAuthCredential);
 
-                        PhoneAuthCredential phoneAuthCredential =
-                            PhoneAuthProvider.credential(
-                                verificationId: verificationId,
-                                smsCode: smsCode);
-                        FirebaseFirestore.instance
-                            .collection("USERS")
-                            .doc(firebaseuser.uid)
-                            .set({
-                          "name": name,
-                          "email": email,
-                          "phonenumber": phoneNumber,
-                          "password": password,
-                          "address": address,
-                          "follower": 0,
-                          "following": 0,
-                          "imageurl": "image",
-                        });
-                        FirebaseFirestore.instance
-                            .collection("PhoneNumbers")
-                            .doc(phoneNumber)
-                            .set({});
-                        // Sign the user in (or link) with the credential
-
-                        firebaseuser.updatePhoneNumber(phoneAuthCredential);
-
-                        firebaseuser.linkWithCredential(phoneAuthCredential);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SignInScreen()));
-
-                        //await auth.signInWithCredential(phoneAuthCredential);
+                                        firebaseuser.linkWithCredential(
+                                            phoneAuthCredential);
+                                        await FirebaseAuth.instance.signOut();
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SignInScreen()));
+                                      },
+                                    )
+                                  ],
+                                ));
                       },
                       codeAutoRetrievalTimeout: (String verificationId) {},
                     );
@@ -360,23 +380,6 @@ class _SignUpFormState extends State<SignUpForm> {
             CustomSurffixIcon(svgIcon: "assets/icons/Location point.svg"),
       ),
     );
-  }
-
-  bool checkdata() {
-    FirebaseFirestore.instance
-        .collection("PhoneNumbers")
-        .doc("+91$phoneNumber")
-        .get()
-        .then((DocumentSnapshot documentSnapshot) {
-      if (documentSnapshot.exists) {
-        print("inside true block");
-      } else {
-        print("this phone number does not exist");
-      }
-    });
-    // print(ans);
-    // print(phoneNumber);
-    // return ans;
   }
 
   TextFormField buildFirstNameFormField() {

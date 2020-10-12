@@ -2,10 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-//import 'package:shop_app/helpers/style.dart';
-import 'package:shop_app/models/usermodel.dart';
-import 'package:shop_app/services/auth.dart';
-//import 'package:shop_app/theme.dart';
+import 'package:flutter/material.dart';
 import 'package:shop_app/theme/colors.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,8 +18,11 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   File _image;
+  // ignore: non_constant_identifier_names
   TextEditingController controller_name = new TextEditingController();
+  // ignore: non_constant_identifier_names
   TextEditingController controller_email = new TextEditingController();
+  // ignore: non_constant_identifier_names
   TextEditingController controller_address = new TextEditingController();
 
   @override

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/constant/data_json.dart';
-//import 'package:shop_app/screens/commentspage/commentscreen.dart';
 import 'package:shop_app/screens/commentspage/commentscreen2.dart';
 import 'package:shop_app/theme/colors.dart';
 import 'package:shop_app/homepage_widget/header_home_page.dart';
@@ -8,6 +7,7 @@ import 'package:shop_app/homepage_widget/column_social_icon.dart';
 import 'package:shop_app/homepage_widget/left_panel.dart';
 import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:video_player/video_player.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 VideoPlayerController videoController;
 
@@ -16,12 +16,13 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   TabController _tabController;
+  CollectionReference users =
+      FirebaseFirestore.instance.collection('videoproducts');
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     _tabController = TabController(length: items.length, vsync: this);
@@ -29,7 +30,6 @@ class _HomePageState extends State<HomePage>
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _tabController.dispose();
   }
@@ -41,26 +41,40 @@ class _HomePageState extends State<HomePage>
 
   Widget getBody() {
     var size = MediaQuery.of(context).size;
-    return RotatedBox(
-      quarterTurns: 1,
-      child: TabBarView(
-        controller: _tabController,
-        children: List.generate(items.length, (index) {
-          return VideoPlayerItem(
-            videoUrl: items[index]['videoUrl'],
-            size: size,
-            name: items[index]['name'],
-            caption: items[index]['caption'],
-            songName: items[index]['songName'],
-            profileImg: items[index]['profileImg'],
-            likes: items[index]['likes'],
-            comments: items[index]['comments'],
-            shares: items[index]['shares'],
-            shopnow: items[index]['shopnow'],
+    return StreamBuilder<QuerySnapshot>(
+        stream: users.snapshots(),
+        builder: (BuildContext context, stream) {
+          if (stream.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (stream.hasError) {
+            return Center(child: Text(stream.error.toString()));
+          }
+          QuerySnapshot querySnapshot = stream.data;
+
+          return RotatedBox(
+            quarterTurns: 1,
+            child: TabBarView(
+              controller:
+                  TabController(length: querySnapshot.size, vsync: this),
+              children: List.generate(querySnapshot.size, (index) {
+                return VideoPlayerItem(
+                  videoUrl: querySnapshot.docs[index].data()['videoUrl'],
+                  size: size,
+                  name: querySnapshot.docs[index].data()['name'],
+                  caption: querySnapshot.docs[index].data()['caption'],
+                  songName: querySnapshot.docs[index].data()['songName'],
+                  profileImg: querySnapshot.docs[index].data()['profileImg'],
+                  likes: querySnapshot.docs[index].data()['likes'],
+                  comments: querySnapshot.docs[index].data()['comments'],
+                  shares: querySnapshot.docs[index].data()['shares'],
+                  shopnow: querySnapshot.docs[index].data()['shopnow'],
+                );
+              }),
+            ),
           );
-        }),
-      ),
-    );
+        });
   }
 }
 
@@ -99,10 +113,10 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
-    videoController = VideoPlayerController.asset(widget.videoUrl)
+    videoController = VideoPlayerController.asset(widget.videoUrl);
+    videoController = VideoPlayerController.network(widget.videoUrl)
       ..initialize().then((value) {
         videoController.play();
         setState(() {
@@ -113,7 +127,6 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     videoController.dispose();
   }
@@ -223,6 +236,7 @@ class RightPanel extends StatelessWidget {
 
   final Size size;
   final String productid = "bWJLO2jCGw7rfIslImEp";
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -246,7 +260,7 @@ class RightPanel extends StatelessWidget {
                     Navigator.push(
                         context,
                         new MaterialPageRoute(
-                            builder: (context) => commentscreen(
+                            builder: (context) => Commentscreen(
                                   productid: productid,
                                 )));
                   },

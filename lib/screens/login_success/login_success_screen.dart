@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/services/auth.dart';
 
 import 'components/body.dart';
 
