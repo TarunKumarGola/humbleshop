@@ -97,10 +97,9 @@ class _RootAppState extends State<HomeScreen> {
                     onTap: () {
                       selectedTab(index);
                       if (index != 0) {
-                        videoController.pause();
-                      } else {
-                        videoController.play();
-                      }
+                        print('yo');
+                        print('yo');
+                      } else {}
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/constant/data_json.dart';
 import 'package:shop_app/screens/commentspage/commentscreen2.dart';
@@ -9,17 +10,27 @@ import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-VideoPlayerController videoController;
+VideoPlayerController _videoController;
 
 class HomePage extends StatefulWidget {
+  final String type;
+  final String typename;
+
+  HomePage({this.type, this.typename});
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState(type, typename);
 }
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   TabController _tabController;
   CollectionReference users =
       FirebaseFirestore.instance.collection('videoproducts');
+  String type;
+  String typename;
+  _HomePageState(String type, String typename) {
+    this.type = type;
+    this.typename = typename;
+  }
 
   @override
   void initState() {
@@ -41,8 +52,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget getBody() {
     var size = MediaQuery.of(context).size;
+    List<String> following;
+    // performing queries
+    Stream<QuerySnapshot> stream;
+    if (type == null) {
+      stream = users.snapshots();
+    } else if (type == 'following') {
+      following = getFollowing() as List<String>;
+      stream = users
+          .where((d) => following == null || following.contains(d.id))
+          .snapshots();
+    } else {
+      stream = users.where(type, isEqualTo: typename).snapshots();
+    }
+
     return StreamBuilder<QuerySnapshot>(
-        stream: users.snapshots(),
+        stream: stream,
         builder: (BuildContext context, stream) {
           if (stream.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -75,6 +100,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
           );
         });
+  }
+
+  Future<List<String>> getFollowing() async {
+    DocumentSnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('USERS')
+        .doc(FirebaseAuth.instance.currentUser.uid)
+        .get();
+
+    if (querySnapshot.exists &&
+        querySnapshot.data().containsKey('following') &&
+        querySnapshot.data()['following'] is List) {
+      // Create a new List<String> from List<dynamic>
+      return List<String>.from(querySnapshot.data()['following']);
+    }
+
+    return [];
   }
 }
 
@@ -115,10 +156,9 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
   void initState() {
     super.initState();
 
-    videoController = VideoPlayerController.asset(widget.videoUrl);
-    videoController = VideoPlayerController.network(widget.videoUrl)
+    _videoController = VideoPlayerController.network(widget.videoUrl)
       ..initialize().then((value) {
-        videoController.play();
+        _videoController.play();
         setState(() {
           isShowPlaying = false;
         });
@@ -128,11 +168,11 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
   @override
   void dispose() {
     super.dispose();
-    videoController.dispose();
+    _videoController.dispose();
   }
 
   Widget isPlaying() {
-    return videoController.value.isPlaying && !isShowPlaying
+    return _videoController.value.isPlaying && !isShowPlaying
         ? Container()
         : Icon(
             Icons.play_arrow,
@@ -146,9 +186,9 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
     return InkWell(
       onTap: () {
         setState(() {
-          videoController.value.isPlaying
-              ? videoController.pause()
-              : videoController.play();
+          _videoController.value.isPlaying
+              ? _videoController.pause()
+              : _videoController.play();
         });
       },
       child: RotatedBox(
@@ -164,7 +204,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                   decoration: BoxDecoration(color: black),
                   child: Stack(
                     children: <Widget>[
-                      VideoPlayer(videoController),
+                      VideoPlayer(_videoController),
                       Center(
                         child: Container(
                           decoration: BoxDecoration(),
@@ -256,7 +296,6 @@ class RightPanel extends StatelessWidget {
                 GestureDetector(
                   child: getIcons(TikTokIcons.chat_bubble, comments, 35.0),
                   onTap: () {
-                    videoController.pause();
                     Navigator.push(
                         context,
                         new MaterialPageRoute(
