@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 //import 'dart:html';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart' show DragStartBehavior;
+import 'package:shop_app/models/sellermodel.dart';
+import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/theme/colors.dart';
 
 //import 'package:gallery/l10n/gallery_localizations.dart';
@@ -19,11 +22,12 @@ class TextFormFieldDemo extends StatefulWidget {
   TextFormFieldDemoState createState() => TextFormFieldDemoState();
 }
 
-class PersonData {
+class SellerData {
   String name = '';
-  String phoneNumber = '';
-  String email = '';
-  String password = '';
+  String aadhar = '';
+  String pan = '';
+  String shopdescription = '';
+  String shopname = '';
 }
 
 class PasswordField extends StatefulWidget {
@@ -90,14 +94,54 @@ class _PasswordFieldState extends State<PasswordField> {
 
 class TextFormFieldDemoState extends State<TextFormFieldDemo> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
 
-  PersonData person = PersonData();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  SellerData seller = SellerData();
+  Position _currentposition;
 
   void showInSnackBar(String value) {
     _scaffoldKey.currentState.hideCurrentSnackBar();
     _scaffoldKey.currentState.showSnackBar(SnackBar(
       content: Text(value),
     ));
+  }
+
+  Future<void> _handleSubmitted() async {
+    final form = _formKey.currentState;
+    if (!form.validate()) {
+      _autoValidateMode =
+          AutovalidateMode.always; // Start validating on every change.
+      showInSnackBar("please fix the errors in red before submitting");
+    } else if (_currentposition == null) {
+      showInSnackBar("please set your shop location by tapping above button");
+    } else {
+      form.save();
+      await FirebaseFirestore.instance
+          .collection("SELLERS")
+          .doc(authobj.currentUser.uid)
+          .set({
+        "name": seller.name,
+        "shopname": seller.shopname,
+        "shopdescription": seller.shopdescription,
+        "pan": seller.pan,
+        "aadhar": seller.aadhar,
+        "productsuid": [],
+        "shoplocation":
+            GeoPoint(_currentposition.latitude, _currentposition.longitude)
+      });
+      isSeller = true;
+      sellerobj = SellerModel(
+          name: seller.name,
+          shopname: seller.shopname,
+          shopdescription: seller.shopdescription,
+          pan: seller.pan,
+          aadhar: seller.aadhar,
+          productsuid: [],
+          shoplocation:
+              GeoPoint(_currentposition.latitude, _currentposition.longitude));
+    }
+    showInSnackBar("Registration successful");
   }
 
   String _validateName(String value) {
@@ -107,6 +151,40 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
     final nameExp = RegExp(r'^[A-Za-z ]+$');
     if (!nameExp.hasMatch(value)) {
       return "Please Enter Only Alphabets";
+    }
+    return null;
+  }
+
+  String validatePan(String value) {
+    if (value.isEmpty) {
+      return "this field can't be empty";
+    }
+    if (value.length < 10) {
+      return "Please enter correct pan number";
+    }
+    return null;
+  }
+
+  String validateShopDescription(String value) {
+    if (value.isEmpty) {
+      return "this field can't be empty";
+    }
+    return null;
+  }
+
+  String validateAadhar(String value) {
+    if (value.isEmpty) {
+      return "this field can't be empty";
+    }
+    if (value.length < 12) {
+      return "Please enter correct pan number";
+    }
+    return null;
+  }
+
+  String validateShopName(String value) {
+    if (value.isEmpty) {
+      return "this field can't be empty";
     }
     return null;
   }
@@ -124,139 +202,220 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
     const sizedBoxSpace = SizedBox(height: 24);
 
     return Scaffold(
+        resizeToAvoidBottomPadding: false,
         key: _scaffoldKey,
-        body: Form(
-            child: Container(
-          padding: EdgeInsets.only(right: 8.0, left: 8.0),
-          child: ListView(
-            children: [
-              sizedBoxSpace,
-              TextFormField(
-                textCapitalization: TextCapitalization.words,
-                cursorColor: cursorColor,
-                decoration: InputDecoration(
-                  filled: true,
-                  icon: const Icon(Icons.person),
-                  hintText: "Enter your Name",
-                  labelText: "Name*",
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Form(
+              key: _formKey,
+              child: Scrollbar(
+                //padding: EdgeInsets.only(right: 8.0, left: 8.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      sizedBoxSpace,
+                      TextFormField(
+                        textCapitalization: TextCapitalization.words,
+                        cursorColor: cursorColor,
+                        decoration: InputDecoration(
+                          filled: true,
+                          icon: const Icon(Icons.person),
+                          hintText: "Enter your Name",
+                          labelText: "Name*",
+                        ),
+                        onSaved: (value) {
+                          seller.name = value;
+                        },
+                        validator: _validateName,
+                      ),
+                      sizedBoxSpace,
+                      TextFormField(
+                        textCapitalization: TextCapitalization.words,
+                        cursorColor: cursorColor,
+                        decoration: InputDecoration(
+                          filled: true,
+                          icon: const Icon(Icons.home),
+                          hintText: "Enter your Shop Name",
+                          labelText: "Shop Name*",
+                        ),
+                        onSaved: (value) {
+                          seller.shopname = value;
+                        },
+                        validator: validateShopName,
+                      ),
+                      sizedBoxSpace,
+                      // TextFormField(
+                      //   cursorColor: cursorColor,
+                      //   decoration: InputDecoration(
+                      //     filled: true,
+                      //     icon: const Icon(Icons.phone),
+                      //     hintText: "98XXXXXXXX",
+                      //     labelText: "Phone number*",
+                      //     prefixText: '+1 91',
+                      //   ),
+                      //   keyboardType: TextInputType.phone,
+                      //   onSaved: (value) {
+                      //     person.phoneNumber = value;
+                      //   },
+                      //   maxLength: 10,
+                      //   maxLengthEnforced: true,
+                      //   validator: _validatePhoneNumber,
+                      //   // TextInputFormatters are applied in sequence.
+                      // ),
+                      // sizedBoxSpace,
+                      // TextFormField(
+                      //   cursorColor: cursorColor,
+                      //   decoration: InputDecoration(
+                      //     filled: true,
+                      //     icon: const Icon(Icons.email),
+                      //     hintText: "Your email address",
+                      //     labelText: "Email*",
+                      //   ),
+                      //   keyboardType: TextInputType.emailAddress,
+                      //   onSaved: (value) {
+                      //     person.email = value;
+                      //   },
+                      // ),
+                      sizedBoxSpace,
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        child: TextFormField(
+                          cursorColor: cursorColor,
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            hintText: "Tell Us about your Shop",
+                            helperText: "Keep it short",
+                            labelText: "Description",
+                          ),
+                          onSaved: (value) {
+                            seller.shopdescription = value;
+                          },
+                          validator: validateShopDescription,
+                          maxLines: 3,
+                        ),
+                      ),
+                      sizedBoxSpace,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: TextFormField(
+                          cursorColor: cursorColor,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: "PAN number*",
+                              hintText: "Enter your 10 digit Pan"),
+                          maxLength: 10,
+                          maxLines: 1,
+                          validator: validatePan,
+                          onSaved: (value) {
+                            seller.pan = value;
+                          },
+                        ),
+                      ),
+                      sizedBoxSpace,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: TextFormField(
+                          cursorColor: cursorColor,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: "AAdhar number*",
+                              hintText: "Enter your 12 digit AAdhar"),
+                          maxLength: 12,
+                          maxLines: 1,
+                          validator: validateAadhar,
+                          onSaved: (value) {
+                            seller.aadhar = value;
+                          },
+                        ),
+                      ),
+                      sizedBoxSpace,
+                      // PasswordField(
+                      //   helperText: "No more than 8 characters",
+                      //   labelText: "Password*",
+                      //   onFieldSubmitted: (value) {
+                      //     setState(() {
+                      //       person.password = value;
+                      //     });
+                      //   },
+                      // ),
+                      // sizedBoxSpace,
+                      // TextFormField(
+                      //   cursorColor: cursorColor,
+                      //   decoration: InputDecoration(
+                      //     filled: true,
+                      //     labelText: "Re-type password*",
+                      //   ),
+                      //   maxLength: 8,
+                      //   obscureText: true,
+                      // ),
+                      Center(
+                        child: RaisedButton(
+                          child: Text(
+                            "Shop Current location",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          color: Colors.pinkAccent,
+                          onPressed: () {
+                            _getCurrentLocation();
+                          },
+                        ),
+                      ),
+                      sizedBoxSpace,
+
+                      Center(
+                        child: RaisedButton(
+                          child: Text("Register",
+                              style: TextStyle(color: Colors.white)),
+                          color: primary,
+                          onPressed: _handleSubmitted,
+
+                          // await FirebaseFirestore.instance
+                          //     .collection("SELLERS")
+                          //     .doc(authobj.currentUser.uid)
+                          //     .set({
+                          //   "name": seller.name,
+                          //   "shopname":seller.shopname,
+                          //   "shopdescription": seller.shopdescription,
+                          //   "shopname": seller.shopname,
+                          //   "pan": seller.pan,
+                          //   "aadhar": seller.aadhar,
+                          //   "productsuid":[],
+                          //   "shoplocation":GeoPoint(_currentposition.latitude, _currentposition.longitude)
+                          // });
+                        ),
+                      ),
+                      sizedBoxSpace,
+                      Text(
+                        "By clicking on Register you agree to our terms and conditions",
+                        style: Theme.of(context).textTheme.caption,
+                      ),
+                      Text(
+                        "*indicates required field",
+                        style: Theme.of(context).textTheme.caption,
+                      ),
+                      sizedBoxSpace,
+                    ],
+                  ),
                 ),
-                onSaved: (value) {
-                  person.name = value;
-                },
-                validator: _validateName,
-              ),
-              sizedBoxSpace,
-              TextFormField(
-                textCapitalization: TextCapitalization.words,
-                cursorColor: cursorColor,
-                decoration: InputDecoration(
-                  filled: true,
-                  icon: const Icon(Icons.home),
-                  hintText: "Enter your Shop Name",
-                  labelText: "Shop Name*",
-                ),
-              ),
-              sizedBoxSpace,
-              TextFormField(
-                cursorColor: cursorColor,
-                decoration: InputDecoration(
-                  filled: true,
-                  icon: const Icon(Icons.phone),
-                  hintText: "98XXXXXXXX",
-                  labelText: "Phone number*",
-                  prefixText: '+1 91',
-                ),
-                keyboardType: TextInputType.phone,
-                onSaved: (value) {
-                  person.phoneNumber = value;
-                },
-                maxLength: 10,
-                maxLengthEnforced: true,
-                validator: _validatePhoneNumber,
-                // TextInputFormatters are applied in sequence.
-              ),
-              sizedBoxSpace,
-              TextFormField(
-                cursorColor: cursorColor,
-                decoration: InputDecoration(
-                  filled: true,
-                  icon: const Icon(Icons.email),
-                  hintText: "Your email address",
-                  labelText: "Email*",
-                ),
-                keyboardType: TextInputType.emailAddress,
-                onSaved: (value) {
-                  person.email = value;
-                },
-              ),
-              sizedBoxSpace,
-              TextFormField(
-                cursorColor: cursorColor,
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  hintText: "Tell Us about your Shop",
-                  helperText: "Keep it short",
-                  labelText: "Description",
-                ),
-                maxLines: 3,
-              ),
-              sizedBoxSpace,
-              TextFormField(
-                cursorColor: cursorColor,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: "PAN number*",
-                    hintText: "Enter your 10 digit Pan"),
-                maxLines: 1,
-              ),
-              sizedBoxSpace,
-              TextFormField(
-                cursorColor: cursorColor,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: "AAdhar number*",
-                    hintText: "Enter your 12 digit Pan"),
-                maxLines: 1,
-              ),
-              sizedBoxSpace,
-              PasswordField(
-                helperText: "No more than 8 characters",
-                labelText: "Password*",
-                onFieldSubmitted: (value) {
-                  setState(() {
-                    person.password = value;
-                  });
-                },
-              ),
-              sizedBoxSpace,
-              TextFormField(
-                cursorColor: cursorColor,
-                decoration: InputDecoration(
-                  filled: true,
-                  labelText: "Re-type password*",
-                ),
-                maxLength: 8,
-                obscureText: true,
-              ),
-              sizedBoxSpace,
-              Center(
-                child: RaisedButton(
-                  child: Text("Register"),
-                  color: primary,
-                  onPressed: () {},
-                ),
-              ),
-              sizedBoxSpace,
-              Text(
-                "indicates required field",
-                style: Theme.of(context).textTheme.caption,
-              ),
-              sizedBoxSpace,
-            ],
-          ),
-        )));
+              )),
+        ));
+  }
+
+  _getCurrentLocation() {
+    final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+
+    geolocator
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) {
+      setState(() {
+        _currentposition = position;
+      });
+    }).catchError((e) {
+      print(e);
+    });
   }
 }
 

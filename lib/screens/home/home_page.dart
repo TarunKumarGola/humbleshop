@@ -10,7 +10,7 @@ import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-VideoPlayerController _videoController;
+VideoPlayerController videoController;
 
 class HomePage extends StatefulWidget {
   final String type;
@@ -156,9 +156,10 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
   void initState() {
     super.initState();
 
-    _videoController = VideoPlayerController.network(widget.videoUrl)
+    videoController = VideoPlayerController.network(widget.videoUrl)
       ..initialize().then((value) {
-        _videoController.play();
+        videoController.play();
+        print("playing videoplayer in initialize");
         setState(() {
           isShowPlaying = false;
         });
@@ -168,11 +169,11 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
   @override
   void dispose() {
     super.dispose();
-    _videoController.dispose();
+    videoController.dispose();
   }
 
   Widget isPlaying() {
-    return _videoController.value.isPlaying && !isShowPlaying
+    return videoController.value.isPlaying && !isShowPlaying
         ? Container()
         : Icon(
             Icons.play_arrow,
@@ -186,9 +187,9 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
     return InkWell(
       onTap: () {
         setState(() {
-          _videoController.value.isPlaying
-              ? _videoController.pause()
-              : _videoController.play();
+          videoController.value.isPlaying
+              ? videoController.pause()
+              : videoController.play();
         });
       },
       child: RotatedBox(
@@ -204,7 +205,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                   decoration: BoxDecoration(color: black),
                   child: Stack(
                     children: <Widget>[
-                      VideoPlayer(_videoController),
+                      VideoPlayer(videoController),
                       Center(
                         child: Container(
                           decoration: BoxDecoration(),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/homepage_widget/upload_icon.dart';
+import 'package:shop_app/screens/addproducts/addproduct.dart';
+import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/complete_profile/components/profilefirst.dart';
 import 'package:shop_app/screens/home/home_page.dart';
 import 'package:shop_app/theme/colors.dart';
@@ -7,6 +9,7 @@ import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:shop_app/models/Categories.dart';
 import 'package:shop_app/screens/home/categorycard.dart';
 import 'package:shop_app/screens/seller_registration/seller_registration_screen.dart';
+import 'package:video_player/video_player.dart';
 
 class HomeScreen extends StatefulWidget {
   static String routeName = "\HomeScreen";
@@ -58,7 +61,7 @@ class _RootAppState extends State<HomeScreen> {
           ),
         )),
         Center(
-          child: SellerRegistration(),
+          child: onplusbuttonpressed(),
         ),
         Center(
           child: Text(
@@ -97,9 +100,12 @@ class _RootAppState extends State<HomeScreen> {
                     onTap: () {
                       selectedTab(index);
                       if (index != 0) {
-                        print('yo');
-                        print('yo');
-                      } else {}
+                        videoController.pause();
+                        print("pausing videoplayer index$index");
+                      } else {
+                        videoController.play();
+                        print("playing videoplayer index$index");
+                      }
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -141,5 +147,14 @@ class _RootAppState extends State<HomeScreen> {
     //videoController.pause();
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (contexts) => SellerRegistration()));
+  }
+
+  Widget onplusbuttonpressed() {
+    //print(sellerobj.name);
+    if (isSeller = false) {
+      return SellerRegistration();
+    } else {
+      return AddProduct();
+    }
   }
 }
