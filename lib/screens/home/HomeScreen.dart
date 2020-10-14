@@ -157,7 +157,7 @@ class _RootAppState extends State<HomeScreen> {
   selectedTab(index) {
     setState(() {
       pageIndex = index;
-      print(pageIndex);
+      if (pageIndex != 0) videoController.pause();
     });
   }
 

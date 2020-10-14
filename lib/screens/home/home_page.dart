@@ -11,6 +11,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shop_app/screens/home/HomeScreen.dart';
 
 Stream<QuerySnapshot> stream;
+VideoPlayerController videoController;
 
 class HomePage extends StatefulWidget {
   @override
@@ -143,14 +144,14 @@ class VideoPlayerItem extends StatefulWidget {
 
 class _VideoPlayerItemState extends State<VideoPlayerItem> {
   bool isShowPlaying = true;
-  VideoPlayerController _videoController;
+
   @override
   void initState() {
     super.initState();
 
-    _videoController = VideoPlayerController.network(widget.videoUrl)
+    videoController = VideoPlayerController.network(widget.videoUrl)
       ..initialize().then((value) {
-        _videoController.play();
+        videoController.play();
         setState(() {
           isShowPlaying = false;
         });
@@ -160,12 +161,12 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
   @override
   void dispose() {
     super.dispose();
-    _videoController.pause();
-    _videoController.dispose();
+    videoController.pause();
+    videoController.dispose();
   }
 
   Widget isPlaying() {
-    return _videoController.value.isPlaying && !isShowPlaying
+    return videoController.value.isPlaying && !isShowPlaying
         ? Container()
         : Icon(
             Icons.play_arrow,
@@ -179,12 +180,12 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
     return InkWell(
       onTap: () {
         setState(() {
-          if (_videoController.value.isPlaying) {
-            _videoController.pause();
+          if (videoController.value.isPlaying) {
+            videoController.pause();
             isShowPlaying = false;
           } else {
             isShowPlaying = true;
-            _videoController.play();
+            videoController.play();
           }
         });
       },
@@ -201,7 +202,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                   decoration: BoxDecoration(color: black),
                   child: Stack(
                     children: <Widget>[
-                      VideoPlayer(_videoController),
+                      VideoPlayer(videoController),
                       Center(
                         child: Container(
                           decoration: BoxDecoration(),
