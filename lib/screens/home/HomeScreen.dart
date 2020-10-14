@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/constants.dart';
 import 'package:shop_app/homepage_widget/upload_icon.dart';
 import 'package:shop_app/screens/addproducts/addproduct.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
@@ -10,6 +11,9 @@ import 'package:shop_app/models/Categories.dart';
 import 'package:shop_app/screens/home/categorycard.dart';
 import 'package:shop_app/screens/seller_registration/seller_registration_screen.dart';
 import 'package:video_player/video_player.dart';
+
+String type;
+String typename;
 
 class HomeScreen extends StatefulWidget {
   static String routeName = "\HomeScreen";
@@ -55,7 +59,13 @@ class _RootAppState extends State<HomeScreen> {
                     ),
                     itemBuilder: (context, index) => CategoryCard(
                         category: category[index],
-                        press: () => print('${category[index].title})')),
+                        press: () => {
+                              type = 'category',
+                              typename = category[index].title,
+                              print(type),
+                              print(typename),
+                              selectedTab(0),
+                            }),
                   ),
                 )),
           ),
@@ -86,9 +96,19 @@ class _RootAppState extends State<HomeScreen> {
       {"icon": TikTokIcons.profile, "label": "Me", "isIcon": true}
     ];
     return Container(
-      height: 80,
+      height: 60,
       width: double.infinity,
-      decoration: BoxDecoration(color: Colors.redAccent),
+      decoration: BoxDecoration(
+        color: kPrimaryColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black,
+            blurRadius: 2.0,
+            spreadRadius: 0.0,
+            offset: Offset(1.0, 1.0), // shadow direction: bottom right
+          )
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 0),
         child: Row(
@@ -98,6 +118,9 @@ class _RootAppState extends State<HomeScreen> {
             return bottomItems[index]['isIcon']
                 ? InkWell(
                     onTap: () {
+                      type = 'NO';
+                      typename = null;
+                      if (index == 0) type = null;
                       selectedTab(index);
                       if (index != 0) {
                         videoController.pause();
@@ -128,6 +151,9 @@ class _RootAppState extends State<HomeScreen> {
                   )
                 : InkWell(
                     onTap: () {
+                      if (index != 0) {
+                        type = 'no';
+                      }
                       selectedTab(index);
                     },
                     child: UploadIcon());
@@ -140,6 +166,7 @@ class _RootAppState extends State<HomeScreen> {
   selectedTab(index) {
     setState(() {
       pageIndex = index;
+      if (pageIndex != 0) videoController.pause();
     });
   }
 
