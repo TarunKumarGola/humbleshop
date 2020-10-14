@@ -3,34 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:shop_app/constant/data_json.dart';
 import 'package:shop_app/screens/commentspage/commentscreen2.dart';
 import 'package:shop_app/theme/colors.dart';
-import 'package:shop_app/homepage_widget/header_home_page.dart';
 import 'package:shop_app/homepage_widget/column_social_icon.dart';
 import 'package:shop_app/homepage_widget/left_panel.dart';
 import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shop_app/screens/home/HomeScreen.dart';
 
-VideoPlayerController _videoController;
+Stream<QuerySnapshot> stream;
 
 class HomePage extends StatefulWidget {
-  final String type;
-  final String typename;
-
-  HomePage({this.type, this.typename});
   @override
-  _HomePageState createState() => _HomePageState(type, typename);
+  _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   TabController _tabController;
   CollectionReference users =
       FirebaseFirestore.instance.collection('videoproducts');
-  String type;
-  String typename;
-  _HomePageState(String type, String typename) {
-    this.type = type;
-    this.typename = typename;
-  }
 
   @override
   void initState() {
@@ -54,7 +44,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     var size = MediaQuery.of(context).size;
     List<String> following;
     // performing queries
-    Stream<QuerySnapshot> stream;
+
     if (type == null) {
       stream = users.snapshots();
     } else if (type == 'following') {
@@ -62,9 +52,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       stream = users
           .where((d) => following == null || following.contains(d.id))
           .snapshots();
-    } else {
+    } else if (type == 'category') {
       stream = users.where(type, isEqualTo: typename).snapshots();
-    }
+    } else
+      stream = null;
 
     return StreamBuilder<QuerySnapshot>(
         stream: stream,
@@ -129,6 +120,7 @@ class VideoPlayerItem extends StatefulWidget {
   final String comments;
   final String shares;
   final String shopnow;
+
   VideoPlayerItem(
       {Key key,
       @required this.size,
@@ -150,8 +142,8 @@ class VideoPlayerItem extends StatefulWidget {
 }
 
 class _VideoPlayerItemState extends State<VideoPlayerItem> {
-  bool isShowPlaying = false;
-
+  bool isShowPlaying = true;
+  VideoPlayerController _videoController;
   @override
   void initState() {
     super.initState();
@@ -168,6 +160,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
   @override
   void dispose() {
     super.dispose();
+    _videoController.pause();
     _videoController.dispose();
   }
 
@@ -186,9 +179,13 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
     return InkWell(
       onTap: () {
         setState(() {
-          _videoController.value.isPlaying
-              ? _videoController.pause()
-              : _videoController.play();
+          if (_videoController.value.isPlaying) {
+            _videoController.pause();
+            isShowPlaying = false;
+          } else {
+            isShowPlaying = true;
+            _videoController.play();
+          }
         });
       },
       child: RotatedBox(
@@ -224,7 +221,6 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          HeaderHomePage(),
                           Expanded(
                               child: Row(
                             children: <Widget>[

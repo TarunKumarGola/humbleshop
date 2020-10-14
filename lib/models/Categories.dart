@@ -16,6 +16,33 @@ class Category {
 }
 
 List<Category> category = [
+   Category(
+    id: 7,
+    title: "Near Me",
+    price: 234,
+    size: 12,
+    //description: dummyText,
+    image: "assets/images/icons8_near_me_40px_1.png",
+    color: Colors.blue, //Color(0xFFAEAEAE),
+  ),
+  Category(
+    id: 8,
+    title: "Following",
+    price: 234,
+    size: 12,
+    //description: dummyText,
+    image: "assets/images/icons8_heart_50px.png",
+    color: Colors.white, //Color(0xFFAEAEAE),
+  ),
+  Category(
+    id: 9,
+    title: "National",
+    price: 234,
+    size: 12,
+    //description: dummyText,
+    image: "assets/images/icons8_india_50px.png",
+    color: Colors.white, //Color(0xFFAEAEAE),
+  ),
   Category(
       id: 1,
       title: "Toys",
@@ -65,4 +92,5 @@ List<Category> category = [
     image: "assets/images/mobileaccessories.png",
     color: Colors.black, //Color(0xFFAEAEAE),
   ),
+ 
 ];
