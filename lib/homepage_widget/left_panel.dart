@@ -3,14 +3,16 @@ import 'package:shop_app/theme/colors.dart';
 
 class LeftPanel extends StatelessWidget {
   final String name;
+  final String price;
   final String caption;
-  final String songName;
+  final String offer;
   const LeftPanel({
     Key key,
     @required this.size,
     this.name,
+    this.price,
     this.caption,
-    this.songName,
+    this.offer,
   }) : super(key: key);
 
   final Size size;
@@ -34,6 +36,13 @@ class LeftPanel extends StatelessWidget {
             height: 10,
           ),
           Text(
+            price,
+            style: TextStyle(color: white),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
             caption,
             style: TextStyle(color: white),
           ),
@@ -49,7 +58,7 @@ class LeftPanel extends StatelessWidget {
               ),
               Flexible(
                 child: Text(
-                  songName,
+                  offer,
                   style: TextStyle(color: white, height: 1.5),
                 ),
               )

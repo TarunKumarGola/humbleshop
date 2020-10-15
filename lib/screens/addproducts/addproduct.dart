@@ -35,7 +35,6 @@ class _AddProductState extends State<AddProduct> {
   String videopath;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _subscription =
         _flutterVideoCompress.compressProgress$.subscribe((progress) {
@@ -47,7 +46,6 @@ class _AddProductState extends State<AddProduct> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _subscription.unsubscribe();
     _loadingStreamCtrl.close();
@@ -121,18 +119,28 @@ class _AddProductState extends State<AddProduct> {
             .collection("PRODUCT")
             .doc("${authobj.currentUser.uid}_$id")
             .set({
-          "name": name,
-          "price": price,
-          "description": description,
-          "category": dropdownvalue,
-          "videourl": value,
-          "shoplocation": GeoPoint(
-              sellerobj.shoplocation.latitude, sellerobj.shoplocation.longitude)
-        }).then((value) {
-          print('product uploaded');
-        }).catchError((error) {
-          print('unable to upload product');
-        });
+              "Brand": "Spark",
+              "likes": "0",
+              "comments": "0",
+              "profileImg": authobj.currentUser.imageurl,
+              "shopnow":
+                  "https://images.unsplash.com/photo-1462804512123-465343c607ee?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=668&q=80",
+              "offer": "10% off",
+              "shares": "0",
+              "country": "india",
+              "name": name,
+              "price": price,
+              "description": description,
+              "category": dropdownvalue,
+              "videoUrl": value,
+              "productsuid": "${authobj.currentUser.uid}_$id",
+              "shoplocation": GeoPoint(sellerobj.shoplocation.latitude,
+                  sellerobj.shoplocation.longitude)
+            })
+            .then((value) {})
+            .catchError((error) {
+              print('unable to upload product');
+            });
 
         await FirebaseFirestore.instance
             .collection("SELLERS")
@@ -181,7 +189,7 @@ class _AddProductState extends State<AddProduct> {
                         maxLines: 1,
                         validator: validateName,
                         onSaved: (value) {
-                          name = name;
+                          name = value;
                         },
                       ),
                     ),

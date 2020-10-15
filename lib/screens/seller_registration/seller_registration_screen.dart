@@ -8,7 +8,7 @@ class SellerRegistration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(primaryColor: primary, accentColor: Colors.pink[300]),
+      theme: ThemeData(primaryColor: primary, accentColor: Color(0xFFF50057)),
       home: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,

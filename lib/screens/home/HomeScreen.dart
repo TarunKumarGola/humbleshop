@@ -10,7 +10,6 @@ import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:shop_app/models/Categories.dart';
 import 'package:shop_app/screens/home/categorycard.dart';
 import 'package:shop_app/screens/seller_registration/seller_registration_screen.dart';
-import 'package:video_player/video_player.dart';
 
 String type;
 String typename;
@@ -178,7 +177,7 @@ class _RootAppState extends State<HomeScreen> {
 
   Widget onplusbuttonpressed() {
     //print(sellerobj.name);
-    if (isSeller = false) {
+    if (!isSeller) {
       return SellerRegistration();
     } else {
       return AddProduct();

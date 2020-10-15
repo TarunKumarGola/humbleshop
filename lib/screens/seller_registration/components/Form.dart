@@ -189,13 +189,6 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
     return null;
   }
 
-  String _validatePhoneNumber(String value) {
-    if (value.length < 10) {
-      return "Enter Correct Phone number";
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     final cursorColor = Theme.of(context).cursorColor;

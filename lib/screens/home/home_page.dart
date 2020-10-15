@@ -9,6 +9,7 @@ import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shop_app/screens/home/HomeScreen.dart';
+import 'package:flutter/src/widgets/framework.dart';
 
 Stream<QuerySnapshot> stream;
 VideoPlayerController videoController;
@@ -20,8 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   TabController _tabController;
-  CollectionReference users =
-      FirebaseFirestore.instance.collection('videoproducts');
+  CollectionReference users = FirebaseFirestore.instance.collection('PRODUCT');
 
   @override
   void initState() {
@@ -80,8 +80,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   videoUrl: querySnapshot.docs[index].data()['videoUrl'],
                   size: size,
                   name: querySnapshot.docs[index].data()['name'],
-                  caption: querySnapshot.docs[index].data()['caption'],
-                  songName: querySnapshot.docs[index].data()['songName'],
+                  price: querySnapshot.docs[index].data()['price'],
+                  caption: querySnapshot.docs[index].data()['description'],
+                  offer: querySnapshot.docs[index].data()['offer'],
                   profileImg: querySnapshot.docs[index].data()['profileImg'],
                   likes: querySnapshot.docs[index].data()['likes'],
                   comments: querySnapshot.docs[index].data()['comments'],
@@ -114,8 +115,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 class VideoPlayerItem extends StatefulWidget {
   final String videoUrl;
   final String name;
+  final String price;
   final String caption;
-  final String songName;
+  final String offer;
   final String profileImg;
   final String likes;
   final String comments;
@@ -126,8 +128,9 @@ class VideoPlayerItem extends StatefulWidget {
       {Key key,
       @required this.size,
       this.name,
+      this.price,
       this.caption,
-      this.songName,
+      this.offer,
       this.profileImg,
       this.likes,
       this.comments,
@@ -150,19 +153,17 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
     super.initState();
 
     videoController = VideoPlayerController.network(widget.videoUrl)
-      ..initialize().then((value) {
-        videoController.play();
-        print("playing videoplayer in initialize");
-        setState(() {
-          isShowPlaying = false;
-        });
+      ..initialize()
+      ..setLooping(true)
+      ..play().then((value) {
+        setState(() {});
       });
   }
 
   @override
   void dispose() {
     super.dispose();
-    videoController.pause();
+
     videoController.dispose();
   }
 
@@ -184,13 +185,6 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
           videoController.value.isPlaying
               ? videoController.pause()
               : videoController.play();
-          if (videoController.value.isPlaying) {
-            videoController.pause();
-            isShowPlaying = false;
-          } else {
-            isShowPlaying = true;
-            videoController.play();
-          }
         });
       },
       child: RotatedBox(
@@ -232,8 +226,9 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                               LeftPanel(
                                 size: widget.size,
                                 name: "${widget.name}",
+                                price: "RS.${widget.price}",
                                 caption: "${widget.caption}",
-                                songName: "${widget.songName}",
+                                offer: "${widget.offer}",
                               ),
                               RightPanel(
                                 size: widget.size,
