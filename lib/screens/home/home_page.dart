@@ -9,10 +9,8 @@ import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shop_app/screens/home/HomeScreen.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 Stream<QuerySnapshot> stream;
-VideoPlayerController videoController;
 
 class HomePage extends StatefulWidget {
   @override
@@ -147,7 +145,7 @@ class VideoPlayerItem extends StatefulWidget {
 
 class _VideoPlayerItemState extends State<VideoPlayerItem> {
   bool isShowPlaying = true;
-
+  VideoPlayerController videoController;
   @override
   void initState() {
     super.initState();

@@ -94,6 +94,7 @@ class _PasswordFieldState extends State<PasswordField> {
 
 class TextFormFieldDemoState extends State<TextFormFieldDemo> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  // ignore: unused_field
   AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();

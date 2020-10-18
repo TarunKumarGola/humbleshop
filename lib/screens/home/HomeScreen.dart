@@ -4,11 +4,10 @@ import 'package:shop_app/homepage_widget/upload_icon.dart';
 import 'package:shop_app/screens/addproducts/addproduct.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/complete_profile/components/profilefirst.dart';
+import 'package:shop_app/screens/home/categorycardtwo.dart';
 import 'package:shop_app/screens/home/home_page.dart';
 import 'package:shop_app/theme/colors.dart';
 import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
-import 'package:shop_app/models/Categories.dart';
-import 'package:shop_app/screens/home/categorycard.dart';
 import 'package:shop_app/screens/seller_registration/seller_registration_screen.dart';
 
 String type;
@@ -41,34 +40,7 @@ class _RootAppState extends State<HomeScreen> {
       index: pageIndex,
       children: <Widget>[
         HomePage(),
-        Center(
-            child: Container(
-          padding: EdgeInsets.all(6.0),
-          child: Expanded(
-            child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Container(
-                  child: GridView.builder(
-                    itemCount: category.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 10.0,
-                      crossAxisSpacing: 10.0,
-                      childAspectRatio: 0.75,
-                    ),
-                    itemBuilder: (context, index) => CategoryCard(
-                        category: category[index],
-                        press: () => {
-                              type = 'category',
-                              typename = category[index].title,
-                              print(type),
-                              print(typename),
-                              selectedTab(0),
-                            }),
-                  ),
-                )),
-          ),
-        )),
+        Categorycardtwo(),
         Center(
           child: onplusbuttonpressed(),
         ),
@@ -121,13 +93,6 @@ class _RootAppState extends State<HomeScreen> {
                       typename = null;
                       if (index == 0) type = null;
                       selectedTab(index);
-                      if (index != 0) {
-                        videoController.pause();
-                        print("pausing videoplayer index$index");
-                      } else {
-                        videoController.play();
-                        print("playing videoplayer index$index");
-                      }
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -165,7 +130,6 @@ class _RootAppState extends State<HomeScreen> {
   selectedTab(index) {
     setState(() {
       pageIndex = index;
-      if (pageIndex != 0) videoController.pause();
     });
   }
 

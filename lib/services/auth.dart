@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shop_app/models/usermodel.dart';
 import 'package:shop_app/screens/login_success/login_success_screen.dart';
 
@@ -10,6 +11,8 @@ class AuthServices {
   final CollectionReference _usersCollectionReference =
       FirebaseFirestore.instance.collection("users");
   UserModel currentUser;
+  GoogleSignIn _googleSignIn = GoogleSignIn();
+  bool isUserSignedIn = false;
 
   AuthServices({this.currentUser});
   Future _populateCurrentUser(User user) async {
@@ -69,6 +72,38 @@ class AuthServices {
       print("User Updated");
       currentUser.name = name;
       currentUser.address = address;
+      currentUser.email = email;
+      return true;
+    }).catchError((error) {
+      print("Failed to update user: $error");
+      return false;
+    });
+  }
+
+  Future<User> googlesignin() async {
+    // hold the instance of the authenticated user
+    User user;
+    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+    // get the credentials to (access / id token)
+    // to sign in via Firebase Authentication
+    final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+    user = (await _auth.signInWithCredential(credential)).user;
+    googleupdateUser(name: user.displayName, email: user.email, uid: user.uid);
+    return user;
+  }
+
+  Future<bool> googleupdateUser({String name, String email, String uid}) {
+    return _usersCollectionReference.doc(uid).update({
+      'name': name,
+      'email': email,
+      'address': "No address availble"
+    }).then((value) {
+      print("User Updated");
+      currentUser.name = name;
+      currentUser.address = "No address availble";
       currentUser.email = email;
       return true;
     }).catchError((error) {

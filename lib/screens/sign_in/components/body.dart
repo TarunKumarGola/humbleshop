@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/components/no_account_text.dart';
 import 'package:shop_app/components/socal_card.dart';
 import '../../../size_config.dart';
 import 'sign_form.dart';
+import 'package:shop_app/services/auth.dart';
+import 'package:shop_app/screens/login_success/login_success_screen.dart';
 
 class Body extends StatelessWidget {
   @override
@@ -37,7 +40,22 @@ class Body extends StatelessWidget {
                   children: [
                     SocalCard(
                       icon: "assets/icons/google-icon.svg",
-                      press: () {},
+                      press: () {
+                        AuthServices ob = new AuthServices();
+                        ob
+                            .googlesignin()
+                            .whenComplete(() => {
+                                  if (FirebaseAuth.instance.currentUser != null)
+                                    Navigator.push(
+                                        context,
+                                        new MaterialPageRoute(
+                                            builder: (context) =>
+                                                LoginSuccessScreen()))
+                                })
+                            .catchError((error) {
+                          print(error);
+                        });
+                      },
                     ),
                     SocalCard(
                       icon: "assets/icons/facebook-2.svg",

@@ -25,9 +25,12 @@ class _AddProductState extends State<AddProduct> {
   String price;
   String dropdownvalue = 'Category';
   final _flutterVideoCompress = FlutterVideoCompress();
+  // ignore: unused_field
   MediaInfo _compressedVideoInfo = MediaInfo(path: '');
   final _loadingStreamCtrl = StreamController<bool>.broadcast();
+  // ignore: unused_field
   String _taskName;
+  // ignore: unused_field
   double _progressState = 0;
   VideoPlayerController _videoPlayerController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
