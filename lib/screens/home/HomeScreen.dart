@@ -93,6 +93,13 @@ class _RootAppState extends State<HomeScreen> {
                       typename = null;
                       if (index == 0) type = null;
                       selectedTab(index);
+                      if (index != 0) {
+                        //videoController.pause();
+                        print("pausing videoplayer index$index");
+                      } else {
+                        // videoController.play();
+                        print("playing videoplayer index$index");
+                      }
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -130,6 +137,7 @@ class _RootAppState extends State<HomeScreen> {
   selectedTab(index) {
     setState(() {
       pageIndex = index;
+      // if (pageIndex != 0)// videoController.pause();
     });
   }
 

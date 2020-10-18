@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shop_app/models/Categories.dart';
 import 'package:shop_app/theme/colors.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_video_compress/flutter_video_compress.dart';
@@ -18,11 +19,11 @@ class AddProduct extends StatefulWidget {
 }
 
 class _AddProductState extends State<AddProduct> {
+  TextEditingController controllername = TextEditingController();
+  TextEditingController controllerdescription = TextEditingController();
+  TextEditingController controllerprice = TextEditingController();
   Subscription _subscription;
   File _video;
-  String name;
-  String description;
-  String price;
   String dropdownvalue = 'Category';
   final _flutterVideoCompress = FlutterVideoCompress();
   // ignore: unused_field
@@ -52,6 +53,7 @@ class _AddProductState extends State<AddProduct> {
     super.dispose();
     _subscription.unsubscribe();
     _loadingStreamCtrl.close();
+    _videoPlayerController.dispose();
   }
 
   void showInSnackBar(String value) {
@@ -122,28 +124,38 @@ class _AddProductState extends State<AddProduct> {
             .collection("PRODUCT")
             .doc("${authobj.currentUser.uid}_$id")
             .set({
-              "Brand": "Spark",
-              "likes": "0",
-              "comments": "0",
-              "profileImg": authobj.currentUser.imageurl,
-              "shopnow":
-                  "https://images.unsplash.com/photo-1462804512123-465343c607ee?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=668&q=80",
-              "offer": "10% off",
-              "shares": "0",
-              "country": "india",
-              "name": name,
-              "price": price,
-              "description": description,
-              "category": dropdownvalue,
-              "videoUrl": value,
-              "productsuid": "${authobj.currentUser.uid}_$id",
-              "shoplocation": GeoPoint(sellerobj.shoplocation.latitude,
-                  sellerobj.shoplocation.longitude)
-            })
-            .then((value) {})
-            .catchError((error) {
-              print('unable to upload product');
-            });
+          "Brand": "Spark",
+          "likes": "0",
+          "comments": "0",
+          "profileImg": authobj.currentUser.imageurl,
+          "shopnow":
+              "https://images.unsplash.com/photo-1462804512123-465343c607ee?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=668&q=80",
+          "offer": "10% off",
+          "shares": "0",
+          "country": "india",
+          "name": controllername.text,
+          "price": controllerprice.text,
+          "description": controllerdescription.text,
+          "category": dropdownvalue,
+          "videoUrl": value,
+          "productsuid": "${authobj.currentUser.uid}_$id",
+          "shoplocation": GeoPoint(
+              sellerobj.shoplocation.latitude, sellerobj.shoplocation.longitude)
+        }).then((value) {
+          print("debug product upload successful");
+          showInSnackBar("Product upload successful");
+          setState(() {
+            videopath = null;
+            controllername.text = "";
+            _video = null;
+            controllerdescription.text = "";
+            dropdownvalue = 'Category';
+            controllerprice.text = "";
+          });
+        }).catchError((error) {
+          print('debug unable to upload product');
+          showInSnackBar("Something went wrong Please try again");
+        });
 
         await FirebaseFirestore.instance
             .collection("SELLERS")
@@ -151,6 +163,8 @@ class _AddProductState extends State<AddProduct> {
             .update({
           "productsuid":
               FieldValue.arrayUnion(["${authobj.currentUser.uid}_$id"])
+        }).catchError((e) {
+          print("debug something went wrong while updation seller productsuid");
         });
       }).catchError((onError) {
         showInSnackBar("fail in upload error$onError");
@@ -191,9 +205,7 @@ class _AddProductState extends State<AddProduct> {
                             hintText: "Enter Your Product Name"),
                         maxLines: 1,
                         validator: validateName,
-                        onSaved: (value) {
-                          name = value;
-                        },
+                        controller: controllername,
                       ),
                     ),
                     sizedBoxSpace,
@@ -209,9 +221,7 @@ class _AddProductState extends State<AddProduct> {
                         maxLength: 10,
                         maxLines: 1,
                         validator: validateName,
-                        onSaved: (value) {
-                          price = value;
-                        },
+                        controller: controllerprice,
                       ),
                     ),
                     sizedBoxSpace,
@@ -225,9 +235,7 @@ class _AddProductState extends State<AddProduct> {
                           helperText: "Keep it short",
                           labelText: "Description",
                         ),
-                        onSaved: (value) {
-                          description = value;
-                        },
+                        controller: controllerdescription,
                         validator: validateName,
                         maxLines: 3,
                       ),

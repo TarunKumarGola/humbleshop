@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/constant/data_json.dart';
@@ -11,6 +13,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shop_app/screens/home/HomeScreen.dart';
 
 Stream<QuerySnapshot> stream;
+// VideoPlayerController videoController;
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,12 +23,119 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   TabController _tabController;
   CollectionReference users = FirebaseFirestore.instance.collection('PRODUCT');
+  final FirebaseFirestore db = FirebaseFirestore.instance;
+  String activetags = 'Default';
+  bool nearmeclicked = false;
+  bool nationalclicked = false;
+  bool followingclicked = false;
+
+  List<DocumentSnapshot> products = [];
+  bool isLoading = false;
+  bool hasMore = true;
+  int documentLimit = 1;
+  DocumentSnapshot lastDocument;
+  ScrollController _scrollController = ScrollController();
+  Query query;
+
+  StreamController<List<DocumentSnapshot>> _controller =
+      StreamController<List<DocumentSnapshot>>();
+
+  Stream<List<DocumentSnapshot>> get _streamController => _controller.stream;
 
   @override
   void initState() {
     super.initState();
-
+    query = getQuery(tag: 'Default');
     _tabController = TabController(length: items.length, vsync: this);
+    getProducts(query);
+    _scrollController.addListener(() {
+      double maxScroll = _scrollController.position.maxScrollExtent;
+      double currentScroll = _scrollController.position.pixels;
+      double delta = MediaQuery.of(context).size.height * 0.20;
+      if (maxScroll - currentScroll <= delta) {
+        getProducts(query);
+      }
+    });
+  }
+
+  Query getQuery({String tag = 'Default'}) {
+    Query query;
+    if (tag == 'National') {
+      query = db.collection('PRODUCT').where('country', isEqualTo: 'india');
+      print(query.toString());
+    } else {
+      query = db.collection('PRODUCT');
+      print(query.toString());
+    }
+    return query;
+  }
+
+  getProducts(Query query) async {
+    if (!hasMore) {
+      print('debug No More Products');
+      return;
+    }
+    if (isLoading) {
+      return;
+    }
+    setState(() {
+      isLoading = true;
+    });
+    QuerySnapshot querySnapshot;
+    if (lastDocument == null) {
+      await query.limit(documentLimit).get().then((value) {
+        if (value.size == 0) {
+          hasMore = false;
+          print("debug $hasMore");
+        } else {
+          print("debug fetched documents ${value.toString()}");
+          querySnapshot = value;
+        }
+      }).catchError((e) {
+        print(e);
+        hasMore = false;
+      });
+    } else {
+      await query
+          .startAfterDocument(lastDocument)
+          .limit(documentLimit)
+          .get()
+          .then((value) {
+        if (value.size == 0) {
+          hasMore = false;
+          print("debug $hasMore");
+        } else {
+          print("debug fetched documents ${value.toString()}");
+          querySnapshot = value;
+        }
+      }).catchError((e) {
+        print("debug error $e");
+      });
+      //     .catchError((e) {
+      //   print("e");
+      //   hasMore = false;
+      // });
+      print(1);
+    }
+    if (querySnapshot != null) {
+      if (querySnapshot.docs.length < documentLimit) {
+        hasMore = false;
+      }
+
+      lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+      products.addAll(querySnapshot.docs);
+      print("debug products length ${products.length}");
+      _controller.sink.add(products);
+
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -44,53 +154,196 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     List<String> following;
     // performing queries
 
-    if (type == null) {
-      stream = users.snapshots();
-    } else if (type == 'following') {
-      following = getFollowing() as List<String>;
-      stream = users
-          .where((d) => following == null || following.contains(d.id))
-          .snapshots();
-    } else if (type == 'category') {
-      stream = users.where(type, isEqualTo: typename).snapshots();
-    } else
-      stream = null;
+    // if (type == null) {
+    //   stream = users.snapshots();
+    // } else if (type == 'following') {
+    //   following = getFollowing() as List<String>;
+    //   stream = users
+    //       .where((d) => following == null || following.contains(d.id))
+    //       .snapshots();
+    // } else if (type == 'category') {
+    //   stream = users.where(type, isEqualTo: typename).snapshots();
+    // } else
+    //   stream = null;
 
-    return StreamBuilder<QuerySnapshot>(
-        stream: stream,
-        builder: (BuildContext context, stream) {
-          if (stream.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-
-          if (stream.hasError) {
-            return Center(child: Text(stream.error.toString()));
-          }
-          QuerySnapshot querySnapshot = stream.data;
-
-          return RotatedBox(
+    return Stack(children: [
+      Column(children: [
+        Expanded(
+          child: RotatedBox(
             quarterTurns: 1,
-            child: TabBarView(
-              controller:
-                  TabController(length: querySnapshot.size, vsync: this),
-              children: List.generate(querySnapshot.size, (index) {
-                return VideoPlayerItem(
-                  videoUrl: querySnapshot.docs[index].data()['videoUrl'],
-                  size: size,
-                  name: querySnapshot.docs[index].data()['name'],
-                  price: querySnapshot.docs[index].data()['price'],
-                  caption: querySnapshot.docs[index].data()['description'],
-                  offer: querySnapshot.docs[index].data()['offer'],
-                  profileImg: querySnapshot.docs[index].data()['profileImg'],
-                  likes: querySnapshot.docs[index].data()['likes'],
-                  comments: querySnapshot.docs[index].data()['comments'],
-                  shares: querySnapshot.docs[index].data()['shares'],
-                  shopnow: querySnapshot.docs[index].data()['shopnow'],
-                );
-              }),
+            child: StreamBuilder<List<DocumentSnapshot>>(
+              stream: _streamController,
+              builder: (sContext, snapshot) {
+                if (snapshot.hasData && snapshot.data.length > 0) {
+                  return ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    controller: _scrollController,
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      return VideoPlayerItem(
+                          videoUrl: snapshot.data[index].data()['videoUrl'],
+                          size: size,
+                          name: snapshot.data[index].data()['name'],
+                          price: snapshot.data[index].data()['price'],
+                          caption: snapshot.data[index].data()['description'],
+                          offer: snapshot.data[index].data()['offer'],
+                          profileImg: snapshot.data[index].data()['profileImg'],
+                          likes: snapshot.data[index].data()['likes'],
+                          comments: snapshot.data[index].data()['comments'],
+                          shares: snapshot.data[index].data()['shares'],
+                          shopnow: snapshot.data[index].data()['shopnow'],
+                          productsuid:
+                              snapshot.data[index].data()['productsuid']);
+                    },
+                  );
+                } else {
+                  return Center(
+                    child: Text('No Data...'),
+                  );
+                }
+              },
             ),
-          );
-        });
+          ),
+        ),
+        isLoading
+            ? Container(
+                width: MediaQuery.of(context).size.width,
+                padding: EdgeInsets.all(5),
+                color: Colors.yellowAccent,
+                child: Text(
+                  'Loading',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+            : Container()
+      ]),
+      SafeArea(
+        child: Container(
+          padding: EdgeInsets.only(top: 20),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                GestureDetector(
+                  onTap: () {
+                    if (followingclicked == false) {
+                      nationalclicked = false;
+                      nearmeclicked = false;
+                      followingclicked = true;
+                    }
+                  },
+                  child: Text('Following',
+                      style: TextStyle(
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.normal,
+                          color: followingclicked
+                              ? Colors.white
+                              : Colors.white54)),
+                ),
+                SizedBox(
+                  width: 3,
+                ),
+                Container(
+                  color: Colors.white70,
+                  height: 10,
+                  width: 1.0,
+                ),
+                SizedBox(
+                  width: 3,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    if (nearmeclicked == false) {
+                      nationalclicked = false;
+                      nearmeclicked = true;
+                      followingclicked = false;
+                    }
+                  },
+                  child: Text('NearMe',
+                      style: TextStyle(
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.normal,
+                          color:
+                              nearmeclicked ? Colors.white : Colors.white54)),
+                ),
+                SizedBox(
+                  width: 3,
+                ),
+                Container(
+                  color: Colors.white70,
+                  height: 10,
+                  width: 1.0,
+                ),
+                SizedBox(
+                  width: 3,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    if (nationalclicked == false) {
+                      setState(() {
+                        print('National clicked');
+                        query = getQuery(tag: 'National');
+                        products.clear();
+                        _controller.sink.add(products);
+                        print("debug products length ${products.length}");
+                        lastDocument = null;
+                        hasMore = true;
+                        getProducts(query);
+                        nationalclicked = true;
+                        nearmeclicked = false;
+                        followingclicked = false;
+                      });
+                    }
+                  },
+                  child: Text('National',
+                      style: TextStyle(
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.bold,
+                          color:
+                              nationalclicked ? Colors.white : Colors.white54)),
+                )
+              ]),
+        ),
+      ),
+    ]);
+    // return StreamBuilder<QuerySnapshot>(
+    //     stream: stream,
+    //     builder: (BuildContext context, stream) {
+    //       if (stream.connectionState == ConnectionState.waiting) {
+    //         return Center(child: CircularProgressIndicator());
+    //       }
+
+    //       if (stream.hasError) {
+    //         return Center(child: Text(stream.error.toString()));
+    //       }
+    //       QuerySnapshot querySnapshot = stream.data;
+
+    //       return RotatedBox(
+    //         quarterTurns: 1,
+    //         child: TabBarView(
+    //           controller:
+    //               TabController(length: querySnapshot.size, vsync: this),
+    //           children: List.generate(querySnapshot.size, (index) {
+    //             return VideoPlayerItem(
+    //               videoUrl: querySnapshot.docs[index].data()['videoUrl'],
+    //               size: size,
+    //               name: querySnapshot.docs[index].data()['name'],
+    //               price: querySnapshot.docs[index].data()['price'],
+    //               caption: querySnapshot.docs[index].data()['description'],
+    //               offer: querySnapshot.docs[index].data()['offer'],
+    //               profileImg: querySnapshot.docs[index].data()['profileImg'],
+    //               likes: querySnapshot.docs[index].data()['likes'],
+    //               comments: querySnapshot.docs[index].data()['comments'],
+    //               shares: querySnapshot.docs[index].data()['shares'],
+    //               shopnow: querySnapshot.docs[index].data()['shopnow'],
+    //             );
+    //           }),
+    //         ),
+    //       );
+    //     });
   }
 
   Future<List<String>> getFollowing() async {
@@ -121,6 +374,7 @@ class VideoPlayerItem extends StatefulWidget {
   final String comments;
   final String shares;
   final String shopnow;
+  final String productsuid;
 
   VideoPlayerItem(
       {Key key,
@@ -134,7 +388,8 @@ class VideoPlayerItem extends StatefulWidget {
       this.comments,
       this.shares,
       this.shopnow,
-      this.videoUrl})
+      this.videoUrl,
+      this.productsuid})
       : super(key: key);
 
   final Size size;
@@ -146,6 +401,7 @@ class VideoPlayerItem extends StatefulWidget {
 class _VideoPlayerItemState extends State<VideoPlayerItem> {
   bool isShowPlaying = true;
   VideoPlayerController videoController;
+
   @override
   void initState() {
     super.initState();
@@ -229,13 +485,13 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                                 offer: "${widget.offer}",
                               ),
                               RightPanel(
-                                size: widget.size,
-                                likes: "${widget.likes}",
-                                comments: "${widget.comments}",
-                                shares: "${widget.shares}",
-                                profileImg: "${widget.profileImg}",
-                                shopnow: "${widget.shopnow}",
-                              )
+                                  size: widget.size,
+                                  likes: "${widget.likes}",
+                                  comments: "${widget.comments}",
+                                  shares: "${widget.shares}",
+                                  profileImg: "${widget.profileImg}",
+                                  shopnow: "${widget.shopnow}",
+                                  productuid: "${widget.productsuid}")
                             ],
                           ))
                         ],
@@ -257,6 +513,7 @@ class RightPanel extends StatelessWidget {
   final String profileImg;
   final String albumImg;
   final String shopnow;
+  final String productuid;
   const RightPanel(
       {Key key,
       @required this.size,
@@ -265,11 +522,11 @@ class RightPanel extends StatelessWidget {
       this.shares,
       this.profileImg,
       this.albumImg,
-      this.shopnow})
+      this.shopnow,
+      this.productuid})
       : super(key: key);
 
   final Size size;
-  final String productid = "bWJLO2jCGw7rfIslImEp";
 
   @override
   Widget build(BuildContext context) {
@@ -294,7 +551,7 @@ class RightPanel extends StatelessWidget {
                         context,
                         new MaterialPageRoute(
                             builder: (context) => Commentscreen(
-                                  productid: productid,
+                                  productid: productuid,
                                 )));
                   },
                 ),
