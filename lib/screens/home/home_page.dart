@@ -182,18 +182,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     itemCount: snapshot.data.length,
                     itemBuilder: (context, index) {
                       return VideoPlayerItem(
-                        videoUrl: snapshot.data[index].data()['videoUrl'],
-                        size: size,
-                        name: snapshot.data[index].data()['name'],
-                        price: snapshot.data[index].data()['price'],
-                        caption: snapshot.data[index].data()['description'],
-                        offer: snapshot.data[index].data()['offer'],
-                        profileImg: snapshot.data[index].data()['profileImg'],
-                        likes: snapshot.data[index].data()['likes'],
-                        comments: snapshot.data[index].data()['comments'],
-                        shares: snapshot.data[index].data()['shares'],
-                        shopnow: snapshot.data[index].data()['shopnow'],
-                      );
+                          videoUrl: snapshot.data[index].data()['videoUrl'],
+                          size: size,
+                          name: snapshot.data[index].data()['name'],
+                          price: snapshot.data[index].data()['price'],
+                          caption: snapshot.data[index].data()['description'],
+                          offer: snapshot.data[index].data()['offer'],
+                          profileImg: snapshot.data[index].data()['profileImg'],
+                          likes: snapshot.data[index].data()['likes'],
+                          comments: snapshot.data[index].data()['comments'],
+                          shares: snapshot.data[index].data()['shares'],
+                          shopnow: snapshot.data[index].data()['shopnow'],
+                          productsuid:
+                              snapshot.data[index].data()['productsuid']);
                     },
                   );
                 } else {
@@ -374,6 +375,7 @@ class VideoPlayerItem extends StatefulWidget {
   final String comments;
   final String shares;
   final String shopnow;
+  final String productsuid;
 
   VideoPlayerItem(
       {Key key,
@@ -387,7 +389,8 @@ class VideoPlayerItem extends StatefulWidget {
       this.comments,
       this.shares,
       this.shopnow,
-      this.videoUrl})
+      this.videoUrl,
+      this.productsuid})
       : super(key: key);
 
   final Size size;
@@ -483,13 +486,13 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                                 offer: "${widget.offer}",
                               ),
                               RightPanel(
-                                size: widget.size,
-                                likes: "${widget.likes}",
-                                comments: "${widget.comments}",
-                                shares: "${widget.shares}",
-                                profileImg: "${widget.profileImg}",
-                                shopnow: "${widget.shopnow}",
-                              )
+                                  size: widget.size,
+                                  likes: "${widget.likes}",
+                                  comments: "${widget.comments}",
+                                  shares: "${widget.shares}",
+                                  profileImg: "${widget.profileImg}",
+                                  shopnow: "${widget.shopnow}",
+                                  productuid: "${widget.productsuid}")
                             ],
                           ))
                         ],
@@ -511,6 +514,7 @@ class RightPanel extends StatelessWidget {
   final String profileImg;
   final String albumImg;
   final String shopnow;
+  final String productuid;
   const RightPanel(
       {Key key,
       @required this.size,
@@ -519,11 +523,11 @@ class RightPanel extends StatelessWidget {
       this.shares,
       this.profileImg,
       this.albumImg,
-      this.shopnow})
+      this.shopnow,
+      this.productuid})
       : super(key: key);
 
   final Size size;
-  final String productid = "bWJLO2jCGw7rfIslImEp";
 
   @override
   Widget build(BuildContext context) {
@@ -548,7 +552,7 @@ class RightPanel extends StatelessWidget {
                         context,
                         new MaterialPageRoute(
                             builder: (context) => Commentscreen(
-                                  productid: productid,
+                                  productid: productuid,
                                 )));
                   },
                 ),
