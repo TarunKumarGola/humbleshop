@@ -11,7 +11,6 @@ import 'package:shop_app/homepage_widget/left_panel.dart';
 import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shop_app/screens/home/HomeScreen.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 Stream<QuerySnapshot> stream;
@@ -153,7 +152,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget getBody() {
     var size = MediaQuery.of(context).size;
-    List<String> following;
+    //List<String> following;
     // performing queries
 
     // if (type == null) {
