@@ -12,6 +12,7 @@ import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shop_app/screens/home/HomeScreen.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 Stream<QuerySnapshot> stream;
 // VideoPlayerController videoController;
@@ -442,66 +443,77 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
               : videoController.play();
         });
       },
-      child: RotatedBox(
-        quarterTurns: -1,
-        child: Container(
-            height: widget.size.height,
-            width: widget.size.width,
-            child: Stack(
-              children: <Widget>[
-                Container(
-                  height: widget.size.height,
-                  width: widget.size.width,
-                  decoration: BoxDecoration(color: black),
-                  child: Stack(
-                    children: <Widget>[
-                      VideoPlayer(videoController),
-                      Center(
-                        child: Container(
-                          decoration: BoxDecoration(),
-                          child: isPlaying(),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  height: widget.size.height,
-                  width: widget.size.width,
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.only(left: 15, top: 20, bottom: 10),
-                    child: SafeArea(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Expanded(
-                              child: Row(
-                            children: <Widget>[
-                              LeftPanel(
-                                size: widget.size,
-                                name: "${widget.name}",
-                                price: "RS.${widget.price}",
-                                caption: "${widget.caption}",
-                                offer: "${widget.offer}",
-                              ),
-                              RightPanel(
-                                  size: widget.size,
-                                  likes: "${widget.likes}",
-                                  comments: "${widget.comments}",
-                                  shares: "${widget.shares}",
-                                  profileImg: "${widget.profileImg}",
-                                  shopnow: "${widget.shopnow}",
-                                  productuid: "${widget.productsuid}")
-                            ],
-                          ))
-                        ],
-                      ),
+      child: VisibilityDetector(
+        key: Key("unique key"),
+        onVisibilityChanged: (VisibilityInfo info) {
+          debugPrint("${info.visibleFraction} of my widget is visible");
+          if (info.visibleFraction == 0) {
+            videoController.pause();
+          } else {
+            videoController.play();
+          }
+        },
+        child: RotatedBox(
+          quarterTurns: -1,
+          child: Container(
+              height: widget.size.height,
+              width: widget.size.width,
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    height: widget.size.height,
+                    width: widget.size.width,
+                    decoration: BoxDecoration(color: black),
+                    child: Stack(
+                      children: <Widget>[
+                        VideoPlayer(videoController),
+                        Center(
+                          child: Container(
+                            decoration: BoxDecoration(),
+                            child: isPlaying(),
+                          ),
+                        )
+                      ],
                     ),
                   ),
-                )
-              ],
-            )),
+                  Container(
+                    height: widget.size.height,
+                    width: widget.size.width,
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.only(left: 15, top: 20, bottom: 10),
+                      child: SafeArea(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Expanded(
+                                child: Row(
+                              children: <Widget>[
+                                LeftPanel(
+                                  size: widget.size,
+                                  name: "${widget.name}",
+                                  price: "RS.${widget.price}",
+                                  caption: "${widget.caption}",
+                                  offer: "${widget.offer}",
+                                ),
+                                RightPanel(
+                                    size: widget.size,
+                                    likes: "${widget.likes}",
+                                    comments: "${widget.comments}",
+                                    shares: "${widget.shares}",
+                                    profileImg: "${widget.profileImg}",
+                                    shopnow: "${widget.shopnow}",
+                                    productuid: "${widget.productsuid}")
+                              ],
+                            ))
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              )),
+        ),
       ),
     );
   }

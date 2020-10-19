@@ -11,7 +11,7 @@ bool isSeller = false;
 Future<void> getuser(String uid) async {
   UserModel obj;
   await FirebaseFirestore.instance
-      .collection("USERS")
+      .collection('USERS')
       .doc(uid)
       .get()
       .then((querySnapshot) {
