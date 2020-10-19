@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shop_app/models/Categories.dart';
 import 'package:shop_app/theme/colors.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_video_compress/flutter_video_compress.dart';

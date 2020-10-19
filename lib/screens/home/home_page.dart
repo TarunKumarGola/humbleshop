@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/constant/data_json.dart';
+import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/commentspage/commentscreen2.dart';
 import 'package:shop_app/theme/colors.dart';
 import 'package:shop_app/homepage_widget/column_social_icon.dart';
@@ -506,6 +507,225 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
   }
 }
 
+class RightPanel extends StatefulWidget {
+  final String likes;
+  final String comments;
+  final String shares;
+  final String profileImg;
+  final String albumImg;
+  final String shopnow;
+  final String productuid;
+  const RightPanel(
+      {Key key,
+      @required this.size,
+      this.likes,
+      this.comments,
+      this.shares,
+      this.profileImg,
+      this.albumImg,
+      this.shopnow,
+      this.productuid})
+      : super(key: key);
+
+  final Size size;
+  @override
+  _RightPanelState createState() => _RightPanelState(
+      size: size,
+      likes: likes,
+      comments: comments,
+      shares: shares,
+      profileImg: profileImg,
+      albumImg: albumImg,
+      shopnow: shopnow,
+      productuid: productuid);
+}
+
+class _RightPanelState extends State<RightPanel> {
+  String likes;
+  String comments;
+  String shares;
+  final String profileImg;
+  final String albumImg;
+  final String shopnow;
+  final String productuid;
+  _RightPanelState(
+      {Key key,
+      @required this.size,
+      this.likes,
+      this.comments,
+      this.shares,
+      this.profileImg,
+      this.albumImg,
+      this.shopnow,
+      this.productuid});
+
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        height: size.height,
+        child: Column(
+          children: <Widget>[
+            Container(
+              height: size.height * 0.3,
+            ),
+            Expanded(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                getProfile(profileImg),
+                //    getIcons(TikTokIcons.heart, likes, 35.0, productuid, likes)
+                InkWell(
+                  child: Container(
+                    child: Column(
+                      children: <Widget>[
+                        Icon(TikTokIcons.heart, color: white, size: 35.0),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          likes,
+                          style: TextStyle(
+                              color: white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700),
+                        )
+                      ],
+                    ),
+                  ),
+                  onTap: () => {
+                    FirebaseFirestore.instance
+                        .collection('USERS')
+                        .doc(authobj.currentUser.uid)
+                        .collection("Liked")
+                        .doc(productuid)
+                        .get()
+                        .then((DocumentSnapshot documentSnapshot) {
+                      if (documentSnapshot.exists) {
+                        FirebaseFirestore.instance
+                            .collection("USERS")
+                            .doc(authobj.currentUser.uid)
+                            .collection("Liked")
+                            .doc(productuid)
+                            .delete();
+
+                        int ans = int.parse(likes) - 1;
+
+                        setState(() {
+                          likes = ans.toString();
+                        });
+                        likes = ans.toString();
+                        DocumentReference ref = FirebaseFirestore.instance
+                            .collection("PRODUCT")
+                            .doc(productuid);
+                        ref.update({"likes": ans.toString()});
+                      } else {
+                        FirebaseFirestore.instance
+                            .collection("USERS")
+                            .doc(authobj.currentUser.uid)
+                            .collection("Liked")
+                            .doc(productuid)
+                            .set({});
+                        int ans = int.parse(likes) + 1;
+                        setState(() {
+                          likes = ans.toString();
+                        });
+                        likes = ans.toString();
+                        DocumentReference ref = FirebaseFirestore.instance
+                            .collection("PRODUCT")
+                            .doc(productuid);
+                        ref.update({"likes": ans.toString()});
+                      }
+                    })
+                  },
+                ),
+                GestureDetector(
+                  child: getIconstwo(TikTokIcons.chat_bubble, comments, 35.0),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) => Commentscreen(
+                                  productid: productuid,
+                                )));
+                  },
+                ),
+                getIconstwo(TikTokIcons.reply, shares, 25.0),
+                getshopnow(shopnow, context)
+              ],
+            ))
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget getIcons(icon, count, size, likeduid, likes) {
+    return InkWell(
+      child: Container(
+        child: Column(
+          children: <Widget>[
+            Icon(icon, color: white, size: size),
+            SizedBox(
+              height: 5,
+            ),
+            Text(
+              count,
+              style: TextStyle(
+                  color: white, fontSize: 12, fontWeight: FontWeight.w700),
+            )
+          ],
+        ),
+      ),
+      onTap: () => {
+        FirebaseFirestore.instance
+            .collection('USERS')
+            .doc(authobj.currentUser.uid)
+            .collection("Liked")
+            .doc(likeduid)
+            .get()
+            .then((DocumentSnapshot documentSnapshot) {
+          if (documentSnapshot.exists) {
+            FirebaseFirestore.instance
+                .collection("USERS")
+                .doc(authobj.currentUser.uid)
+                .collection("Liked")
+                .doc(likeduid)
+                .delete();
+
+            int ans = int.parse(likes) - 1;
+
+            setState(() {
+              count = ans.toString();
+            });
+            count = ans.toString();
+            DocumentReference ref =
+                FirebaseFirestore.instance.collection("PRODUCT").doc(likeduid);
+            ref.update({"likes": ans});
+          } else {
+            FirebaseFirestore.instance
+                .collection("USERS")
+                .doc(authobj.currentUser.uid)
+                .collection("Liked")
+                .doc(likeduid)
+                .set({});
+            int ans = int.parse(likes) + 1;
+            setState(() {
+              count = ans.toString();
+            });
+            count = ans.toString();
+            DocumentReference ref =
+                FirebaseFirestore.instance.collection("PRODUCT").doc(likeduid);
+            ref.update({"likes": ans});
+          }
+        })
+      },
+    );
+  }
+}
+/*
 class RightPanel extends StatelessWidget {
   final String likes;
   final String comments;
@@ -543,9 +763,9 @@ class RightPanel extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 getProfile(profileImg),
-                getIcons(TikTokIcons.heart, likes, 35.0),
+                getIcons(TikTokIcons.heart, likes, 35.0, productuid, likes),
                 GestureDetector(
-                  child: getIcons(TikTokIcons.chat_bubble, comments, 35.0),
+                  child: getIconstwo(TikTokIcons.chat_bubble, comments, 35.0),
                   onTap: () {
                     Navigator.push(
                         context,
@@ -555,7 +775,7 @@ class RightPanel extends StatelessWidget {
                                 )));
                   },
                 ),
-                getIcons(TikTokIcons.reply, shares, 25.0),
+                getIconstwo(TikTokIcons.reply, shares, 25.0),
                 getshopnow(shopnow, context)
               ],
             ))
@@ -565,3 +785,4 @@ class RightPanel extends StatelessWidget {
     );
   }
 }
+*/

@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/screens/addtocartpage/addtocart.dart';
+import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/theme/colors.dart';
 
 Widget getshopnow(albumImg, context) {
@@ -41,7 +44,7 @@ Widget getshopnow(albumImg, context) {
   );
 }
 
-Widget getIcons(icon, count, size) {
+Widget getIconstwo(icon, count, size) {
   return Container(
     child: Column(
       children: <Widget>[

@@ -1,16 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shop_app/models/usermodel.dart';
+import 'package:shop_app/screens/authenticate/authenticate.dart';
+import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/login_success/login_success_screen.dart';
 
 //  class to work with firebase auth services
 class AuthServices {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final CollectionReference _usersCollectionReference =
-      FirebaseFirestore.instance.collection("users");
-  UserModel currentUser;
+      FirebaseFirestore.instance.collection("USERS");
+  UserModel currentUser = new UserModel();
   GoogleSignIn _googleSignIn = GoogleSignIn();
   bool isUserSignedIn = false;
 
@@ -41,17 +44,9 @@ class AuthServices {
   }
 
   // sign out
-  Future signOut() async {
+  Future signOut(context) async {
     try {
       return await _auth.signOut();
-      // ignore: dead_code
-      currentUser.address = null;
-      currentUser.email = null;
-      currentUser.follower = null;
-      currentUser.following = null;
-      currentUser.imageurl = null;
-      currentUser.name = null;
-      currentUser.phonenumber = null;
     } catch (e) {
       print("error");
     }
@@ -91,7 +86,32 @@ class AuthServices {
     final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
     user = (await _auth.signInWithCredential(credential)).user;
-    googleupdateUser(name: user.displayName, email: user.email, uid: user.uid);
+    _usersCollectionReference.doc(user.uid).get().then((value) => {
+          if (!value.exists)
+            {
+              _usersCollectionReference.doc(user.uid).set({
+                "name": user.displayName,
+                "email": user.email,
+                "phonenumber": user.phoneNumber,
+                "password": "Not available",
+                "address": "Not available",
+                "follower": "0",
+                "following": "0",
+                "imageurl": user.photoURL,
+              })
+            }
+        });
+    UserModel ob = UserModel(
+        uid: user.uid,
+        name: user.displayName,
+        email: user.email,
+        address: "No Address",
+        phonenumber: "No PhoneNumber",
+        follower: 0,
+        following: 0,
+        imageurl: user.photoURL);
+    authobj = AuthServices(currentUser: ob);
+
     return user;
   }
 
