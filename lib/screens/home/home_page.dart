@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:shop_app/constant/data_json.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/commentspage/commentscreen2.dart';
@@ -25,11 +27,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   TabController _tabController;
   CollectionReference users = FirebaseFirestore.instance.collection('PRODUCT');
   final FirebaseFirestore db = FirebaseFirestore.instance;
+
   String activetags = 'Default';
   bool nearmeclicked = false;
   bool nationalclicked = false;
   bool followingclicked = false;
-
+  Geolocator geolocator;
+  Geoflutterfire geo = Geoflutterfire();
   List<DocumentSnapshot> products = [];
   bool isLoading = false;
   bool hasMore = true;
@@ -46,7 +50,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    query = getQuery(tag: 'Default');
+    query = getQuery(tag: 'Default') as Query;
     _tabController = TabController(length: items.length, vsync: this);
     getProducts(query);
     _scrollController.addListener(() {
@@ -54,7 +58,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       double currentScroll = _scrollController.position.pixels;
       double delta = MediaQuery.of(context).size.height * 0.20;
       if (maxScroll - currentScroll <= delta) {
-        getProducts(query);
+        if (nearmeclicked == false) getProducts(query);
       }
     });
   }
@@ -64,11 +68,56 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     if (tag == 'National') {
       query = db.collection('PRODUCT').where('country', isEqualTo: 'india');
       print(query.toString());
+    } else if (tag == 'NearMe') {
+      nearmefunction();
+      // geolocator = Geolocator()..forceAndroidLocationManager;
+      // geolocator
+      //     .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+      //     .then((Position position) {
+      //   GeoFirePoint center = geo.point(
+      //       latitude: position.latitude, longitude: position.longitude);
+      //   Stream<List<DocumentSnapshot>> stream = geo
+      //       .collection(collectionRef: db.collection('PRODUCT').limit(10))
+      //       .within(
+      //           center: center,
+      //           radius: 20,
+      //           field: 'position',
+      //           strictMode: true);
+      //   stream.listen((element) {
+      //     products.addAll(element);
+      //     _controller.sink.add(products);
+      //   });
+      // }).catchError((e) {
+      //   print("debug something went wrong while getting position of user $e");
+      // });
+      // GeoFirePoint center = geo.point(latitude: geolocator., longitude: lng);
     } else {
       query = db.collection('PRODUCT');
       print(query.toString());
     }
     return query;
+  }
+
+  nearmefunction() async {
+    geolocator = Geolocator()..forceAndroidLocationManager;
+    geolocator
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) {
+      GeoFirePoint center =
+          geo.point(latitude: position.latitude, longitude: position.longitude);
+      print("debug lat ${position.latitude} lon ${position.longitude}");
+      Stream<List<DocumentSnapshot>> stream = geo
+          .collection(collectionRef: db.collection('PRODUCT').limit(10))
+          .within(
+              center: center, radius: 20, field: 'position', strictMode: true);
+      stream.forEach((element) {
+        print("debug ${element.isEmpty}");
+        products.addAll(element);
+        _controller.sink.add(products);
+      });
+    }).catchError((e) {
+      print("debug something went wrong while getting position of user $e");
+    });
   }
 
   getProducts(Query query) async {
@@ -177,6 +226,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               builder: (sContext, snapshot) {
                 if (snapshot.hasData && snapshot.data.length > 0) {
                   return ListView.builder(
+                    cacheExtent: 10000,
                     scrollDirection: Axis.horizontal,
                     controller: _scrollController,
                     itemCount: snapshot.data.length,
@@ -258,9 +308,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 GestureDetector(
                   onTap: () {
                     if (nearmeclicked == false) {
-                      nationalclicked = false;
-                      nearmeclicked = true;
-                      followingclicked = false;
+                      setState(() {
+                        print('NearMe clicked');
+                        getQuery(tag: 'NearMe') as Query;
+                        products.clear();
+                        _controller.sink.add(products);
+                        print("debug products length ${products.length}");
+                        lastDocument = null;
+                        hasMore = true;
+
+                        nationalclicked = false;
+                        nearmeclicked = true;
+                        followingclicked = false;
+                      });
                     }
                   },
                   child: Text('NearMe',
@@ -286,7 +346,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     if (nationalclicked == false) {
                       setState(() {
                         print('National clicked');
-                        query = getQuery(tag: 'National');
+                        query = getQuery(tag: 'National') as Query;
                         products.clear();
                         _controller.sink.add(products);
                         print("debug products length ${products.length}");

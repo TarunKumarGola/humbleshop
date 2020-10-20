@@ -138,8 +138,9 @@ class _AddProductState extends State<AddProduct> {
           "category": dropdownvalue,
           "videoUrl": value,
           "productsuid": "${authobj.currentUser.uid}_$id",
-          "shoplocation": GeoPoint(
-              sellerobj.shoplocation.latitude, sellerobj.shoplocation.longitude)
+          "shoplocation": GeoPoint(sellerobj.shoplocation.latitude,
+              sellerobj.shoplocation.longitude),
+          "position": sellerobj.position.data
         }).then((value) {
           print("debug product upload successful");
           showInSnackBar("Product upload successful");

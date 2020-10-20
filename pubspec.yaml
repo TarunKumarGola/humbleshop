@@ -51,6 +51,8 @@ dependencies:
   transparent_image: ^1.0.0
   uuid: ^2.2.2
   video_player: ^0.11.1+2
+  location: ^3.0.2
+  geoflutterfire: ^2.2.1
 
 dev_dependencies:
   flutter_test:
