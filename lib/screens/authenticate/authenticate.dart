@@ -13,6 +13,7 @@ class Authenticate extends StatefulWidget {
 class _AuthenticateState extends State<Authenticate> {
   @override
   Widget build(BuildContext context) {
+    //  final user = Provider.of<User>(context);
     //final user = Provider.of<User>(context);
 
     if (FirebaseAuth.instance.currentUser == null) {
@@ -21,6 +22,7 @@ class _AuthenticateState extends State<Authenticate> {
       // AuthServices obj = new AuthServices();
       // Future<UserModel> currentUser = obj.getUser(user.uid);
       // print("User uid is ${user.uid}");
+      //getuser(user.uid);
       getuser(FirebaseAuth.instance.currentUser.uid);
       //UserModel obj=await getuser(user.uid);
 

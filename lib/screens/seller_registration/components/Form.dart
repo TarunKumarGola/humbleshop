@@ -4,6 +4,7 @@
 
 //import 'dart:html';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 
@@ -110,6 +111,10 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
 
   Future<void> _handleSubmitted() async {
     final form = _formKey.currentState;
+    Geoflutterfire geo = Geoflutterfire();
+    GeoFirePoint point = geo.point(
+        latitude: _currentposition.latitude,
+        longitude: _currentposition.longitude);
     if (!form.validate()) {
       _autoValidateMode =
           AutovalidateMode.always; // Start validating on every change.
@@ -129,7 +134,8 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
         "aadhar": seller.aadhar,
         "productsuid": [],
         "shoplocation":
-            GeoPoint(_currentposition.latitude, _currentposition.longitude)
+            GeoPoint(_currentposition.latitude, _currentposition.longitude),
+        "position": point.data
       });
       isSeller = true;
       sellerobj = SellerModel(
@@ -140,7 +146,8 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
           aadhar: seller.aadhar,
           productsuid: [],
           shoplocation:
-              GeoPoint(_currentposition.latitude, _currentposition.longitude));
+              GeoPoint(_currentposition.latitude, _currentposition.longitude),
+          position: point);
     }
     showInSnackBar("Registration successful");
   }

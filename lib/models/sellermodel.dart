@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 
 class SellerModel {
   // String uid;
@@ -11,6 +12,7 @@ class SellerModel {
   String pan;
   GeoPoint shoplocation;
   List<dynamic> productsuid = [];
+  GeoFirePoint position;
   //String phonenumber;
   //String address;
   // int follower;
@@ -24,7 +26,8 @@ class SellerModel {
       this.shoplocation,
       this.aadhar,
       this.pan,
-      this.productsuid});
+      this.productsuid,
+      this.position});
   SellerModel.fromData(Map<String, dynamic> data)
       : name = data['name'],
         shopname = data['shopname'],
@@ -32,7 +35,8 @@ class SellerModel {
         shoplocation = data['shoplocation'],
         aadhar = data['aadhar'],
         pan = data['pan'],
-        productsuid = data['productsuid'];
+        productsuid = data['productsuid'],
+        position = data['position'];
 
   Map<String, dynamic> toJson() {
     return {
