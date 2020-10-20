@@ -371,12 +371,13 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> handleClick(String value) async {
     switch (value) {
       case 'Logout':
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext context) => Authenticate()),
-            (route) => false);
-        await FirebaseAuth.instance.signOut();
+        await FirebaseAuth.instance.signOut().whenComplete(() => {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => Authenticate()),
+                  (route) => false)
+            });
         break;
     }
   }
