@@ -470,7 +470,7 @@ class VideoPlayerItem extends StatefulWidget {
 }
 
 class _VideoPlayerItemState extends State<VideoPlayerItem> {
-  bool isShowPlaying = true;
+  bool isShowPlaying = false;
   VideoPlayerController videoController;
 
   @override
@@ -550,7 +550,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                     width: widget.size.width,
                     child: Padding(
                       padding:
-                          const EdgeInsets.only(left: 15, top: 20, bottom: 10),
+                          const EdgeInsets.only(left: 15, top: 20, bottom: 70),
                       child: SafeArea(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
