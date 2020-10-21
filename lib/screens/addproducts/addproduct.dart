@@ -109,6 +109,7 @@ class _AddProductState extends State<AddProduct> {
       showInSnackBar("please select a video from camera or gallery");
     } else {
       form.save();
+      showAlertDialog(context);
       //now we are uploading our file to firebase storage
       var id = new DateTime.now().millisecondsSinceEpoch;
       //String fileName = "${authobj.currentUser.uid}_product_$id";
@@ -143,6 +144,7 @@ class _AddProductState extends State<AddProduct> {
           "position": sellerobj.position.data
         }).then((value) {
           print("debug product upload successful");
+          Navigator.pop(context);
           showInSnackBar("Product upload successful");
           setState(() {
             videopath = null;
@@ -154,6 +156,7 @@ class _AddProductState extends State<AddProduct> {
           });
         }).catchError((error) {
           print('debug unable to upload product');
+          Navigator.pop(context);
           showInSnackBar("Something went wrong Please try again");
         });
 
@@ -328,4 +331,22 @@ class _AddProductState extends State<AddProduct> {
       ),
     );
   }
+}
+
+showAlertDialog(BuildContext context) {
+  AlertDialog alert = AlertDialog(
+    content: new Row(
+      children: [
+        CircularProgressIndicator(),
+        Container(margin: EdgeInsets.only(left: 5), child: Text("Loading")),
+      ],
+    ),
+  );
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

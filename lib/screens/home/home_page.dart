@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shop_app/constant/data_json.dart';
+//import 'package:shop_app/models/Categories.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/commentspage/commentscreen2.dart';
 import 'package:shop_app/theme/colors.dart';
@@ -18,40 +19,47 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 Stream<QuerySnapshot> stream;
 // VideoPlayerController videoController;
+List<DocumentSnapshot> products = [];
+bool isLoading = false;
+bool hasMore = true;
+Query query;
+
+DocumentSnapshot lastDocument;
+StreamController<List<DocumentSnapshot>> controller =
+    StreamController<List<DocumentSnapshot>>();
 
 class HomePage extends StatefulWidget {
+  String tag;
+  HomePage(this.tag);
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState(tag);
 }
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+  _HomePageState(this.tag);
   TabController _tabController;
   CollectionReference users = FirebaseFirestore.instance.collection('PRODUCT');
   final FirebaseFirestore db = FirebaseFirestore.instance;
-
+  String tag;
   String activetags = 'Default';
   bool nearmeclicked = false;
   bool nationalclicked = false;
   bool followingclicked = false;
   Geolocator geolocator;
   Geoflutterfire geo = Geoflutterfire();
-  List<DocumentSnapshot> products = [];
-  bool isLoading = false;
-  bool hasMore = true;
+  // List<DocumentSnapshot> products = [];
+  // bool isLoading = false;
+  // bool hasMore = true;
   int documentLimit = 1;
-  DocumentSnapshot lastDocument;
+  // DocumentSnapshot lastDocument;
   ScrollController _scrollController = ScrollController();
-  Query query;
 
-  StreamController<List<DocumentSnapshot>> _controller =
-      StreamController<List<DocumentSnapshot>>();
-
-  Stream<List<DocumentSnapshot>> get _streamController => _controller.stream;
+  Stream<List<DocumentSnapshot>> get _streamController => controller.stream;
 
   @override
   void initState() {
     super.initState();
-    query = getQuery(tag: 'Default') as Query;
+    query = getQuery(tag: tag) as Query;
     _tabController = TabController(length: items.length, vsync: this);
     getProducts(query);
     _scrollController.addListener(() {
@@ -114,7 +122,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       stream.forEach((element) {
         print("debug ${element.isEmpty}");
         products.addAll(element);
-        _controller.sink.add(products);
+        controller.sink.add(products);
       });
     }).catchError((e) {
       print("debug something went wrong while getting position of user $e");
@@ -177,7 +185,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
       products.addAll(querySnapshot.docs);
       print("debug products length ${products.length}");
-      _controller.sink.add(products);
+      controller.sink.add(products);
 
       setState(() {
         isLoading = false;
@@ -311,9 +319,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     if (nearmeclicked == false) {
                       setState(() {
                         print('NearMe clicked');
+
                         getQuery(tag: 'NearMe') as Query;
                         products.clear();
-                        _controller.sink.add(products);
+                        controller.sink.add(products);
                         print("debug products length ${products.length}");
                         lastDocument = null;
                         hasMore = true;
@@ -349,7 +358,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         print('National clicked');
                         query = getQuery(tag: 'National') as Query;
                         products.clear();
-                        _controller.sink.add(products);
+                        controller.sink.add(products);
                         print("debug products length ${products.length}");
                         lastDocument = null;
                         hasMore = true;

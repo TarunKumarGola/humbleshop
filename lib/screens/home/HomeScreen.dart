@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/homepage_widget/upload_icon.dart';
 import 'package:shop_app/screens/addproducts/addproduct.dart';
@@ -12,6 +14,8 @@ import 'package:shop_app/screens/seller_registration/seller_registration_screen.
 
 String type;
 String typename;
+int pageIndex = 0;
+String category = 'Default';
 
 class HomeScreen extends StatefulWidget {
   static String routeName = "\HomeScreen";
@@ -21,7 +25,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _RootAppState extends State<HomeScreen> {
-  int pageIndex = 0;
   @override
   void initState() {
     super.initState();
@@ -39,11 +42,51 @@ class _RootAppState extends State<HomeScreen> {
     return IndexedStack(
       index: pageIndex,
       children: <Widget>[
-        HomePage(),
-        Categorycardtwo(),
+        HomePage(category),
         Center(
-          child: onplusbuttonpressed(),
+          child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: kPrimaryColor,
+              title: Text(
+                'Category',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            body: StaggeredGridView.count(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12.0,
+              mainAxisSpacing: 12.0,
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              children: <Widget>[
+                myItems(
+                    "assets/images/smartphone.png", 'SmartPhones', 0xffed622b),
+                myItems("assets/images/laptops.png", 'Laptops', 0xff26cb3c),
+                myItems(
+                    "assets/images/electronics.png", 'Electronics', 0xff3399fe),
+                myItems("assets/images/men.png", 'Men Clothing', 0xffff3266),
+                myItems(
+                    "assets/images/women.png", 'Women Clothing', 0xfff4c83f),
+                myItems("assets/images/footwear.png", 'FootWear', 0xff622F74),
+                myItems(
+                    "assets/images/kitchen.png", 'Home & Kitchens', 0xff7297ff),
+                myItems("assets/images/toys.png", 'Toys', 0xff7297ff),
+              ],
+              staggeredTiles: [
+                StaggeredTile.extent(1, 200.0),
+                StaggeredTile.extent(1, 200.0),
+                StaggeredTile.extent(1, 200.0),
+                StaggeredTile.extent(1, 200.0),
+                StaggeredTile.extent(1, 210.0),
+                StaggeredTile.extent(1, 200.0),
+                StaggeredTile.extent(2, 200.0),
+                StaggeredTile.extent(1, 200.0),
+              ],
+            ),
+          ),
         ),
+        onplusbuttonpressed(),
         Center(
           child: Text(
             "All Activity",
@@ -91,7 +134,9 @@ class _RootAppState extends State<HomeScreen> {
                     onTap: () {
                       type = 'NO';
                       typename = null;
-                      if (index == 0) type = null;
+                      if (index == 0) {
+                        type = null;
+                      }
                       selectedTab(index);
                       if (index != 0) {
                         //videoController.pause();
@@ -136,6 +181,7 @@ class _RootAppState extends State<HomeScreen> {
 
   selectedTab(index) {
     setState(() {
+      print('debug $index');
       pageIndex = index;
       // if (pageIndex != 0)// videoController.pause();
     });
@@ -153,6 +199,126 @@ class _RootAppState extends State<HomeScreen> {
       return SellerRegistration();
     } else {
       return AddProduct();
+    }
+  }
+
+  Material myItems(String path, String heading, int color) {
+    return Material(
+      child: InkWell(
+        child: Material(
+          color: Colors.white,
+          elevation: 14.0,
+          shadowColor: Color(0x802196F3),
+          borderRadius: BorderRadius.circular(24.0),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      // Text
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          heading,
+                          style: TextStyle(
+                            color: new Color(color),
+                            fontSize: 13.0,
+                          ),
+                        ),
+                      ),
+
+                      //Icon
+                      Material(
+                        // color: new Color(color),
+                        borderRadius: BorderRadius.circular(24.0),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: new Image(
+                            image: new AssetImage(path),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        onTap: () {
+          print("debug $heading");
+          setState(() {
+            category = heading;
+            products.clear();
+            controller.sink.add(products);
+            print("debug products length ${products.length}");
+            lastDocument = null;
+            hasMore = true;
+            getProducts(heading);
+          });
+
+          selectedTab(0);
+        },
+      ),
+    );
+  }
+
+  getProducts(String category) async {
+    if (!hasMore) {
+      print('debug No More Products');
+      return;
+    }
+    if (isLoading) {
+      return;
+    }
+    setState(() {
+      isLoading = true;
+    });
+    QuerySnapshot querySnapshot;
+
+    await FirebaseFirestore.instance
+        .collection('PRODUCT')
+        .where('category', isEqualTo: category)
+        .limit(2)
+        .get()
+        .then((value) {
+      query = FirebaseFirestore.instance
+          .collection('PRODUCT')
+          .where('category', isEqualTo: category);
+      if (value.size == 0) {
+        hasMore = false;
+        print("debug $hasMore");
+      } else {
+        print("debug fetched documents ${value.toString()}");
+        querySnapshot = value;
+      }
+    }).catchError((e) {
+      print(e);
+      hasMore = false;
+    });
+
+    if (querySnapshot != null) {
+      if (querySnapshot.docs.length < 2) {
+        hasMore = false;
+      }
+
+      lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+      products.addAll(querySnapshot.docs);
+      print("debug products length ${products.length}");
+      controller.sink.add(products);
+
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 }
