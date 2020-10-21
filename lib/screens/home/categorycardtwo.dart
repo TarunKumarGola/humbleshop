@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:shop_app/constants.dart';
+import 'package:shop_app/screens/home/HomeScreen2.dart';
+import 'package:shop_app/screens/home/home_page.dart';
 
 class Categorycardtwo extends StatefulWidget {
   @override
@@ -56,7 +58,14 @@ class _CategorycardtwoState extends State<Categorycardtwo> {
           ),
         ),
         onTap: () {
-          print(heading);
+          print("debug $heading");
+
+          setState(() {
+            print('debug $pageIndex');
+            pageIndex = 0;
+            print('debug $pageIndex');
+            category = heading;
+          });
         },
       ),
     );
@@ -80,14 +89,14 @@ class _CategorycardtwoState extends State<Categorycardtwo> {
         mainAxisSpacing: 12.0,
         padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         children: <Widget>[
-          myItems("assets/images/smartphone.png", "SmartPhones", 0xffed622b),
-          myItems("assets/images/laptops.png", "Laptops", 0xff26cb3c),
-          myItems("assets/images/electronics.png", "Electronics ", 0xff3399fe),
-          myItems("assets/images/men.png", "Men Clothing", 0xffff3266),
-          myItems("assets/images/women.png", "Women\nClothing", 0xfff4c83f),
-          myItems("assets/images/footwear.png", "FootWear", 0xff622F74),
-          myItems("assets/images/kitchen.png", "Home & Kitchens", 0xff7297ff),
-          myItems("assets/images/toys.png", "Toys", 0xff7297ff),
+          myItems("assets/images/smartphone.png", 'SmartPhones', 0xffed622b),
+          myItems("assets/images/laptops.png", 'Laptops', 0xff26cb3c),
+          myItems("assets/images/electronics.png", 'Electronics', 0xff3399fe),
+          myItems("assets/images/men.png", 'Men Clothing', 0xffff3266),
+          myItems("assets/images/women.png", 'Women Clothing', 0xfff4c83f),
+          myItems("assets/images/footwear.png", 'FootWear', 0xff622F74),
+          myItems("assets/images/kitchen.png", 'Home & Kitchens', 0xff7297ff),
+          myItems("assets/images/toys.png", 'Toys', 0xff7297ff),
         ],
         staggeredTiles: [
           StaggeredTile.extent(1, 200.0),
