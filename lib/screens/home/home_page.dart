@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shop_app/constant/data_json.dart';
+import 'package:shop_app/models/Product.dart';
 //import 'package:shop_app/models/Categories.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/commentspage/commentscreen2.dart';
@@ -75,13 +76,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Query getQuery({String tag = 'Default'}) {
     Query query;
     if (tag == 'National') {
-      query = db.collection('PRODUCT').where('country', isEqualTo: 'india');
+      query = db.collection('PRODUCT').where('country', isEqualTo: 'India');
       print(query.toString());
     } else if (tag == 'NearMe') {
       nearmefunction();
       // geolocator = Geolocator()..forceAndroidLocationManager;
       // geolocator
-      //     .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+      //     .getCurrentPosition(desiredAccuracy:LocationAccuracy.best)
       //     .then((Position position) {
       //   GeoFirePoint center = geo.point(
       //       latitude: position.latitude, longitude: position.longitude);
@@ -241,19 +242,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     itemCount: snapshot.data.length,
                     itemBuilder: (context, index) {
                       return VideoPlayerItem(
-                          videoUrl: snapshot.data[index].data()['videoUrl'],
-                          size: size,
-                          name: snapshot.data[index].data()['name'],
-                          price: snapshot.data[index].data()['price'],
-                          caption: snapshot.data[index].data()['description'],
-                          offer: snapshot.data[index].data()['offer'],
-                          profileImg: snapshot.data[index].data()['profileImg'],
-                          likes: snapshot.data[index].data()['likes'],
-                          comments: snapshot.data[index].data()['comments'],
-                          shares: snapshot.data[index].data()['shares'],
-                          shopnow: snapshot.data[index].data()['shopnow'],
-                          productsuid:
-                              snapshot.data[index].data()['productsuid']);
+                        videoUrl: snapshot.data[index].data()['videoUrl'],
+                        size: size,
+                        name: snapshot.data[index].data()['name'],
+                        price: snapshot.data[index].data()['price'],
+                        caption: snapshot.data[index].data()['description'],
+                        offer: snapshot.data[index].data()['offer'],
+                        profileImg: snapshot.data[index].data()['profileImg'],
+                        likes: snapshot.data[index].data()['likes'],
+                        comments: snapshot.data[index].data()['comments'],
+                        shares: snapshot.data[index].data()['shares'],
+                        shopnow: snapshot.data[index].data()['shopnow'],
+                        productsuid: snapshot.data[index].data()['productsuid'],
+                        colors: snapshot.data[index].data()['colors'],
+                        selleruid: snapshot.data[index].data()['selleruid'],
+                        description: snapshot.data[index].data()['description'],
+                        speciality: snapshot.data[index].data()['speciality'],
+                        phonenumber: snapshot.data[index].data()['phonenumber'],
+                      );
                     },
                   );
                 } else {
@@ -446,6 +452,11 @@ class VideoPlayerItem extends StatefulWidget {
   final String shares;
   final String shopnow;
   final String productsuid;
+  final String description;
+  final String speciality;
+  final List<dynamic> colors;
+  final String selleruid;
+  final String phonenumber;
 
   VideoPlayerItem(
       {Key key,
@@ -460,7 +471,12 @@ class VideoPlayerItem extends StatefulWidget {
       this.shares,
       this.shopnow,
       this.videoUrl,
-      this.productsuid})
+      this.productsuid,
+      this.description,
+      this.speciality,
+      this.colors,
+      this.selleruid,
+      this.phonenumber})
       : super(key: key);
 
   final Size size;
@@ -562,17 +578,26 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                                   size: widget.size,
                                   name: "${widget.name}",
                                   price: "RS.${widget.price}",
-                                  caption: "${widget.caption}",
+                                  caption: "${widget.speciality}",
                                   offer: "${widget.offer}",
                                 ),
                                 RightPanel(
-                                    size: widget.size,
-                                    likes: "${widget.likes}",
-                                    comments: "${widget.comments}",
-                                    shares: "${widget.shares}",
-                                    profileImg: "${widget.profileImg}",
-                                    shopnow: "${widget.shopnow}",
-                                    productuid: "${widget.productsuid}")
+                                  size: widget.size,
+                                  likes: "${widget.likes}",
+                                  comments: "${widget.comments}",
+                                  shares: "${widget.shares}",
+                                  profileImg: "${widget.profileImg}",
+                                  shopnow: "${widget.shopnow}",
+                                  productuid: "${widget.productsuid}",
+                                  speciality: "${widget.speciality}",
+                                  offer: "${widget.offer}",
+                                  description: "${widget.description}",
+                                  colors: widget.colors,
+                                  name: "${widget.name}",
+                                  videourl: widget.videoUrl,
+                                  price: widget.price,
+                                  phonenumber: widget.phonenumber,
+                                )
                               ],
                             ))
                           ],
@@ -596,6 +621,15 @@ class RightPanel extends StatefulWidget {
   final String albumImg;
   final String shopnow;
   final String productuid;
+  final String description;
+  final String offer;
+  final String speciality;
+  final List<dynamic> colors;
+  final String name;
+  final String videourl;
+  final String price;
+  final String phonenumber;
+
   const RightPanel(
       {Key key,
       @required this.size,
@@ -605,7 +639,15 @@ class RightPanel extends StatefulWidget {
       this.profileImg,
       this.albumImg,
       this.shopnow,
-      this.productuid})
+      this.productuid,
+      this.description,
+      this.offer,
+      this.speciality,
+      this.colors,
+      this.name,
+      this.videourl,
+      this.price,
+      this.phonenumber})
       : super(key: key);
 
   final Size size;
@@ -618,7 +660,15 @@ class RightPanel extends StatefulWidget {
       profileImg: profileImg,
       albumImg: albumImg,
       shopnow: shopnow,
-      productuid: productuid);
+      productuid: productuid,
+      description: description,
+      offer: offer,
+      speciality: speciality,
+      colors: colors,
+      name: name,
+      videourl: videourl,
+      price: price,
+      phonenumber: phonenumber);
 }
 
 class _RightPanelState extends State<RightPanel> {
@@ -629,6 +679,15 @@ class _RightPanelState extends State<RightPanel> {
   final String albumImg;
   final String shopnow;
   final String productuid;
+  String description;
+  String offer;
+  String speciality;
+  List<dynamic> colors;
+  String name;
+  String videourl;
+  String price;
+  String phonenumber;
+
   _RightPanelState(
       {Key key,
       @required this.size,
@@ -638,12 +697,37 @@ class _RightPanelState extends State<RightPanel> {
       this.profileImg,
       this.albumImg,
       this.shopnow,
-      this.productuid});
+      this.productuid,
+      this.offer,
+      this.speciality,
+      this.description,
+      this.colors,
+      this.name,
+      this.videourl,
+      this.price,
+      this.phonenumber});
 
   final Size size;
 
   @override
   Widget build(BuildContext context) {
+    Product product = new Product(
+      likes: likes,
+      name: name,
+      shares: shares,
+      comments: comments,
+      productuid: productuid,
+      profileImg: profileImg,
+      colors: colors,
+      offer: offer,
+      albumImg: albumImg,
+      description: description,
+      speciality: speciality,
+      shopnow: shopnow,
+      videourl: videourl,
+      price: price,
+      phonenumber: phonenumber,
+    );
     return Expanded(
       child: Container(
         height: size.height,
@@ -733,8 +817,8 @@ class _RightPanelState extends State<RightPanel> {
                                 )));
                   },
                 ),
-                getIconstwo(TikTokIcons.reply, shares, 25.0),
-                getshopnow(shopnow, context)
+                getIconsthree(Icons.call, shares, 35.0, phonenumber),
+                getshopnow(product, context)
               ],
             ))
           ],

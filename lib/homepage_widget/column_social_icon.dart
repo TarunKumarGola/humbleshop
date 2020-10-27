@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/models/Product.dart';
 import 'package:shop_app/screens/addtocartpage/addtocart.dart';
 import 'package:shop_app/theme/colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-Widget getshopnow(albumImg, context) {
+Widget getshopnow(Product product, context) {
   return Container(
     width: 50,
     height: 50,
@@ -33,7 +35,10 @@ Widget getshopnow(albumImg, context) {
             onTap: () async {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AddToCart()),
+                MaterialPageRoute(
+                    builder: (context) => AddToCart(
+                          product: product,
+                        )),
               );
             })
       ],
@@ -49,12 +54,25 @@ Widget getIconstwo(icon, count, size) {
         SizedBox(
           height: 5,
         ),
-        Text(
-          count,
-          style: TextStyle(
-              color: white, fontSize: 12, fontWeight: FontWeight.w700),
-        )
       ],
+    ),
+  );
+}
+
+Widget getIconsthree(icon, count, size, phonenumber) {
+  return InkWell(
+    onTap: () {
+      makecall('tel:${phonenumber}');
+    },
+    child: Container(
+      child: Column(
+        children: <Widget>[
+          Icon(icon, color: white, size: size),
+          SizedBox(
+            height: 5,
+          ),
+        ],
+      ),
     ),
   );
 }
@@ -91,6 +109,17 @@ Widget getProfile(img) {
       ],
     ),
   );
+}
+
+Future<void> makecall(String phonenumber) async {
+  print(phonenumber);
+  if (await canLaunch(phonenumber)) {
+    print(phonenumber);
+    await launch(phonenumber);
+  } else {
+    print('Tarun${phonenumber}');
+    throw 'could not call';
+  }
 }
 
 // Here we will add Shopnow widget which will first if user has already resgistered or not

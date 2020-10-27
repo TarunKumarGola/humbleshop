@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shop_app/theme/colors.dart';
 import 'package:video_player/video_player.dart';
@@ -21,9 +24,16 @@ class _AddProductState extends State<AddProduct> {
   TextEditingController controllername = TextEditingController();
   TextEditingController controllerdescription = TextEditingController();
   TextEditingController controllerprice = TextEditingController();
+  TextEditingController controllerspeciality = TextEditingController();
+  TextEditingController controlleroffer = TextEditingController();
+  Color _tempShadeColor;
+  Color _shadeColor = Colors.blue[800];
+  List colors = new List();
+
   Subscription _subscription;
   File _video;
   String dropdownvalue = 'Category';
+  String countryvalue = 'Select Country';
   final _flutterVideoCompress = FlutterVideoCompress();
   // ignore: unused_field
   MediaInfo _compressedVideoInfo = MediaInfo(path: '');
@@ -107,6 +117,16 @@ class _AddProductState extends State<AddProduct> {
       showInSnackBar("please select a valid category");
     } else if (_video == null) {
       showInSnackBar("please select a video from camera or gallery");
+    } else if (controllerdescription.text == '' ||
+        controllername.text == '' ||
+        controlleroffer.text == '' ||
+        controllerspeciality.text == '' ||
+        controllerprice.text == '') {
+      showInSnackBar("Pleas fill empty fields");
+    } else if (colors.length == 0) {
+      showInSnackBar("Please choose colors");
+    } else if (countryvalue == 'Select Country') {
+      showInSnackBar("Please Select Country");
     } else {
       form.save();
       showAlertDialog(context);
@@ -124,24 +144,27 @@ class _AddProductState extends State<AddProduct> {
             .collection("PRODUCT")
             .doc("${authobj.currentUser.uid}_$id")
             .set({
-          "Brand": "Spark",
           "likes": "0",
           "comments": "0",
           "profileImg": authobj.currentUser.imageurl,
           "shopnow":
               "https://images.unsplash.com/photo-1462804512123-465343c607ee?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=668&q=80",
-          "offer": "10% off",
+          "offer": controlleroffer.text,
           "shares": "0",
-          "country": "india",
+          "country": countryvalue,
           "name": controllername.text,
           "price": controllerprice.text,
+          "speciality": controllerspeciality.text,
           "description": controllerdescription.text,
           "category": dropdownvalue,
           "videoUrl": value,
           "productsuid": "${authobj.currentUser.uid}_$id",
           "shoplocation": GeoPoint(sellerobj.shoplocation.latitude,
               sellerobj.shoplocation.longitude),
-          "position": sellerobj.position.data
+          "position": sellerobj.position.data,
+          "colors": FieldValue.arrayUnion(colors),
+          "selleruid": authobj.currentUser.uid,
+          "phonenumber": FirebaseAuth.instance.currentUser.phoneNumber,
         }).then((value) {
           print("debug product upload successful");
           Navigator.pop(context);
@@ -153,9 +176,14 @@ class _AddProductState extends State<AddProduct> {
             controllerdescription.text = "";
             dropdownvalue = 'Category';
             controllerprice.text = "";
+            colors = new List();
+            _video = null;
+            controlleroffer.text = '';
+            controllerspeciality.text = '';
           });
         }).catchError((error) {
           print('debug unable to upload product');
+          print(error);
           Navigator.pop(context);
           showInSnackBar("Something went wrong Please try again");
         });
@@ -170,6 +198,7 @@ class _AddProductState extends State<AddProduct> {
           print("debug something went wrong while updation seller productsuid");
         });
       }).catchError((onError) {
+        Navigator.pop(context);
         showInSnackBar("fail in upload error$onError");
       });
     }
@@ -179,7 +208,7 @@ class _AddProductState extends State<AddProduct> {
   @override
   Widget build(BuildContext context) {
     final cursorColor = Theme.of(context).cursorColor;
-    const sizedBoxSpace = SizedBox(height: 24);
+    const sizedBoxSpace = SizedBox(height: 15);
     return MaterialApp(
       theme: ThemeData(primaryColor: primary),
       home: Scaffold(
@@ -199,7 +228,7 @@ class _AddProductState extends State<AddProduct> {
                   children: <Widget>[
                     sizedBoxSpace,
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
                       child: TextFormField(
                         cursorColor: cursorColor,
                         decoration: InputDecoration(
@@ -213,7 +242,7 @@ class _AddProductState extends State<AddProduct> {
                     ),
                     sizedBoxSpace,
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
                       child: TextFormField(
                         cursorColor: cursorColor,
                         keyboardType: TextInputType.number,
@@ -229,7 +258,24 @@ class _AddProductState extends State<AddProduct> {
                     ),
                     sizedBoxSpace,
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: EdgeInsets.symmetric(horizontal: 4.0),
+                      child: TextFormField(
+                        cursorColor: cursorColor,
+                        maxLength: 30,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          hintText: "This will be visible with main video",
+                          helperText: "Keep it short",
+                          labelText: "Speciality",
+                        ),
+                        controller: controllerspeciality,
+                        validator: validateName,
+                        maxLines: 1,
+                      ),
+                    ),
+                    sizedBoxSpace,
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 4.0),
                       child: TextFormField(
                         cursorColor: cursorColor,
                         decoration: InputDecoration(
@@ -243,6 +289,27 @@ class _AddProductState extends State<AddProduct> {
                         maxLines: 3,
                       ),
                     ),
+                    sizedBoxSpace,
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 4.0),
+                      child: TextFormField(
+                        cursorColor: cursorColor,
+                        maxLength: 30,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          hintText: "This will ve visible with Main video",
+                          helperText: "Keep it short",
+                          labelText: "Offers",
+                        ),
+                        controller: controlleroffer,
+                        validator: validateName,
+                        maxLines: 1,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    colorPickerWidget(),
                     sizedBoxSpace,
                     DropdownButton<String>(
                       value: dropdownvalue,
@@ -266,7 +333,37 @@ class _AddProductState extends State<AddProduct> {
                         'Medicines',
                         'Men Clothing',
                         'Women Clothing',
-                        'Mobile & Accessories'
+                        'Mobile & Accessories',
+                        'Laptops',
+                        'SmartPhones',
+                        'FootWear',
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                    sizedBoxSpace,
+                    DropdownButton<String>(
+                      value: countryvalue,
+                      icon: Icon(Icons.arrow_downward),
+                      iconSize: 24,
+                      elevation: 16,
+                      style: TextStyle(color: primary),
+                      underline: Container(
+                        height: 2,
+                        color: primary,
+                      ),
+                      onChanged: (String newValue) {
+                        setState(() {
+                          countryvalue = newValue;
+                        });
+                      },
+                      items: <String>[
+                        'Select Country',
+                        'India',
+                        'Other',
                       ].map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
@@ -297,7 +394,7 @@ class _AddProductState extends State<AddProduct> {
                       onPressed: () {
                         _pickVideoFromGallery();
                       },
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      padding: EdgeInsets.symmetric(horizontal: 5.0),
                       child: Text("Pick Video From Gallery",
                           style: TextStyle(color: Colors.white)),
                       color: primary,
@@ -307,7 +404,7 @@ class _AddProductState extends State<AddProduct> {
                       onPressed: () {
                         _pickVideoFromCamera();
                       },
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      padding: EdgeInsets.symmetric(horizontal: 5.0),
                       child: Text("Pick Video From Camera",
                           style: TextStyle(color: Colors.white)),
                       color: primary,
@@ -329,6 +426,88 @@ class _AddProductState extends State<AddProduct> {
           ),
         ),
       ),
+    );
+  }
+
+  void _openDialog(String title, Widget content) {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          contentPadding: const EdgeInsets.all(6.0),
+          title: Text(title),
+          content: content,
+          actions: [
+            FlatButton(
+              child: Text('CANCEL'),
+              onPressed: Navigator.of(context).pop,
+            ),
+            FlatButton(
+              child: Text('SUBMIT'),
+              onPressed: () {
+                Navigator.of(context).pop();
+
+                setState(() => _shadeColor = _tempShadeColor);
+                setState(() => colors.add(_shadeColor));
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _openColorPicker() async {
+    _openDialog(
+      "Color picker",
+      MaterialColorPicker(
+        selectedColor: _shadeColor,
+        onColorChange: (color) => setState(() => _tempShadeColor = color),
+        onBack: () => print("Back button pressed"),
+      ),
+    );
+  }
+
+  Widget colorPickerWidget() {
+    return Column(
+      children: [
+        const SizedBox(height: 32.0),
+        const SizedBox(
+          width: 10,
+        ),
+        OutlineButton(
+          onPressed: _openColorPicker,
+          child: const Text('Add Color Options '),
+        ),
+        const SizedBox(height: 16.0),
+        colors.length != 0
+            ? Container(
+                height: 60,
+                child: ListView.builder(
+                    padding: EdgeInsets.all(5),
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemCount: colors.length,
+                    itemBuilder: (context, index) {
+                      return MaterialButton(
+                        shape: CircleBorder(
+                            side: BorderSide(
+                                width: 3,
+                                color: colors[index],
+                                style: BorderStyle.solid)),
+                        padding: EdgeInsets.all(5),
+                        elevation: 5,
+                        color: colors[index],
+                        onPressed: () {
+                          setState(() {
+                            colors.remove(colors[index]);
+                          });
+                        },
+                      );
+                    }),
+              )
+            : Column(),
+      ],
     );
   }
 }

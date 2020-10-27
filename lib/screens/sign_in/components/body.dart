@@ -41,10 +41,13 @@ class Body extends StatelessWidget {
                     SocalCard(
                       icon: "assets/icons/google-icon.svg",
                       press: () {
+                        showAlertDialog(context);
+
                         AuthServices ob = new AuthServices();
                         ob
                             .googlesignin()
                             .whenComplete(() => {
+                                  Navigator.pop(context),
                                   if (FirebaseAuth.instance.currentUser != null)
                                     Navigator.push(
                                         context,
@@ -53,6 +56,7 @@ class Body extends StatelessWidget {
                                                 LoginSuccessScreen()))
                                 })
                             .catchError((error) {
+                          Navigator.pop(context);
                           print(error);
                         });
                       },
@@ -76,4 +80,22 @@ class Body extends StatelessWidget {
       ),
     );
   }
+}
+
+showAlertDialog(BuildContext context) {
+  AlertDialog alert = AlertDialog(
+    content: new Row(
+      children: [
+        CircularProgressIndicator(),
+        Container(margin: EdgeInsets.only(left: 5), child: Text("Loading")),
+      ],
+    ),
+  );
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

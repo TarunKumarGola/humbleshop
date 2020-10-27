@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 //import 'package:flutter/material.dart'
 
 import 'package:shop_app/models/usermodel.dart';
@@ -48,20 +49,22 @@ Future<void> getuser(String uid) async {
                   print("string ${querySnapshot.data().toString()}");
                   Map<String, dynamic> data = querySnapshot.data();
                   isSeller = true;
+                  GeoPoint geoPoint = data['shoplocation'];
                   sellerobj = SellerModel(
-                      aadhar: data['aadhar'],
-                      name: data['name'],
-                      pan: data['pan'],
-                      productsuid: data['productsuid'],
-                      shopdescription: data['shopdescription'],
-                      shoplocation: data['shoplocation'],
-                      shopname: data['shopname']
-
-                      // print("userdata is ${obj.name} ${obj.address} ${user.phoneNumber}");
-                      );
-                  print("${sellerobj.name}");
+                    aadhar: data['aadhar'],
+                    name: data['name'],
+                    pan: data['pan'],
+                    productsuid: data['productsuid'],
+                    shopdescription: data['shopdescription'],
+                    shoplocation: data['shoplocation'],
+                    shopname: data['shopname'],
+                    position: Geoflutterfire().point(
+                        latitude: geoPoint.latitude,
+                        longitude: geoPoint.longitude),
+                  );
+                  print("Tarun ${sellerobj.shoplocation}");
                 })
               }
           })
-      .whenComplete(() => print("successful"));
+      .whenComplete(() => print("Tarun ${sellerobj.shoplocation}"));
 }

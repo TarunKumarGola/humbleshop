@@ -1,18 +1,33 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:shop_app/constants.dart';
+import 'package:shop_app/models/Product.dart';
+import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/cartpage/cartpage.dart';
+import 'package:shop_app/screens/home/home_page.dart';
 import 'package:shop_app/theme/colors.dart';
+import 'package:video_player/video_player.dart';
 
 class AddToCart extends StatelessWidget {
+  final Product product;
+
+  const AddToCart({Key key, this.product}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
+      home: MyHomePage(product: product),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  final Product product;
+
+  const MyHomePage({Key key, this.product}) : super(key: key);
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -20,24 +35,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int photoIndex = 0;
   String dropdownValue = 'six';
-  List<String> photos = [
-    'assets/images/otto.jpg',
-    'assets/images/otto2.jpg',
-    'assets/images/otto.jpg',
-    'assets/images/otto2.jpg'
-  ];
 
-  void _previousImage() {
-    setState(() {
-      photoIndex = photoIndex > 0 ? photoIndex - 1 : 0;
-    });
-  }
-
-  void _nextImage() {
-    setState(() {
-      photoIndex = photoIndex < photos.length - 1 ? photoIndex + 1 : photoIndex;
-    });
-  }
+  int colorselect = 0;
 
   int getColorHexFromStr(String colorStr) {
     colorStr = "FF" + colorStr;
@@ -70,87 +69,29 @@ class _MyHomePageState extends State<MyHomePage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Stack(
-                children: <Widget>[
-                  Container(
-                    height: 275.0,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: AssetImage(photos[photoIndex]),
-                            fit: BoxFit.cover)),
-                  ),
-                  GestureDetector(
-                    child: Container(
-                      height: 275.0,
-                      width: MediaQuery.of(context).size.width,
-                      color: Colors.transparent,
-                    ),
-                    onTap: _nextImage,
-                  ),
-                  GestureDetector(
-                    child: Container(
-                      height: 275.0,
-                      width: MediaQuery.of(context).size.width / 2,
-                      color: Colors.transparent,
-                    ),
-                    onTap: _previousImage,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(right: 15.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        IconButton(
-                            icon: Icon(Icons.arrow_back),
-                            color: Colors.black,
-                            onPressed: () {}),
-                        Material(
-                            elevation: 4.0,
-                            borderRadius: BorderRadius.circular(20.0),
-                            child: Container(
-                                height: 40.0,
-                                width: 40.0,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20.0)),
-                                child: Icon(
-                                  Icons.favorite,
-                                  color: Colors.red,
-                                )))
-                      ],
-                    ),
-                  ),
-                  Positioned(
-                      top: 240.0,
-                      left: MediaQuery.of(context).size.width / 2 - 30.0,
-                      child: Row(
-                        children: <Widget>[
-                          SelectedPhoto(
-                            numberOfDots: photos.length,
-                            photoIndex: photoIndex,
-                          )
-                        ],
-                      ))
-                ],
+              MyProductVideo(
+                product: widget.product,
               ),
               SizedBox(height: 20.0),
               Padding(
                 padding: EdgeInsets.only(left: 15.0),
                 child: Text(
-                  'Article code: 2323X',
+                  widget.product.name,
                   style: TextStyle(
                       fontFamily: 'Montserrat',
-                      fontSize: 15.0,
-                      color: Colors.grey),
+                      fontSize: 25.0,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
               SizedBox(height: 10.0),
               Padding(
                 padding: const EdgeInsets.only(left: 15.0),
                 child: Text(
-                  'Mountain View',
+                  'Specifications',
                   style: TextStyle(
                       fontFamily: 'Montserrat',
-                      fontSize: 25.0,
+                      fontSize: 20.0,
                       color: Colors.black,
                       fontWeight: FontWeight.bold),
                 ),
@@ -163,31 +104,47 @@ class _MyHomePageState extends State<MyHomePage> {
                       Container(
                         width: (MediaQuery.of(context).size.width / 4 +
                                 MediaQuery.of(context).size.width / 2) -
-                            10.0,
+                            50.0,
                         child: Text(
-                          'Mountain View Hotel scene',
+                          widget.product.speciality,
                           style: TextStyle(
                             fontFamily: 'Montserrat',
-                            fontSize: 12.0,
-                            color: Colors.grey.withOpacity(0.8),
+                            fontSize: 17.0,
+                            color: Colors.grey.withOpacity(1),
                           ),
                         ),
                       ),
-                      Text(
-                        'Rs.248',
-                        style: TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontSize: 20.0,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold),
+                      Container(
+                        height: 35,
+                        width: 120,
+                        child: Material(
+                          elevation: 5,
+                          child: Center(
+                            child: Text(
+                              '₹${widget.product.price}',
+                              style: TextStyle(
+                                  fontFamily: 'Montserrat',
+                                  fontSize: 20.0,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          color: kPrimaryColor,
+                        ),
                       ),
                     ],
                   )),
-              SizedBox(height: 20.0),
+              Divider(
+                color: Colors.black,
+              ),
+              SizedBox(height: 2.0),
               Padding(
                 padding: EdgeInsets.only(left: 15.0),
                 child: Text(
-                  'COLOR',
+                  'Description',
                   style: TextStyle(
                       fontFamily: 'Montserrat',
                       fontSize: 22.0,
@@ -195,37 +152,123 @@ class _MyHomePageState extends State<MyHomePage> {
                       fontWeight: FontWeight.bold),
                 ),
               ),
-              SizedBox(height: 20.0),
+              SizedBox(height: 5.0),
+              Container(
+                padding: EdgeInsets.only(left: 15),
+                child: Text(
+                  widget.product.description,
+                  style: TextStyle(
+                    //  fontFamily: 'Montserrat',
+                    fontSize: 17.0,
+                    color: Colors.grey.withOpacity(1),
+                  ),
+                ),
+              ),
+              Divider(
+                color: Colors.black,
+              ),
+              SizedBox(height: 2.0),
               Padding(
-                  padding: EdgeInsets.only(left: 15.0),
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        height: 50.0,
-                        width: 50.0,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25.0),
-                            color: Color(getColorHexFromStr('#5A5551'))),
-                      ),
-                      SizedBox(width: 15.0),
-                      Container(
-                        height: 50.0,
-                        width: 50.0,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25.0),
-                            color: Color(getColorHexFromStr('#C3BCB5'))),
-                      ),
-                      SizedBox(width: 15.0),
-                      Container(
-                        height: 50.0,
-                        width: 50.0,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25.0),
-                            color: Color(getColorHexFromStr('#EFEFEF'))),
-                      )
-                    ],
-                  )),
-              SizedBox(height: 20.0),
+                padding: EdgeInsets.only(left: 15.0),
+                child: Text(
+                  'Offers',
+                  style: TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontSize: 22.0,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              SizedBox(height: 5.0),
+              Container(
+                padding: EdgeInsets.only(left: 15),
+                child: Text(
+                  widget.product.offer,
+                  style: TextStyle(
+                    //  fontFamily: 'Montserrat',
+                    fontSize: 17.0,
+                    color: Colors.grey.withOpacity(1),
+                  ),
+                ),
+              ),
+              Divider(
+                color: Colors.black,
+              ),
+              SizedBox(height: 2.0),
+              Padding(
+                padding: EdgeInsets.only(left: 15.0),
+                child: Text(
+                  'Colors',
+                  style: TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontSize: 22.0,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              SizedBox(height: 5.0),
+              Container(
+                height: 60,
+                child: ListView.builder(
+                    padding: EdgeInsets.all(5),
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemCount: widget.product.colors.length,
+                    itemBuilder: (context, index) {
+                      return MaterialButton(
+                        shape: CircleBorder(
+                            side: BorderSide(
+                                width: 3,
+                                color: Color(getColorHexFromStr(widget
+                                    .product.colors[index]
+                                    .substring(10, 16))),
+                                style: BorderStyle.solid)),
+                        padding: EdgeInsets.all(5),
+                        elevation: 5,
+                        color: Color(getColorHexFromStr(
+                            widget.product.colors[index].substring(10, 16))),
+                        onPressed: () {
+                          setState(() {
+                            colorselect = index;
+                          });
+                        },
+                      );
+                    }),
+              ),
+              Divider(
+                color: Colors.black,
+              ),
+              SizedBox(height: 2.0),
+              Padding(
+                padding: EdgeInsets.only(left: 15.0),
+                child: Text(
+                  'Colors Selected',
+                  style: TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontSize: 22.0,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              MaterialButton(
+                shape: CircleBorder(
+                    side: BorderSide(
+                        width: 3,
+                        color: Color(getColorHexFromStr(widget
+                            .product.colors[colorselect]
+                            .substring(10, 16))),
+                        style: BorderStyle.solid)),
+                padding: EdgeInsets.all(5),
+                elevation: 5,
+                color: Color(getColorHexFromStr(
+                    widget.product.colors[colorselect].substring(10, 16))),
+                onPressed: () {},
+              ),
+              SizedBox(height: 5.0),
+              Divider(
+                color: Colors.black,
+              ),
+              SizedBox(height: 2.0),
               Padding(
                 padding: EdgeInsets.only(left: 15.0),
                 child: Text(
@@ -237,7 +280,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       fontWeight: FontWeight.bold),
                 ),
               ),
-              SizedBox(height: 20.0),
+              SizedBox(height: 2.0),
               Padding(
                   padding: EdgeInsets.only(left: 15.0),
                   child: Row(
@@ -329,7 +372,42 @@ class _MyHomePageState extends State<MyHomePage> {
                                 fontWeight: FontWeight.bold),
                           )),
                           onTap: () {
-                            print('Add to cart pressed');
+                            FirebaseFirestore.instance
+                                .collection("USERS")
+                                .doc(authobj.currentUser.uid)
+                                .collection("orders")
+                                .doc()
+                                .set({
+                              "name": widget.product.name,
+                              "productuid": widget.product.productuid,
+                              "color": widget.product.colors[colorselect]
+                                  .substring(10, 16),
+                              "size": dropdownValue,
+                              "speciality": widget.product.speciality,
+                              "price": widget.product.price,
+                            });
+                            try {
+                              FirebaseFirestore.instance
+                                  .collection("SELLERS")
+                                  .doc(widget.product.selleruid)
+                                  .collection("OrderRecieved")
+                                  .doc()
+                                  .set({
+                                "name": widget.product.name,
+                                "productuid": widget.product.productuid,
+                                "color": widget.product.colors[colorselect]
+                                    .substring(10, 16),
+                                "size": dropdownValue,
+                                "speciality": widget.product.speciality,
+                              }).whenComplete(() {
+                                Navigator.push(
+                                    context,
+                                    new MaterialPageRoute(
+                                        builder: (context) => CartPage()));
+                              });
+                            } catch (e) {
+                              print("Error Occured$e");
+                            }
                           },
                         ))
                   ]))),
@@ -337,59 +415,60 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class SelectedPhoto extends StatelessWidget {
-  final int numberOfDots;
-  final int photoIndex;
+class MyProductVideo extends StatefulWidget {
+  final Product product;
 
-  SelectedPhoto({this.numberOfDots, this.photoIndex});
+  const MyProductVideo({Key key, this.product}) : super(key: key);
 
-  Widget _inactivePhoto() {
-    return new Container(
-      child: Padding(
-        padding: EdgeInsets.only(left: 3.0, right: 3.0),
-        child: Container(
-            width: 8.0,
-            height: 8.0,
-            decoration: BoxDecoration(
-                color: Colors.grey, borderRadius: BorderRadius.circular(4.0))),
-      ),
-    );
-  }
+  @override
+  _MyProductVideoState createState() => _MyProductVideoState();
+}
 
-  Widget _activePhoto() {
-    return new Container(
-      child: Padding(
-        padding: EdgeInsets.only(left: 3.0, right: 3.0),
-        child: Container(
-            width: 10.0,
-            height: 10.0,
-            decoration: BoxDecoration(
-                color: Colors.yellow,
-                borderRadius: BorderRadius.circular(5.0),
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.grey, spreadRadius: 0.0, blurRadius: 2.0)
-                ])),
-      ),
-    );
-  }
+class _MyProductVideoState extends State<MyProductVideo> {
+  VideoPlayerController videoPlayerController;
 
-  List<Widget> _buildDots() {
-    List<Widget> dots = [];
-
-    for (int i = 0; i < numberOfDots; ++i) {
-      dots.add(i == photoIndex ? _activePhoto() : _inactivePhoto());
-    }
-
-    return dots;
+  @override
+  void initState() {
+    super.initState();
+    videoPlayerController =
+        VideoPlayerController.network(widget.product.videourl)
+          ..initialize().then((value) => {});
+    videoPlayerController.setLooping(true);
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: _buildDots(),
-    ));
+    return Container(
+      height: 275,
+      width: MediaQuery.of(context).size.width,
+      child: Center(
+        child: Scaffold(
+          body: Center(
+            child: videoPlayerController.value.initialized
+                ? AspectRatio(
+                    aspectRatio: videoPlayerController.value.aspectRatio,
+                    child: VideoPlayer(videoPlayerController),
+                  )
+                : Container(),
+          ),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: kPrimaryColor,
+            onPressed: () {
+              setState(() {
+                videoPlayerController.value.isPlaying
+                    ? videoPlayerController.pause()
+                    : videoPlayerController.play();
+              });
+            },
+            child: Icon(
+              videoPlayerController.value.isPlaying
+                  ? Icons.pause
+                  : Icons.play_arrow,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
