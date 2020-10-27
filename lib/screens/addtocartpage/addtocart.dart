@@ -109,14 +109,14 @@ class _MyHomePageState extends State<MyHomePage> {
                           widget.product.speciality,
                           style: TextStyle(
                             fontFamily: 'Montserrat',
-                            fontSize: 17.0,
+                            fontSize: 15.0,
                             color: Colors.grey.withOpacity(1),
                           ),
                         ),
                       ),
                       Container(
                         height: 35,
-                        width: 120,
+                        width: 80,
                         child: Material(
                           elevation: 5,
                           child: Center(
@@ -124,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               '₹${widget.product.price}',
                               style: TextStyle(
                                   fontFamily: 'Montserrat',
-                                  fontSize: 20.0,
+                                  fontSize: 15.0,
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold),
                             ),

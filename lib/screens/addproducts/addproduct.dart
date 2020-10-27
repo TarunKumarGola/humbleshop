@@ -12,6 +12,7 @@ import 'package:flutter_video_compress/flutter_video_compress.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class AddProduct extends StatefulWidget {
   AddProduct({Key key}) : super(key: key);
@@ -129,6 +130,8 @@ class _AddProductState extends State<AddProduct> {
       showInSnackBar("Please Select Country");
     } else {
       form.save();
+      List<String> clist = new List();
+      for (int i = 0; i < colors.length; i++) clist.add(colors[i].toString());
       showAlertDialog(context);
       //now we are uploading our file to firebase storage
       var id = new DateTime.now().millisecondsSinceEpoch;
@@ -162,7 +165,7 @@ class _AddProductState extends State<AddProduct> {
           "shoplocation": GeoPoint(sellerobj.shoplocation.latitude,
               sellerobj.shoplocation.longitude),
           "position": sellerobj.position.data,
-          "colors": FieldValue.arrayUnion(colors),
+          "colors": FieldValue.arrayUnion(clist),
           "selleruid": authobj.currentUser.uid,
           "phonenumber": FirebaseAuth.instance.currentUser.phoneNumber,
         }).then((value) {
@@ -217,209 +220,226 @@ class _AddProductState extends State<AddProduct> {
         ),
         resizeToAvoidBottomPadding: false,
         key: _scaffoldKey,
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Form(
-            key: _formKey,
-            child: Scrollbar(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    sizedBoxSpace,
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                      child: TextFormField(
-                        cursorColor: cursorColor,
-                        decoration: InputDecoration(
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Form(
+              key: _formKey,
+              child: Scrollbar(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      sizedBoxSpace,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: TextFormField(
+                          cursorColor: cursorColor,
+                          decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: "ProductName*",
+                              hintText: "Enter Your Product Name"),
+                          maxLines: 1,
+                          validator: validateName,
+                          controller: controllername,
+                        ),
+                      ),
+                      sizedBoxSpace,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: TextFormField(
+                          cursorColor: cursorColor,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: "Price*",
+                              hintText: "Enter the Price"),
+                          maxLength: 10,
+                          maxLines: 1,
+                          validator: validateName,
+                          controller: controllerprice,
+                        ),
+                      ),
+                      sizedBoxSpace,
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4.0),
+                        child: TextFormField(
+                          cursorColor: cursorColor,
+                          maxLength: 80,
+                          decoration: InputDecoration(
                             border: const OutlineInputBorder(),
-                            labelText: "ProductName*",
-                            hintText: "Enter Your Product Name"),
-                        maxLines: 1,
-                        validator: validateName,
-                        controller: controllername,
+                            hintText: "This will be visible with main video",
+                            helperText: "Keep it short",
+                            labelText: "Speciality",
+                          ),
+                          controller: controllerspeciality,
+                          validator: validateName,
+                          maxLines: 1,
+                        ),
                       ),
-                    ),
-                    sizedBoxSpace,
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                      child: TextFormField(
-                        cursorColor: cursorColor,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
+                      sizedBoxSpace,
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4.0),
+                        child: TextFormField(
+                          cursorColor: cursorColor,
+                          decoration: InputDecoration(
                             border: const OutlineInputBorder(),
-                            labelText: "Price*",
-                            hintText: "Enter the Price"),
-                        maxLength: 10,
-                        maxLines: 1,
-                        validator: validateName,
-                        controller: controllerprice,
-                      ),
-                    ),
-                    sizedBoxSpace,
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4.0),
-                      child: TextFormField(
-                        cursorColor: cursorColor,
-                        maxLength: 30,
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
-                          hintText: "This will be visible with main video",
-                          helperText: "Keep it short",
-                          labelText: "Speciality",
+                            hintText: "Tell Us about the Product",
+                            helperText: "Keep it short",
+                            labelText: "Description",
+                          ),
+                          controller: controllerdescription,
+                          validator: validateName,
+                          maxLines: 3,
                         ),
-                        controller: controllerspeciality,
-                        validator: validateName,
-                        maxLines: 1,
                       ),
-                    ),
-                    sizedBoxSpace,
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4.0),
-                      child: TextFormField(
-                        cursorColor: cursorColor,
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
-                          hintText: "Tell Us about the Product",
-                          helperText: "Keep it short",
-                          labelText: "Description",
+                      sizedBoxSpace,
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4.0),
+                        child: TextFormField(
+                          cursorColor: cursorColor,
+                          maxLength: 80,
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            hintText: "This will ve visible with Main video",
+                            helperText: "Keep it short",
+                            labelText: "Offers",
+                          ),
+                          controller: controlleroffer,
+                          validator: validateName,
+                          maxLines: 1,
                         ),
-                        controller: controllerdescription,
-                        validator: validateName,
-                        maxLines: 3,
                       ),
-                    ),
-                    sizedBoxSpace,
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4.0),
-                      child: TextFormField(
-                        cursorColor: cursorColor,
-                        maxLength: 30,
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
-                          hintText: "This will ve visible with Main video",
-                          helperText: "Keep it short",
-                          labelText: "Offers",
+                      SizedBox(
+                        height: 10,
+                      ),
+                      colorPickerWidget(),
+                      sizedBoxSpace,
+                      DropdownButton<String>(
+                        value: dropdownvalue,
+                        icon: Icon(Icons.arrow_downward),
+                        iconSize: 24,
+                        elevation: 16,
+                        style: TextStyle(color: primary),
+                        underline: Container(
+                          height: 2,
+                          color: primary,
                         ),
-                        controller: controlleroffer,
-                        validator: validateName,
-                        maxLines: 1,
+                        onChanged: (String newValue) {
+                          setState(() {
+                            dropdownvalue = newValue;
+                          });
+                        },
+                        items: <String>[
+                          'Category',
+                          'Toys',
+                          'Home & Kitchen',
+                          'Medicines',
+                          'Men Clothing',
+                          'Women Clothing',
+                          'Mobile & Accessories',
+                          'Laptops',
+                          'SmartPhones',
+                          'FootWear',
+                        ].map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
                       ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    colorPickerWidget(),
-                    sizedBoxSpace,
-                    DropdownButton<String>(
-                      value: dropdownvalue,
-                      icon: Icon(Icons.arrow_downward),
-                      iconSize: 24,
-                      elevation: 16,
-                      style: TextStyle(color: primary),
-                      underline: Container(
-                        height: 2,
+                      sizedBoxSpace,
+                      DropdownButton<String>(
+                        value: countryvalue,
+                        icon: Icon(Icons.arrow_downward),
+                        iconSize: 24,
+                        elevation: 16,
+                        style: TextStyle(color: primary),
+                        underline: Container(
+                          height: 2,
+                          color: primary,
+                        ),
+                        onChanged: (String newValue) {
+                          setState(() {
+                            countryvalue = newValue;
+                          });
+                        },
+                        items: <String>[
+                          'Select Country',
+                          'India',
+                          'Other',
+                        ].map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                      sizedBoxSpace,
+                      if (_video != null)
+                        _videoPlayerController.value.initialized
+                            ? VisibilityDetector(
+                                key: Key("add product key"),
+                                onVisibilityChanged: (VisibilityInfo info) {
+                                  debugPrint(
+                                      "${info.visibleFraction} of my widget is visible");
+                                  if (info.visibleFraction == 0) {
+                                    _videoPlayerController.pause();
+                                  } else {
+                                    _videoPlayerController.play();
+                                  }
+                                },
+                                child: Stack(
+                                  children: [
+                                    AspectRatio(
+                                      aspectRatio: _videoPlayerController
+                                          .value.aspectRatio,
+                                      child:
+                                          VideoPlayer(_videoPlayerController),
+                                    )
+                                  ],
+                                ),
+                              )
+                            : Container()
+                      else
+                        Text(
+                          "Click on Pick Video to select video",
+                          style: TextStyle(fontSize: 18.0),
+                        ),
+                      sizedBoxSpace,
+                      RaisedButton(
+                        onPressed: () {
+                          _pickVideoFromGallery();
+                        },
+                        padding: EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Text("Pick Video From Gallery",
+                            style: TextStyle(color: Colors.white)),
                         color: primary,
                       ),
-                      onChanged: (String newValue) {
-                        setState(() {
-                          dropdownvalue = newValue;
-                        });
-                      },
-                      items: <String>[
-                        'Category',
-                        'Toys',
-                        'Home & Kitchen',
-                        'Medicines',
-                        'Men Clothing',
-                        'Women Clothing',
-                        'Mobile & Accessories',
-                        'Laptops',
-                        'SmartPhones',
-                        'FootWear',
-                      ].map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    ),
-                    sizedBoxSpace,
-                    DropdownButton<String>(
-                      value: countryvalue,
-                      icon: Icon(Icons.arrow_downward),
-                      iconSize: 24,
-                      elevation: 16,
-                      style: TextStyle(color: primary),
-                      underline: Container(
-                        height: 2,
+                      sizedBoxSpace,
+                      RaisedButton(
+                        onPressed: () {
+                          _pickVideoFromCamera();
+                        },
+                        padding: EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Text("Pick Video From Camera",
+                            style: TextStyle(color: Colors.white)),
                         color: primary,
                       ),
-                      onChanged: (String newValue) {
-                        setState(() {
-                          countryvalue = newValue;
-                        });
-                      },
-                      items: <String>[
-                        'Select Country',
-                        'India',
-                        'Other',
-                      ].map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    ),
-                    sizedBoxSpace,
-                    if (_video != null)
-                      _videoPlayerController.value.initialized
-                          ? Stack(
-                              children: [
-                                AspectRatio(
-                                  aspectRatio:
-                                      _videoPlayerController.value.aspectRatio,
-                                  child: VideoPlayer(_videoPlayerController),
-                                )
-                              ],
-                            )
-                          : Container()
-                    else
-                      Text(
-                        "Click on Pick Video to select video",
-                        style: TextStyle(fontSize: 18.0),
+                      sizedBoxSpace,
+                      RaisedButton(
+                        onPressed: () async {
+                          await _addProduct();
+                        },
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Text("Add Product",
+                            style: TextStyle(color: Colors.white)),
+                        color: primary,
                       ),
-                    sizedBoxSpace,
-                    RaisedButton(
-                      onPressed: () {
-                        _pickVideoFromGallery();
-                      },
-                      padding: EdgeInsets.symmetric(horizontal: 5.0),
-                      child: Text("Pick Video From Gallery",
-                          style: TextStyle(color: Colors.white)),
-                      color: primary,
-                    ),
-                    sizedBoxSpace,
-                    RaisedButton(
-                      onPressed: () {
-                        _pickVideoFromCamera();
-                      },
-                      padding: EdgeInsets.symmetric(horizontal: 5.0),
-                      child: Text("Pick Video From Camera",
-                          style: TextStyle(color: Colors.white)),
-                      color: primary,
-                    ),
-                    sizedBoxSpace,
-                    RaisedButton(
-                      onPressed: () async {
-                        await _addProduct();
-                      },
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Text("Add Product",
-                          style: TextStyle(color: Colors.white)),
-                      color: primary,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

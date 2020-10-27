@@ -152,32 +152,33 @@ class _CartPageState extends State<CartPage> {
                                                           color: Colors
                                                               .pinkAccent),
                                                 ),
+                                                SizedBox(
+                                                  width: 1,
+                                                ),
                                                 Text("color :"),
                                                 MaterialButton(
                                                   shape: CircleBorder(
                                                       side: BorderSide(
-                                                          width: 0,
-                                                          color: Color(
-                                                              getColorHexFromStr(
-                                                                  _card.get(
-                                                                      'color'))),
-                                                          style: BorderStyle
-                                                              .solid)),
-                                                  padding: EdgeInsets.all(1),
+                                                    width: 0,
+                                                    color: Color(
+                                                        getColorHexFromStr(_card
+                                                            .get('color'))),
+                                                  )),
+                                                  padding: EdgeInsets.all(0),
                                                   elevation: 5,
                                                   color: Color(
                                                       getColorHexFromStr(
                                                           _card.get('color'))),
                                                   onPressed: () {},
                                                 ),
-                                                Text("size :"),
-                                                Text(_card.get('size')),
+                                                //   Text("size :"),
+                                                //   Text(_card.get('size')),
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.all(8.0),
                                                   child: Container(
                                                     height: 30,
-                                                    width: 100,
+                                                    width: 80,
                                                     child: RaisedButton(
                                                       onPressed: () {
                                                         print(
@@ -187,7 +188,7 @@ class _CartPageState extends State<CartPage> {
                                                       },
                                                       color: primary,
                                                       padding:
-                                                          EdgeInsets.all(5),
+                                                          EdgeInsets.all(1),
                                                       shape: RoundedRectangleBorder(
                                                           borderRadius:
                                                               BorderRadius.all(
