@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 //import 'package:shopping_cart/utils/CustomTextStyle.dart';
 //import 'package:shopping_cart/utils/CustomUtils.dart';
 import 'package:shop_app/theme/colors.dart';
+
 //import 'CheckOutPage.dart';
 
 class CartPage extends StatefulWidget {
@@ -12,6 +14,7 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
+  Razorpay razorpay;
   CollectionReference orders = FirebaseFirestore.instance
       .collection("USERS")
       .doc(authobj.currentUser.uid)
@@ -37,6 +40,36 @@ class _CartPageState extends State<CartPage> {
     }
     return val;
   }
+
+  @override
+  void initState() {
+    super.initState();
+    razorpay = new Razorpay();
+    razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlerPaymentSuccess);
+    razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, handlerErrorFailure);
+    razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handlerExternalWallet);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    razorpay.clear();
+  }
+
+  void handlerPaymentSuccess() {
+    print("Payment Success");
+  }
+
+  void handlerErrorFailure() {
+    print("Payment error");
+  }
+
+  void handlerExternalWallet() {
+    print("Payment success");
+  }
+
+  var options;
 
   @override
   Widget build(BuildContext context) {
@@ -161,14 +194,51 @@ class _CartPageState extends State<CartPage> {
                                                                   Radius
                                                                       .circular(
                                                                           24))),
-                                                      child: Text(
-                                                        "Checkout",
-                                                        style: TextStyle(
-                                                                fontFamily:
-                                                                    'Muli')
-                                                            .copyWith(
-                                                                color: Colors
-                                                                    .white),
+                                                      child: InkWell(
+                                                        onTap: () {
+                                                          options = {
+                                                            "key":
+                                                                "rzp_test_aRmBQvWMybUfXx",
+                                                            "amount": num.parse(
+                                                                    _card.get(
+                                                                        'price')) *
+                                                                100,
+                                                            "name": authobj
+                                                                .currentUser
+                                                                .name,
+                                                            "description":
+                                                                "Payment for ${_card.get('name')}",
+                                                            "prefill": {
+                                                              "contact": authobj
+                                                                  .currentUser
+                                                                  .phonenumber,
+                                                              "email": authobj
+                                                                  .currentUser
+                                                                  .email,
+                                                            },
+                                                            "external": {
+                                                              "wallets": [
+                                                                "paytm",
+                                                                "googlepay"
+                                                              ]
+                                                            }
+                                                          };
+                                                          try {
+                                                            razorpay
+                                                                .open(options);
+                                                          } catch (e) {
+                                                            print('Tarun$e');
+                                                          }
+                                                        },
+                                                        child: Text(
+                                                          "Checkout",
+                                                          style: TextStyle(
+                                                                  fontFamily:
+                                                                      'Muli')
+                                                              .copyWith(
+                                                                  color: Colors
+                                                                      .white),
+                                                        ),
                                                       ),
                                                     ),
                                                   ),

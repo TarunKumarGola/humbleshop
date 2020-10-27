@@ -48,6 +48,7 @@ dependencies:
   intl: ^0.16.1
   line_icons: ^0.2.0
   provider: ^4.3.2+2
+  razorpay_flutter: ^1.2.2
   shared_preferences: ^0.5.10
   shimmer: ^1.1.1
   transparent_image: ^1.0.0
