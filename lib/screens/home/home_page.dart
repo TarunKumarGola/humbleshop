@@ -15,7 +15,6 @@ import 'package:shop_app/homepage_widget/left_panel.dart';
 import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shop_app/screens/home/HomeScreen.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 Stream<QuerySnapshot> stream;
@@ -597,6 +596,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                                   videourl: widget.videoUrl,
                                   price: widget.price,
                                   phonenumber: widget.phonenumber,
+                                  selleruid: widget.selleruid,
                                 )
                               ],
                             ))
@@ -629,6 +629,7 @@ class RightPanel extends StatefulWidget {
   final String videourl;
   final String price;
   final String phonenumber;
+  final String selleruid;
 
   const RightPanel(
       {Key key,
@@ -647,7 +648,8 @@ class RightPanel extends StatefulWidget {
       this.name,
       this.videourl,
       this.price,
-      this.phonenumber})
+      this.phonenumber,
+      this.selleruid})
       : super(key: key);
 
   final Size size;
@@ -668,7 +670,8 @@ class RightPanel extends StatefulWidget {
       name: name,
       videourl: videourl,
       price: price,
-      phonenumber: phonenumber);
+      phonenumber: phonenumber,
+      selleruid: selleruid);
 }
 
 class _RightPanelState extends State<RightPanel> {
@@ -687,6 +690,7 @@ class _RightPanelState extends State<RightPanel> {
   String videourl;
   String price;
   String phonenumber;
+  String selleruid;
 
   _RightPanelState(
       {Key key,
@@ -705,29 +709,30 @@ class _RightPanelState extends State<RightPanel> {
       this.name,
       this.videourl,
       this.price,
-      this.phonenumber});
+      this.phonenumber,
+      this.selleruid});
 
   final Size size;
 
   @override
   Widget build(BuildContext context) {
     Product product = new Product(
-      likes: likes,
-      name: name,
-      shares: shares,
-      comments: comments,
-      productuid: productuid,
-      profileImg: profileImg,
-      colors: colors,
-      offer: offer,
-      albumImg: albumImg,
-      description: description,
-      speciality: speciality,
-      shopnow: shopnow,
-      videourl: videourl,
-      price: price,
-      phonenumber: phonenumber,
-    );
+        likes: likes,
+        name: name,
+        shares: shares,
+        comments: comments,
+        productuid: productuid,
+        profileImg: profileImg,
+        colors: colors,
+        offer: offer,
+        albumImg: albumImg,
+        description: description,
+        speciality: speciality,
+        shopnow: shopnow,
+        videourl: videourl,
+        price: price,
+        phonenumber: phonenumber,
+        selleruid: selleruid);
     return Expanded(
       child: Container(
         height: size.height,

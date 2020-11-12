@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shop_app/screens/myproduct/myproductpage.dart';
 import 'package:shop_app/theme/colors.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_video_compress/flutter_video_compress.dart';
@@ -43,6 +43,7 @@ class _AddProductState extends State<AddProduct> {
   String _taskName;
   // ignore: unused_field
   double _progressState = 0;
+  String videourl;
   VideoPlayerController _videoPlayerController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -143,6 +144,7 @@ class _AddProductState extends State<AddProduct> {
       StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
       taskSnapshot.ref.getDownloadURL().then((value) async {
         print("Done: $value");
+        videourl = value;
         await FirebaseFirestore.instance
             .collection("PRODUCT")
             .doc("${authobj.currentUser.uid}_$id")
@@ -169,6 +171,35 @@ class _AddProductState extends State<AddProduct> {
           "selleruid": authobj.currentUser.uid,
           "phonenumber": FirebaseAuth.instance.currentUser.phoneNumber,
         }).then((value) {
+          FirebaseFirestore.instance
+              .collection("SELLERS")
+              .doc(authobj.currentUser.uid)
+              .collection("MyProduct")
+              .doc("${authobj.currentUser.uid}_$id")
+              .set({
+            "likes": "0",
+            "comments": "0",
+            "profileImg": authobj.currentUser.imageurl,
+            "shopnow":
+                "https://images.unsplash.com/photo-1462804512123-465343c607ee?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=668&q=80",
+            "offer": controlleroffer.text,
+            "shares": "0",
+            "country": countryvalue,
+            "name": controllername.text,
+            "price": controllerprice.text,
+            "speciality": controllerspeciality.text,
+            "description": controllerdescription.text,
+            "category": dropdownvalue,
+            "videoUrl": videourl,
+            "productsuid": "${authobj.currentUser.uid}_$id",
+            "shoplocation": GeoPoint(sellerobj.shoplocation.latitude,
+                sellerobj.shoplocation.longitude),
+            "position": sellerobj.position.data,
+            "colors": FieldValue.arrayUnion(clist),
+            "selleruid": authobj.currentUser.uid,
+            "phonenumber": FirebaseAuth.instance.currentUser.phoneNumber,
+          });
+
           print("debug product upload successful");
           Navigator.pop(context);
           showInSnackBar("Product upload successful");
@@ -217,6 +248,19 @@ class _AddProductState extends State<AddProduct> {
       home: Scaffold(
         appBar: AppBar(
           title: Text("Add New Product"),
+          actions: <Widget>[
+            PopupMenuButton<String>(
+              onSelected: handleclick,
+              itemBuilder: (BuildContext context) {
+                return {'My Product'}.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            ),
+          ],
         ),
         resizeToAvoidBottomPadding: false,
         key: _scaffoldKey,
@@ -529,6 +573,15 @@ class _AddProductState extends State<AddProduct> {
             : Column(),
       ],
     );
+  }
+
+  Future<void> handleclick(String value) async {
+    switch (value) {
+      case 'My Product':
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => MyProduct()));
+        break;
+    }
   }
 }
 

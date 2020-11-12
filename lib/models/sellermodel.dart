@@ -13,6 +13,7 @@ class SellerModel {
   GeoPoint shoplocation;
   List<dynamic> productsuid = [];
   GeoFirePoint position;
+  String selleruid;
   //String phonenumber;
   //String address;
   // int follower;
@@ -27,7 +28,8 @@ class SellerModel {
       this.aadhar,
       this.pan,
       this.productsuid,
-      this.position});
+      this.position,
+      this.selleruid});
   SellerModel.fromData(Map<String, dynamic> data)
       : name = data['name'],
         shopname = data['shopname'],
@@ -36,7 +38,8 @@ class SellerModel {
         aadhar = data['aadhar'],
         pan = data['pan'],
         productsuid = data['productsuid'],
-        position = data['position'];
+        position = data['position'],
+        selleruid = data['selleruid'];
 
   Map<String, dynamic> toJson() {
     return {

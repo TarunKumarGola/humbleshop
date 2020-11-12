@@ -62,7 +62,7 @@ Widget getIconstwo(icon, count, size) {
 Widget getIconsthree(icon, count, size, phonenumber) {
   return InkWell(
     onTap: () {
-      makecall('tel:${phonenumber}');
+      makecall('tel:$phonenumber');
     },
     child: Container(
       child: Column(
@@ -117,7 +117,7 @@ Future<void> makecall(String phonenumber) async {
     print(phonenumber);
     await launch(phonenumber);
   } else {
-    print('Tarun${phonenumber}');
+    print('Tarun$phonenumber');
     throw 'could not call';
   }
 }

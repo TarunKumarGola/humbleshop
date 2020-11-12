@@ -135,7 +135,8 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
         "productsuid": [],
         "shoplocation":
             GeoPoint(_currentposition.latitude, _currentposition.longitude),
-        "position": point.data
+        "position": point.data,
+        "selleruid": authobj.currentUser.uid,
       });
       isSeller = true;
       sellerobj = SellerModel(

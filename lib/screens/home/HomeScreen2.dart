@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:shop_app/constants.dart';
-import 'package:shop_app/homepage_widget/upload_icon.dart';
 import 'package:shop_app/screens/addproducts/addproduct.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/complete_profile/components/profilefirst.dart';
 import 'package:shop_app/screens/home/categorycardtwo.dart';
 import 'package:shop_app/screens/home/home_page.dart';
 import 'package:shop_app/theme/colors.dart';
-import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:shop_app/screens/seller_registration/seller_registration_screen.dart';
 
 String type;

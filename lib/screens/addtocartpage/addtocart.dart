@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/models/Product.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/cartpage/cartpage.dart';
-import 'package:shop_app/screens/home/home_page.dart';
 import 'package:shop_app/theme/colors.dart';
 import 'package:video_player/video_player.dart';
 
@@ -390,7 +388,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               FirebaseFirestore.instance
                                   .collection("SELLERS")
                                   .doc(widget.product.selleruid)
-                                  .collection("OrderRecieved")
+                                  .collection("orderplaced")
                                   .doc()
                                   .set({
                                 "name": widget.product.name,

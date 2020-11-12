@@ -44,27 +44,6 @@ class _ProfilePageState extends State<ProfilePage> {
             },
           ),
         ],
-        // leading: IconButton(
-        //   // icon: Icon(
-        //   //   Icons.arrow_back,
-        //   //   color: primary,
-        //   // ),
-        //   // onPressed: () {
-        //   //   Navigator.of(context).pop();
-        //   // },
-        // ),
-        // actions: [
-        //   IconButton(
-        //     icon: Icon(
-        //       Icons.settings,
-        //       color: Colors.green,
-        //     ),
-        //     onPressed: () {
-        //       Navigator.of(context).push(MaterialPageRoute(
-        //           builder: (BuildContext context) => SettingsPage()));
-        //     },
-        //   ),
-        // ],
       ),
       body: Container(
         padding: EdgeInsets.only(left: 16, top: 25, right: 16),

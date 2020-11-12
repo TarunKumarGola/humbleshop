@@ -61,8 +61,8 @@ Future<void> getuser(String uid) async {
                     position: Geoflutterfire().point(
                         latitude: geoPoint.latitude,
                         longitude: geoPoint.longitude),
+                    selleruid: data['selleruid'],
                   );
-                  print("Tarun ${sellerobj.shoplocation}");
                 })
               }
           })

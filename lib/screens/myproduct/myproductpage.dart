@@ -1,24 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:shop_app/constants.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
-//import 'package:shopping_cart/utils/CustomTextStyle.dart';
-//import 'package:shopping_cart/utils/CustomUtils.dart';
 import 'package:shop_app/theme/colors.dart';
 
 //import 'CheckOutPage.dart';
 
-class CartPage extends StatefulWidget {
+class MyProduct extends StatefulWidget {
   @override
-  _CartPageState createState() => _CartPageState();
+  _MyProductState createState() => _MyProductState();
 }
 
-class _CartPageState extends State<CartPage> {
-  Razorpay razorpay;
+class _MyProductState extends State<MyProduct> {
   CollectionReference orders = FirebaseFirestore.instance
-      .collection("USERS")
-      .doc(authobj.currentUser.uid)
-      .collection("orders");
+      .collection("SELLERS")
+      .doc(sellerobj.selleruid)
+      .collection("MyProduct");
+
   int getColorHexFromStr(String colorStr) {
     colorStr = "FF" + colorStr;
     colorStr = colorStr.replaceAll("#", "");
@@ -44,16 +42,11 @@ class _CartPageState extends State<CartPage> {
   @override
   void initState() {
     super.initState();
-    razorpay = new Razorpay();
-    razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlerPaymentSuccess);
-    razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, handlerErrorFailure);
-    razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handlerExternalWallet);
   }
 
   @override
   void dispose() {
     super.dispose();
-    razorpay.clear();
   }
 
   void handlerPaymentSuccess() {
@@ -80,14 +73,14 @@ class _CartPageState extends State<CartPage> {
           backgroundColor: Colors.grey.shade100,
           appBar: AppBar(
             centerTitle: true,
-            title: Text('Shopping Cart'),
+            title: Text('My Products'),
           ),
           body: StreamBuilder(
               stream: orders.snapshots(),
               builder: (sContext, snapshot) {
                 if (!snapshot.hasData) {
                   return Text(
-                    'NO item in you cart  ...',
+                    'No Product...',
                   );
                 } else {
                   print('tarun${snapshot.data.docs}');
@@ -154,98 +147,29 @@ class _CartPageState extends State<CartPage> {
                                                 SizedBox(
                                                   width: 1,
                                                 ),
-                                                Text("color :"),
-                                                MaterialButton(
-                                                  shape: CircleBorder(
-                                                      side: BorderSide(
-                                                    width: 0,
-                                                    color: Color(
-                                                        getColorHexFromStr(_card
-                                                            .get('color'))),
-                                                  )),
-                                                  padding: EdgeInsets.all(0),
-                                                  elevation: 5,
-                                                  color: Color(
-                                                      getColorHexFromStr(
-                                                          _card.get('color'))),
-                                                  onPressed: () {},
-                                                ),
-                                                //   Text("size :"),
-                                                //   Text(_card.get('size')),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Container(
-                                                    height: 30,
-                                                    width: 80,
-                                                    child: RaisedButton(
-                                                      onPressed: () {
-                                                        print(
-                                                            'checkout button pressed');
-                                                        // Navigator.push(context,
-                                                        //     new MaterialPageRoute(builder: (context) => CheckOutPage()));
-                                                      },
-                                                      color: primary,
-                                                      padding:
-                                                          EdgeInsets.all(1),
-                                                      shape: RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          24))),
-                                                      child: InkWell(
-                                                        onTap: () {
-                                                          options = {
-                                                            "key":
-                                                                "rzp_test_aRmBQvWMybUfXx",
-                                                            "amount": num.parse(
-                                                                    _card.get(
-                                                                        'price')) *
-                                                                100,
-                                                            "name": authobj
-                                                                .currentUser
-                                                                .name,
-                                                            "description":
-                                                                "Payment for ${_card.get('name')}",
-                                                            "prefill": {
-                                                              "contact": authobj
-                                                                  .currentUser
-                                                                  .phonenumber,
-                                                              "email": authobj
-                                                                  .currentUser
-                                                                  .email,
-                                                            },
-                                                            "external": {
-                                                              "wallets": [
-                                                                "paytm",
-                                                                "googlepay"
-                                                              ]
-                                                            }
-                                                          };
-                                                          try {
-                                                            razorpay
-                                                                .open(options);
-                                                          } catch (e) {
-                                                            print('Tarun$e');
-                                                          }
-                                                        },
-                                                        child: Text(
-                                                          "Checkout",
-                                                          style: TextStyle(
-                                                                  fontFamily:
-                                                                      'Muli')
-                                                              .copyWith(
-                                                                  color: Colors
-                                                                      .white),
-                                                        ),
-                                                      ),
-                                                    ),
+                                                /*  RaisedButton.icon(
+                                                  onPressed: () async {
+                        
+                                                  },
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  10.0))),
+                                                  label: Text(
+                                                    'View',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
                                                   ),
-                                                ),
+                                                  textColor: Colors.white,
+                                                  splashColor: Colors.red,
+                                                  color: kPrimaryColor,
+                                                ),*/
+
                                                 RaisedButton.icon(
                                                   onPressed: () async {
-                                                    await Firestore.instance
+                                                    await FirebaseFirestore
+                                                        .instance
                                                         .runTransaction((Transaction
                                                             myTransaction) async {
                                                       await myTransaction

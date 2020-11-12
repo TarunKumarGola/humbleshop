@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/screens/home/HomeScreen2.dart';
-import 'package:shop_app/screens/home/home_page.dart';
 
 class Categorycardtwo extends StatefulWidget {
   @override
