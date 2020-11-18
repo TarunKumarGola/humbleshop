@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/home/HomeScreen.dart';
+import 'package:shop_app/screens/splash/loader.dart';
 import 'package:shop_app/screens/splash/splash_screen.dart';
 
 class Authenticate extends StatefulWidget {
@@ -11,6 +12,19 @@ class Authenticate extends StatefulWidget {
 }
 
 class _AuthenticateState extends State<Authenticate> {
+  bool state = false;
+  @override
+  Future<void> initState() {
+    super.initState();
+    if (FirebaseAuth.instance.currentUser != null) {
+      getLiked().whenComplete(() {
+        setState(() {
+          state = true;
+        });
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     //  final user = Provider.of<User>(context);
@@ -19,16 +33,10 @@ class _AuthenticateState extends State<Authenticate> {
     if (FirebaseAuth.instance.currentUser == null) {
       return SplashScreen();
     } else {
-      // AuthServices obj = new AuthServices();
-      // Future<UserModel> currentUser = obj.getUser(user.uid);
-      // print("User uid is ${user.uid}");
-      //getuser(user.uid);
       getuser(FirebaseAuth.instance.currentUser.uid);
-      getLiked();
-      //UserModel obj=await getuser(user.uid);
-
-      //AuthServices authobj = new AuthServices(currentUser: obj);
-      return HomeScreen();
+      return Scaffold(
+        body: state ? HomeScreen() : Loader(),
+      );
     }
   }
 }

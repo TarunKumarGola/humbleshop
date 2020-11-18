@@ -83,6 +83,7 @@ Future<void> getLiked() async {
     // Create a new List<String> from List<dynamic>
     liked = List<String>.from(querySnapshot.data()['Liked']);
     print("tarun yo yo");
+    print(liked);
   } else {
     liked = [];
     print("tarun yo");
