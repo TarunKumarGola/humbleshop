@@ -6,16 +6,16 @@ import 'package:shop_app/theme/colors.dart';
 
 //import 'CheckOutPage.dart';
 
-class MyProduct extends StatefulWidget {
+class MyOrder extends StatefulWidget {
   @override
-  _MyProductState createState() => _MyProductState();
+  _MyOrderState createState() => _MyOrderState();
 }
 
-class _MyProductState extends State<MyProduct> {
+class _MyOrderState extends State<MyOrder> {
   CollectionReference orders = FirebaseFirestore.instance
       .collection("SELLERS")
       .doc(sellerobj.selleruid)
-      .collection("MyProduct");
+      .collection("orderplaced");
 
   int getColorHexFromStr(String colorStr) {
     colorStr = "FF" + colorStr;
@@ -59,14 +59,14 @@ class _MyProductState extends State<MyProduct> {
           backgroundColor: Colors.grey.shade100,
           appBar: AppBar(
             centerTitle: true,
-            title: Text('My Products'),
+            title: Text('Order Received'),
           ),
           body: StreamBuilder(
               stream: orders.snapshots(),
               builder: (sContext, snapshot) {
                 if (!snapshot.hasData) {
                   return Text(
-                    'No Product...',
+                    'No OrderYet...',
                   );
                 } else {
                   print('tarun${snapshot.data.docs}');
@@ -116,6 +116,47 @@ class _MyProductState extends State<MyProduct> {
                                                     color: Colors.grey,
                                                     fontSize: 14),
                                           ),
+                                          SizedBox(
+                                            height: 8.0,
+                                          ),
+                                          Text(
+                                            _card.get('buyername'),
+                                            style: TextStyle(fontFamily: 'Muli')
+                                                .copyWith(
+                                                    color: Colors.grey,
+                                                    fontSize: 14),
+                                          ),
+                                          SizedBox(
+                                            height: 8.0,
+                                          ),
+                                          Text(
+                                            _card.get('buyeremailid'),
+                                            style: TextStyle(fontFamily: 'Muli')
+                                                .copyWith(
+                                                    color: Colors.grey,
+                                                    fontSize: 14),
+                                          ),
+                                          Text(
+                                            _card.get('buyeraddress'),
+                                            style: TextStyle(fontFamily: 'Muli')
+                                                .copyWith(
+                                                    color: Colors.grey,
+                                                    fontSize: 14),
+                                          ),
+                                          Text(
+                                            _card.get('size'),
+                                            style: TextStyle(fontFamily: 'Muli')
+                                                .copyWith(
+                                                    color: Colors.grey,
+                                                    fontSize: 14),
+                                          ),
+                                          Text(
+                                            _card.get('color'),
+                                            style: TextStyle(fontFamily: 'Muli')
+                                                .copyWith(
+                                                    color: Colors.grey,
+                                                    fontSize: 14),
+                                          ),
                                           Container(
                                             child: Row(
                                               mainAxisAlignment:
@@ -133,58 +174,6 @@ class _MyProductState extends State<MyProduct> {
                                                 SizedBox(
                                                   width: 1,
                                                 ),
-                                                /*  RaisedButton.icon(
-                                                  onPressed: () async {
-                        
-                                                  },
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                              Radius.circular(
-                                                                  10.0))),
-                                                  label: Text(
-                                                    'View',
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                  textColor: Colors.white,
-                                                  splashColor: Colors.red,
-                                                  color: kPrimaryColor,
-                                                ),*/
-
-                                                RaisedButton.icon(
-                                                  onPressed: () async {
-                                                    await FirebaseFirestore
-                                                        .instance
-                                                        .runTransaction((Transaction
-                                                            myTransaction) async {
-                                                      await myTransaction
-                                                          .delete(snapshot
-                                                              .data
-                                                              .documents[index]
-                                                              .reference);
-
-                                                      // Also remove from the sellers list
-                                                    });
-                                                  },
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                              Radius.circular(
-                                                                  10.0))),
-                                                  label: Text(
-                                                    'Delete',
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                  icon: Icon(
-                                                    Icons.close,
-                                                    color: Colors.white,
-                                                  ),
-                                                  textColor: Colors.white,
-                                                  splashColor: Colors.red,
-                                                  color: Colors.green,
-                                                ),
                                               ],
                                             ),
                                           ),
@@ -196,25 +185,6 @@ class _MyProductState extends State<MyProduct> {
                                 ],
                               ),
                             ),
-                            /* Align(
-                              alignment: Alignment.topRight,
-                              child: Container(
-                                width: 24,
-                                height: 24,
-                                alignment: Alignment.center,
-                                margin: EdgeInsets.only(right: 10, top: 8),
-                                child: Icon(
-                                  Icons.close,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(4),
-                                    ),
-                                    color: Colors.pink[500]),
-                              ),
-                            )*/
                           ],
                         );
                       });

@@ -24,6 +24,7 @@ class _AuthenticateState extends State<Authenticate> {
       // print("User uid is ${user.uid}");
       //getuser(user.uid);
       getuser(FirebaseAuth.instance.currentUser.uid);
+      getLiked();
       //UserModel obj=await getuser(user.uid);
 
       //AuthServices authobj = new AuthServices(currentUser: obj);

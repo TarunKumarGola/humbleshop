@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shop_app/screens/myproduct/myproductpage.dart';
+import 'package:shop_app/screens/orderrecievedpage/orderrecieved.dart';
 import 'package:shop_app/theme/colors.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_video_compress/flutter_video_compress.dart';
@@ -252,7 +253,7 @@ class _AddProductState extends State<AddProduct> {
             PopupMenuButton<String>(
               onSelected: handleclick,
               itemBuilder: (BuildContext context) {
-                return {'My Product'}.map((String choice) {
+                return {'My Product', 'Order Received'}.map((String choice) {
                   return PopupMenuItem<String>(
                     value: choice,
                     child: Text(choice),
@@ -580,6 +581,10 @@ class _AddProductState extends State<AddProduct> {
       case 'My Product':
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => MyProduct()));
+        break;
+      case 'Order Received':
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => MyOrder()));
         break;
     }
   }

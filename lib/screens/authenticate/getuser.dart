@@ -68,3 +68,56 @@ Future<void> getuser(String uid) async {
           })
       .whenComplete(() => print("Tarun ${sellerobj.shoplocation}"));
 }
+
+List<String> liked;
+Future<void> getLiked() async {
+  print("tarun enter");
+  DocumentSnapshot querySnapshot = await FirebaseFirestore.instance
+      .collection("USERS")
+      .doc(authobj.currentUser.uid)
+      .get();
+  print('tarun${querySnapshot.data()}');
+  if (querySnapshot.exists &&
+      querySnapshot.data().containsKey("Liked") &&
+      querySnapshot.data()['Liked'] is List) {
+    // Create a new List<String> from List<dynamic>
+    liked = List<String>.from(querySnapshot.data()['Liked']);
+    print("tarun yo yo");
+  } else {
+    liked = [];
+    print("tarun yo");
+  }
+}
+
+Future<bool> updatelikes(String uid, String likedmem) {
+  DocumentReference favoritesReference =
+      FirebaseFirestore.instance.collection('USERS').doc(uid);
+
+  return FirebaseFirestore.instance.runTransaction((Transaction tx) async {
+    DocumentSnapshot postSnapshot = await tx.get(favoritesReference);
+    if (postSnapshot.exists) {
+      // Extend 'favorites' if the list does not contain the recipe ID:
+      if (!postSnapshot.data()['Liked'].contains(likedmem)) {
+        await tx.update(favoritesReference, <String, dynamic>{
+          'Liked': FieldValue.arrayUnion([likedmem])
+        });
+        // Delete the recipe ID from 'favorites':
+      } else {
+        await tx.update(favoritesReference, <String, dynamic>{
+          'Liked': FieldValue.arrayRemove([likedmem])
+        });
+      }
+    } else {
+      // Create a document for the current user in collection 'users'
+      // and add a new array 'favorites' to the document:
+      await tx.set(favoritesReference, {
+        'Liked': [likedmem]
+      });
+    }
+  }).then((result) {
+    return true;
+  }).catchError((error) {
+    print('Error: $error');
+    return false;
+  });
+}

@@ -489,7 +489,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
   VideoPlayerController videoController;
 
   @override
-  void initState() {
+  Future<void> initState() {
     super.initState();
 
     videoController = VideoPlayerController.network(widget.videoUrl)
@@ -498,6 +498,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
       ..play().then((value) {
         setState(() {});
       });
+    getLiked();
   }
 
   @override
@@ -716,6 +717,11 @@ class _RightPanelState extends State<RightPanel> {
 
   @override
   Widget build(BuildContext context) {
+    Color color = liked != null
+        ? liked.contains(productuid)
+            ? Colors.red
+            : white
+        : white;
     Product product = new Product(
         likes: likes,
         name: name,
@@ -751,7 +757,7 @@ class _RightPanelState extends State<RightPanel> {
                   child: Container(
                     child: Column(
                       children: <Widget>[
-                        Icon(TikTokIcons.heart, color: white, size: 35.0),
+                        Icon(TikTokIcons.heart, color: color, size: 35.0),
                         SizedBox(
                           height: 5,
                         ),
@@ -766,7 +772,7 @@ class _RightPanelState extends State<RightPanel> {
                     ),
                   ),
                   onTap: () => {
-                    FirebaseFirestore.instance
+                    /* FirebaseFirestore.instance
                         .collection('USERS')
                         .doc(authobj.currentUser.uid)
                         .collection("Liked")
@@ -809,6 +815,34 @@ class _RightPanelState extends State<RightPanel> {
                         ref.update({"likes": ans.toString()});
                       }
                     })
+                    */
+                    updatelikes(authobj.currentUser.uid, productuid),
+                    if (liked.contains(productuid))
+                      {
+                        liked.remove(productuid),
+                        setState(() {
+                          int ans = int.parse(likes) - 1;
+                          likes = ans.toString();
+                          color = white;
+                          DocumentReference ref = FirebaseFirestore.instance
+                              .collection("PRODUCT")
+                              .doc(productuid);
+                          ref.update({"likes": ans.toString()});
+                        }),
+                      }
+                    else
+                      {
+                        liked.add(productuid),
+                        setState(() {
+                          int ans = int.parse(likes) + 1;
+                          likes = ans.toString();
+                          color = Colors.red;
+                          DocumentReference ref = FirebaseFirestore.instance
+                              .collection("PRODUCT")
+                              .doc(productuid);
+                          ref.update({"likes": ans.toString()});
+                        }),
+                      }
                   },
                 ),
                 GestureDetector(
@@ -829,69 +863,6 @@ class _RightPanelState extends State<RightPanel> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget getIcons(icon, count, size, likeduid, likes) {
-    return InkWell(
-      child: Container(
-        child: Column(
-          children: <Widget>[
-            Icon(icon, color: white, size: size),
-            SizedBox(
-              height: 5,
-            ),
-            Text(
-              count,
-              style: TextStyle(
-                  color: white, fontSize: 12, fontWeight: FontWeight.w700),
-            )
-          ],
-        ),
-      ),
-      onTap: () => {
-        FirebaseFirestore.instance
-            .collection('USERS')
-            .doc(authobj.currentUser.uid)
-            .collection("Liked")
-            .doc(likeduid)
-            .get()
-            .then((DocumentSnapshot documentSnapshot) {
-          if (documentSnapshot.exists) {
-            FirebaseFirestore.instance
-                .collection("USERS")
-                .doc(authobj.currentUser.uid)
-                .collection("Liked")
-                .doc(likeduid)
-                .delete();
-
-            int ans = int.parse(likes) - 1;
-
-            setState(() {
-              count = ans.toString();
-            });
-            count = ans.toString();
-            DocumentReference ref =
-                FirebaseFirestore.instance.collection("PRODUCT").doc(likeduid);
-            ref.update({"likes": ans});
-          } else {
-            FirebaseFirestore.instance
-                .collection("USERS")
-                .doc(authobj.currentUser.uid)
-                .collection("Liked")
-                .doc(likeduid)
-                .set({});
-            int ans = int.parse(likes) + 1;
-            setState(() {
-              count = ans.toString();
-            });
-            count = ans.toString();
-            DocumentReference ref =
-                FirebaseFirestore.instance.collection("PRODUCT").doc(likeduid);
-            ref.update({"likes": ans});
-          }
-        })
-      },
     );
   }
 }
