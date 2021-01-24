@@ -4,7 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/homepage_widget/profile_list_item.dart';
+import 'package:shop_app/screens/OrderPlacedPage/myplacedorder.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
+import 'package:shop_app/screens/cartpage/cartpage.dart';
 import 'package:shop_app/screens/complete_profile/components/profilefirst.dart';
 
 class Profile extends StatelessWidget {
@@ -150,19 +152,35 @@ class ProfileScreen extends StatelessWidget {
                                   builder: (context) => ProfilePage()));
                         },
                       ),
-                      ProfileListItem(
-                        icon: ImageIcon(
-                          AssetImage("assets/images/cart.png"),
-                          size: 35,
+                      InkWell(
+                        child: ProfileListItem(
+                          icon: ImageIcon(
+                            AssetImage("assets/images/cart.png"),
+                            size: 35,
+                          ),
+                          text: 'Cart',
                         ),
-                        text: 'Cart',
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) => CartPage()));
+                        },
                       ),
-                      ProfileListItem(
-                        icon: ImageIcon(
-                          AssetImage("assets/images/orderhistory.png"),
-                          size: 35,
+                      InkWell(
+                        child: ProfileListItem(
+                          icon: ImageIcon(
+                            AssetImage("assets/images/orderhistory.png"),
+                            size: 35,
+                          ),
+                          text: 'Orders',
                         ),
-                        text: 'Orders',
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) => MyPlacedOrder()));
+                        },
                       ),
                       ProfileListItem(
                         icon: ImageIcon(
