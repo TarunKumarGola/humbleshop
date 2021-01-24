@@ -39,4 +39,9 @@ class _AuthenticateState extends State<Authenticate> {
       );
     }
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 }

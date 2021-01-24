@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:shop_app/constants.dart';
+import 'package:shop_app/screens/OrderPlacedPage/myplacedorder.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
-//import 'package:shopping_cart/utils/CustomTextStyle.dart';
-//import 'package:shopping_cart/utils/CustomUtils.dart';
 import 'package:shop_app/theme/colors.dart';
-
-//import 'CheckOutPage.dart';
+import 'package:toast/toast.dart';
 
 class CartPage extends StatefulWidget {
   @override
@@ -14,7 +15,14 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  Razorpay razorpay;
+  Razorpay _razorpay;
+  String pname = "";
+  String price = "";
+  String selleruid = "";
+  String color = "";
+  String productuid = "";
+  String size = "";
+  String speciality = "";
   CollectionReference orders = FirebaseFirestore.instance
       .collection("USERS")
       .doc(authobj.currentUser.uid)
@@ -44,28 +52,87 @@ class _CartPageState extends State<CartPage> {
   @override
   void initState() {
     super.initState();
-    razorpay = new Razorpay();
-    razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlerPaymentSuccess);
-    razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, handlerErrorFailure);
-    razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handlerExternalWallet);
+    _razorpay = new Razorpay();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlerPaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlerErrorFailure);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handlerExternalWallet);
   }
 
   @override
   void dispose() {
+    _razorpay.clear();
     super.dispose();
-    razorpay.clear();
   }
 
-  void handlerPaymentSuccess() {
-    print("Payment Success");
+  void checkout(name, price) {
+    options = {
+      "key": "rzp_test_aRmBQvWMybUfXx",
+      "amount": num.parse(price) * 100,
+      "name": authobj.currentUser.name,
+      "description": "Payment for " + name,
+      "prefill": {
+        "contact": authobj.currentUser.phonenumber,
+        "email": authobj.currentUser.email,
+      },
+      "external": {
+        "wallets": ["paytm", "googlepay"]
+      }
+    };
+    try {
+      _razorpay.open(options);
+    } catch (e) {
+      print('Makicho$e');
+    }
   }
 
-  void handlerErrorFailure() {
+  void _handlerPaymentSuccess(PaymentSuccessResponse response) {
+    print("Tarun Payment Success");
+    Toast.show("Payment SuccessFull", context);
+    FirebaseFirestore.instance
+        .collection("SELLERS")
+        .doc(selleruid)
+        .collection("orderplaced")
+        .doc()
+        .set({
+      "name": pname,
+      "price": price,
+      "productuid": productuid,
+      "color": color,
+      "size": size,
+      "speciality": speciality,
+      "buyername": authobj.currentUser.name,
+      "buyeremailid": authobj.currentUser.email,
+      "buyeraddress": authobj.currentUser.address,
+      "buyerphonenumber": authobj.currentUser.phonenumber
+    });
+    FirebaseFirestore.instance
+        .collection("USERS")
+        .doc(selleruid)
+        .collection("orderplaced")
+        .doc()
+        .set({
+      "name": pname,
+      "price": price,
+      "productuid": productuid,
+      "color": color,
+      "size": size,
+      "speciality": speciality,
+      "buyername": authobj.currentUser.name,
+      "buyeremailid": authobj.currentUser.email,
+      "buyeraddress": authobj.currentUser.address,
+      "buyerphonenumber": authobj.currentUser.phonenumber
+    });
+    Navigator.push(
+        context, new MaterialPageRoute(builder: (context) => MyPlacedOrder()));
+  }
+
+  void _handlerErrorFailure(PaymentFailureResponse response) {
     print("Payment error");
+    Toast.show("Payment error", context);
   }
 
-  void handlerExternalWallet() {
-    print("Payment success");
+  void _handlerExternalWallet(ExternalWalletResponse response) {
+    Toast.show("Payment ExternalWalletResponse", context);
   }
 
   var options;
@@ -80,14 +147,70 @@ class _CartPageState extends State<CartPage> {
           backgroundColor: Colors.grey.shade100,
           appBar: AppBar(
             centerTitle: true,
-            title: Text('Shopping Cart'),
+            backgroundColor: Colors.white,
+            title: Text(
+              'Shopping Cart',
+              style: TextStyle(color: kPrimaryColor),
+            ),
+            actions: <Widget>[
+              PopupMenuButton<String>(
+                onSelected: handleclick,
+                itemBuilder: (BuildContext context) {
+                  return {'Order Placed'}.map((String choice) {
+                    return PopupMenuItem<String>(
+                      value: choice,
+                      child: Text(choice),
+                    );
+                  }).toList();
+                },
+              ),
+            ],
+            shadowColor: kPrimaryColor,
+            actionsIconTheme: IconThemeData(color: kPrimaryColor),
           ),
           body: StreamBuilder(
               stream: orders.snapshots(),
               builder: (sContext, snapshot) {
-                if (!snapshot.hasData) {
-                  return Text(
-                    'NO item in you cart  ...',
+                if (!snapshot.hasData || (snapshot.data.docs.length == 0)) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(top: 80),
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height * 0.4,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/images/splash_1.png'),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Your Cart Is Empty!',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: kPrimaryColor,
+                              fontSize: 36,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Text(
+                        'Looks like you didn\'t \n add anything to your cart yet',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                    ],
                   );
                 } else {
                   print('tarun${snapshot.data.docs}');
@@ -151,10 +274,7 @@ class _CartPageState extends State<CartPage> {
                                                           color: Colors
                                                               .pinkAccent),
                                                 ),
-                                                SizedBox(
-                                                  width: 1,
-                                                ),
-                                                Text("color :"),
+
                                                 MaterialButton(
                                                   shape: CircleBorder(
                                                       side: BorderSide(
@@ -174,7 +294,7 @@ class _CartPageState extends State<CartPage> {
                                                 //   Text(_card.get('size')),
                                                 Padding(
                                                   padding:
-                                                      const EdgeInsets.all(8.0),
+                                                      const EdgeInsets.all(2.0),
                                                   child: Container(
                                                     height: 30,
                                                     width: 80,
@@ -195,40 +315,39 @@ class _CartPageState extends State<CartPage> {
                                                                       .circular(
                                                                           24))),
                                                       child: InkWell(
-                                                        onTap: () {
-                                                          options = {
-                                                            "key":
-                                                                "rzp_test_aRmBQvWMybUfXx",
-                                                            "amount": num.parse(
-                                                                    _card.get(
-                                                                        'price')) *
-                                                                100,
-                                                            "name": authobj
-                                                                .currentUser
-                                                                .name,
-                                                            "description":
-                                                                "Payment for ${_card.get('name')}",
-                                                            "prefill": {
-                                                              "contact": authobj
-                                                                  .currentUser
-                                                                  .phonenumber,
-                                                              "email": authobj
-                                                                  .currentUser
-                                                                  .email,
-                                                            },
-                                                            "external": {
-                                                              "wallets": [
-                                                                "paytm",
-                                                                "googlepay"
-                                                              ]
-                                                            }
-                                                          };
-                                                          try {
-                                                            razorpay
-                                                                .open(options);
-                                                          } catch (e) {
-                                                            print('Tarun$e');
-                                                          }
+                                                        onTap: () async {
+                                                          pname =
+                                                              _card.get('name');
+                                                          selleruid = _card
+                                                              .get('selleruid');
+                                                          productuid =
+                                                              _card.get(
+                                                                  'productuid');
+                                                          size =
+                                                              _card.get('size');
+                                                          speciality =
+                                                              _card.get(
+                                                                  'speciality');
+                                                          color = _card
+                                                              .get('color');
+                                                          price = _card
+                                                              .get('price');
+                                                          checkout(
+                                                              _card.get('name'),
+                                                              _card.get(
+                                                                  'price'));
+                                                          await FirebaseFirestore
+                                                              .instance
+                                                              .runTransaction(
+                                                                  (Transaction
+                                                                      myTransaction) async {
+                                                            await myTransaction
+                                                                .delete(snapshot
+                                                                    .data
+                                                                    .documents[
+                                                                        index]
+                                                                    .reference);
+                                                          });
                                                         },
                                                         child: Text(
                                                           "Checkout",
@@ -243,9 +362,10 @@ class _CartPageState extends State<CartPage> {
                                                     ),
                                                   ),
                                                 ),
-                                                RaisedButton.icon(
+                                                RaisedButton(
                                                   onPressed: () async {
-                                                    await Firestore.instance
+                                                    await FirebaseFirestore
+                                                        .instance
                                                         .runTransaction((Transaction
                                                             myTransaction) async {
                                                       await myTransaction
@@ -261,16 +381,8 @@ class _CartPageState extends State<CartPage> {
                                                       borderRadius:
                                                           BorderRadius.all(
                                                               Radius.circular(
-                                                                  10.0))),
-                                                  label: Text(
-                                                    'Delete',
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                  icon: Icon(
-                                                    Icons.close,
-                                                    color: Colors.white,
-                                                  ),
+                                                                  24.0))),
+                                                  child: Text('Remove'),
                                                   textColor: Colors.white,
                                                   splashColor: Colors.red,
                                                   color: Colors.green,
@@ -281,7 +393,6 @@ class _CartPageState extends State<CartPage> {
                                         ],
                                       ),
                                     ),
-                                    flex: 100,
                                   )
                                 ],
                               ),
@@ -311,5 +422,82 @@ class _CartPageState extends State<CartPage> {
                 }
               })),
     );
+  }
+
+  Future<void> handleclick(String value) async {
+    switch (value) {
+      case 'Order Placed':
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => MyPlacedOrder()));
+        break;
+    }
+  }
+
+  custumersendMail(String email, String name, String price) async {
+    String username = 'humblemarketofficial@gmail.com';
+    String password = 'qwerty123qwertyK';
+
+    final smtpServer = gmail(username, password);
+    // Use the SmtpServer class to configure an SMTP server:
+    // final smtpServer = SmtpServer('smtp.domain.com');
+    // See the named arguments of SmtpServer for further configuration
+    // options.
+
+    // Create our message.
+    final message = Message()
+      ..from = Address(username, 'Your name')
+      ..recipients.add(email)
+      ..ccRecipients.addAll([email, email])
+      ..bccRecipients.add(Address(email))
+      ..subject =
+          'Thanks for ordering from Humble Market your order has been placed :: 😀 :: ${DateTime.now()}'
+      ..text =
+          'Thanks for ordering from Humble Market your order has been placed. You Ordered ' +
+              name +
+              "At price " +
+              price
+      ..html = "<h1>Test</h1>\n<p>Hey! Here's some HTML content</p>";
+
+    try {
+      final sendReport = await send(message, smtpServer);
+      print('Message sent: ' + sendReport.toString());
+    } on MailerException catch (e) {
+      print('Message not sent.');
+      for (var p in e.problems) {
+        print('Problem: ${p.code}: ${p.msg}');
+      }
+    }
+  }
+
+  sellersendMail(String email, String name, String price) async {
+    String username = 'humblemarketofficial@gmail.com';
+    String password = 'qwerty123qwertyK';
+
+    final smtpServer = gmail(username, password);
+    // Use the SmtpServer class to configure an SMTP server:
+    // final smtpServer = SmtpServer('smtp.domain.com');
+    // See the named arguments of SmtpServer for further configuration
+    // options.
+
+    // Create our message.
+    final message = Message()
+      ..from = Address(username, 'Your name')
+      ..recipients.add(email)
+      ..ccRecipients.addAll([email, email])
+      ..bccRecipients.add(Address(email))
+      ..subject =
+          'You have received an Order Please Deliver it on time  :: 😀 :: ${DateTime.now()}'
+      ..text = 'New Order . Product Ordered ' + name + "At price " + price
+      ..html = "<h1>Test</h1>\n<p>Hey! Here's some HTML content</p>";
+
+    try {
+      final sendReport = await send(message, smtpServer);
+      print('Message sent: ' + sendReport.toString());
+    } on MailerException catch (e) {
+      print('Message not sent.');
+      for (var p in e.problems) {
+        print('Problem: ${p.code}: ${p.msg}');
+      }
+    }
   }
 }

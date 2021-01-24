@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shop_app/constants.dart';
 import 'package:shop_app/helpers/style.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -164,18 +166,63 @@ class _CommentscreenState extends State<Commentscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.white,
         title: Text(
           'Comments',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: kPrimaryColor),
         ),
-        backgroundColor: primary,
+        shadowColor: kPrimaryColor,
+        actionsIconTheme: IconThemeData(color: kPrimaryColor),
+        elevation: 10,
       ),
       body: Column(children: [
         Expanded(
           child: products.length == 0
               ? Center(
-                  child: Text('No Data...'),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: SvgPicture.asset(
+                          'assets/images/chat.svg',
+                          alignment: Alignment.center,
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height * 0.4,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Chat with Sellers and Other Buyers',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: kPrimaryColor,
+                              fontSize: 36,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Text(
+                        'Be the First One to Start the chat',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                    ],
+                  ),
                 )
               : ListView.builder(
                   controller: _scrollController,
@@ -206,7 +253,7 @@ class _CommentscreenState extends State<Commentscreen> {
                 ),
         ),
         Divider(),
-        isLoading
+        (products.length != 0 && isLoading)
             ? Container(
                 width: MediaQuery.of(context).size.width,
                 padding: EdgeInsets.all(5),
@@ -223,6 +270,15 @@ class _CommentscreenState extends State<Commentscreen> {
         buildlisttile()
       ]),
     );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+
+    _commentController.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 }
 

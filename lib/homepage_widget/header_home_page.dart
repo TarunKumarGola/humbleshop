@@ -101,12 +101,15 @@ class _HeaderHomePageState extends State<HeaderHomePage> {
           width: 6,
         ),
         GestureDetector(
-          child: Text(
-            "National",
-            style: TextStyle(
-                color: (followpressed ? white : white.withOpacity(0.7)),
-                fontSize: 17,
-                fontWeight: FontWeight.w500),
+          child: Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(
+                border: Border.all(color: white),
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                    image: AssetImage("assets/images/icons8_india_48px.png"),
+                    fit: BoxFit.cover)),
           ),
           onTap: () {
             print("Follow pressed");

@@ -90,11 +90,11 @@ class AuthServices {
               _usersCollectionReference.doc(user.uid).set({
                 "name": user.displayName,
                 "email": user.email,
-                "phonenumber": user.phoneNumber,
+                "phonenumber": "Not Availalbe",
                 "password": "Not available",
                 "address": "Not available",
-                "follower": "0",
-                "following": "0",
+                "follower": 0,
+                "following": 0,
                 "imageurl": user.photoURL,
               })
             }

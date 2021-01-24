@@ -9,6 +9,7 @@ import 'package:shop_app/models/sellermodel.dart';
 AuthServices authobj;
 SellerModel sellerobj;
 bool isSeller = false;
+
 Future<void> getuser(String uid) async {
   UserModel obj;
   await FirebaseFirestore.instance
@@ -73,7 +74,7 @@ List<String> liked;
 Future<void> getLiked() async {
   print("tarun enter");
   DocumentSnapshot querySnapshot = await FirebaseFirestore.instance
-      .collection("USERS")
+      .collection("USER")
       .doc(authobj.currentUser.uid)
       .get();
   print('tarun${querySnapshot.data()}');
@@ -92,33 +93,36 @@ Future<void> getLiked() async {
 
 Future<bool> updatelikes(String uid, String likedmem) {
   DocumentReference favoritesReference =
-      FirebaseFirestore.instance.collection('USERS').doc(uid);
-
+      FirebaseFirestore.instance.collection('USER').doc(uid);
+  print('yoyo' + uid + " " + likedmem);
   return FirebaseFirestore.instance.runTransaction((Transaction tx) async {
     DocumentSnapshot postSnapshot = await tx.get(favoritesReference);
     if (postSnapshot.exists) {
-      // Extend 'favorites' if the list does not contain the recipe ID:
+      print("yes it exits");
       if (!postSnapshot.data()['Liked'].contains(likedmem)) {
-        await tx.update(favoritesReference, <String, dynamic>{
+        tx.update(favoritesReference, <String, dynamic>{
           'Liked': FieldValue.arrayUnion([likedmem])
         });
+        print("inside add ");
         // Delete the recipe ID from 'favorites':
       } else {
-        await tx.update(favoritesReference, <String, dynamic>{
+        tx.update(favoritesReference, <String, dynamic>{
           'Liked': FieldValue.arrayRemove([likedmem])
         });
+        print("inside remove");
       }
     } else {
       // Create a document for the current user in collection 'users'
       // and add a new array 'favorites' to the document:
-      await tx.set(favoritesReference, {
+      print("creating a new list");
+      tx.set(favoritesReference, {
         'Liked': [likedmem]
       });
     }
   }).then((result) {
     return true;
   }).catchError((error) {
-    print('Error: $error');
+    print('TarunError: $error');
     return false;
   });
 }

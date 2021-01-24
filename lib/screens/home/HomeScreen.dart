@@ -2,14 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:shop_app/constants.dart';
-import 'package:shop_app/homepage_widget/upload_icon.dart';
 import 'package:shop_app/messaging/messagingadmin.dart';
 import 'package:shop_app/screens/addproducts/addproduct.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/complete_profile/components/profilefirst.dart';
+import 'package:shop_app/screens/complete_profile/profilescreen.dart';
 import 'package:shop_app/screens/home/home_page.dart';
 import 'package:shop_app/theme/colors.dart';
-import 'package:shop_app/homepage_widget/tik_tok_icons.dart';
 import 'package:shop_app/screens/seller_registration/seller_registration_screen.dart';
 
 String type;
@@ -89,22 +88,54 @@ class _RootAppState extends State<HomeScreen> {
         onplusbuttonpressed(),
         MessagingWidget(),
         Center(
-          child: ProfilePage(),
-        )
+          child: Profile(),
+        ),
       ],
     );
   }
 
   Widget getFooter() {
     List bottomItems = [
-      {"icon": TikTokIcons.home, "label": "Home", "isIcon": true},
-      {"icon": TikTokIcons.search, "label": "Discover", "isIcon": true},
+      {
+        "icon": ImageIcon(
+          AssetImage("assets/images/market.png"),
+          color: Colors.white,
+          size: 35,
+        ),
+        "label": "Home",
+        "isIcon": true
+      },
+      {
+        "icon": ImageIcon(
+          AssetImage("assets/images/search.png"),
+          color: Colors.white,
+          size: 35,
+        ),
+        "label": "Discover",
+        "isIcon": true
+      },
       {"icon": "", "label": "", "isIcon": false},
-      {"icon": TikTokIcons.messages, "label": "Inbox", "isIcon": true},
-      {"icon": TikTokIcons.profile, "label": "Me", "isIcon": true}
+      {
+        "icon": ImageIcon(
+          AssetImage("assets/images/inbox.png"),
+          color: Colors.white,
+          size: 35,
+        ),
+        "label": "Inbox",
+        "isIcon": true
+      },
+      {
+        "icon": ImageIcon(
+          AssetImage("assets/images/male_user.png"),
+          color: Colors.white,
+          size: 35,
+        ),
+        "label": "Me",
+        "isIcon": true
+      }
     ];
     return Container(
-      height: 60,
+      height: 69,
       width: double.infinity,
       decoration: BoxDecoration(
         color: kPrimaryColor,
@@ -118,7 +149,7 @@ class _RootAppState extends State<HomeScreen> {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 0),
+        padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -143,17 +174,17 @@ class _RootAppState extends State<HomeScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        Icon(
-                          bottomItems[index]['icon'],
-                          color: white,
-                        ),
+                        bottomItems[index]['icon'],
                         SizedBox(
                           height: 5,
                         ),
                         Center(
                           child: Text(
                             bottomItems[index]['label'],
-                            style: TextStyle(color: white, fontSize: 10),
+                            style: TextStyle(
+                                color: white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold),
                           ),
                         )
                       ],
@@ -166,7 +197,28 @@ class _RootAppState extends State<HomeScreen> {
                       }
                       selectedTab(index);
                     },
-                    child: UploadIcon());
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        ImageIcon(
+                          AssetImage("assets/images/add.png"),
+                          color: Colors.white,
+                          size: 35,
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Center(
+                          child: Text(
+                            "Add",
+                            style: TextStyle(
+                                color: white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        )
+                      ],
+                    ));
           }),
         ),
       ),
@@ -314,5 +366,11 @@ class _RootAppState extends State<HomeScreen> {
         isLoading = false;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 }

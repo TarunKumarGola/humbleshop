@@ -24,6 +24,14 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController controller_email = new TextEditingController();
   // ignore: non_constant_identifier_names
   TextEditingController controller_address = new TextEditingController();
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    controller_address.dispose();
+    controller_email.dispose();
+    controller_name.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

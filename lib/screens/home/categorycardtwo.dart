@@ -110,4 +110,10 @@ class _CategorycardtwoState extends State<Categorycardtwo> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
 }

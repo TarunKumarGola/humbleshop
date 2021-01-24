@@ -6,7 +6,6 @@ import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shop_app/constant/data_json.dart';
 import 'package:shop_app/models/Product.dart';
-//import 'package:shop_app/models/Categories.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/commentspage/commentscreen2.dart';
 import 'package:shop_app/theme/colors.dart';
@@ -45,6 +44,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   bool nearmeclicked = false;
   bool nationalclicked = false;
   bool followingclicked = false;
+  bool _folded = true;
   Geolocator geolocator;
   Geoflutterfire geo = Geoflutterfire();
   // List<DocumentSnapshot> products = [];
@@ -79,32 +79,67 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       print(query.toString());
     } else if (tag == 'NearMe') {
       nearmefunction();
-      // geolocator = Geolocator()..forceAndroidLocationManager;
-      // geolocator
-      //     .getCurrentPosition(desiredAccuracy:LocationAccuracy.best)
-      //     .then((Position position) {
-      //   GeoFirePoint center = geo.point(
-      //       latitude: position.latitude, longitude: position.longitude);
-      //   Stream<List<DocumentSnapshot>> stream = geo
-      //       .collection(collectionRef: db.collection('PRODUCT').limit(10))
-      //       .within(
-      //           center: center,
-      //           radius: 20,
-      //           field: 'position',
-      //           strictMode: true);
-      //   stream.listen((element) {
-      //     products.addAll(element);
-      //     _controller.sink.add(products);
-      //   });
-      // }).catchError((e) {
-      //   print("debug something went wrong while getting position of user $e");
-      // });
-      // GeoFirePoint center = geo.point(latitude: geolocator., longitude: lng);
     } else {
       query = db.collection('PRODUCT');
       print(query.toString());
     }
     return query;
+  }
+
+  getnames(String category) async {
+    if (!hasMore) {
+      print('debug No More Products');
+      return;
+    }
+    if (isLoading) {
+      return;
+    }
+    setState(() {
+      isLoading = true;
+    });
+    QuerySnapshot querySnapshot;
+
+    await FirebaseFirestore.instance
+        .collection('PRODUCT')
+        .where('name', isGreaterThanOrEqualTo: category)
+        .orderBy("name", descending: false)
+        .limit(2)
+        .get()
+        .then((value) {
+      query = FirebaseFirestore.instance
+          .collection('PRODUCT')
+          .where('name', isEqualTo: category.toUpperCase());
+      if (value.size == 0) {
+        hasMore = false;
+        print("debug $hasMore");
+      } else {
+        print("debug fetched documents ${value.toString()}");
+        querySnapshot = value;
+      }
+    }).catchError((e) {
+      print(e);
+      hasMore = false;
+    });
+
+    if (querySnapshot != null) {
+      if (querySnapshot.docs.length < 2) {
+        hasMore = false;
+      }
+
+      lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+      products.addAll(querySnapshot.docs);
+      print("debug products length ${products.length}");
+      controller.sink.add(products);
+
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   nearmefunction() async {
@@ -199,8 +234,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    super.dispose();
     _tabController.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -210,6 +246,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget getBody() {
     var size = MediaQuery.of(context).size;
+
     List<String> following;
     // performing queries
 
@@ -286,9 +323,70 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             : Container()
       ]),
       SafeArea(
-        child: Container(
-          padding: EdgeInsets.only(top: 20),
-          child: Row(
+        child: Column(children: <Widget>[
+          AnimatedContainer(
+            duration: Duration(milliseconds: 400),
+            width: _folded ? 56 : 400,
+            height: 56,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(32),
+              color: Colors.transparent,
+              boxShadow: kElevationToShadow[6],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(left: 16),
+                    child: !_folded
+                        ? TextField(
+                            decoration: InputDecoration(
+                                hintText: 'Search',
+                                hintStyle: TextStyle(color: Colors.blue[300]),
+                                border: InputBorder.none),
+                            style: TextStyle(color: Colors.blue[300]),
+                            onSubmitted: (value) {
+                              print("Yep we are here" + value);
+                              products.clear();
+                              controller.sink.add(products);
+                              print("debug products length ${products.length}");
+                              lastDocument = null;
+                              hasMore = true;
+                              getnames(value);
+                            },
+                          )
+                        : null,
+                  ),
+                ),
+                Container(
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: InkWell(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(_folded ? 32 : 0),
+                        topRight: Radius.circular(32),
+                        bottomLeft: Radius.circular(_folded ? 32 : 0),
+                        bottomRight: Radius.circular(32),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Icon(
+                          _folded ? Icons.search : Icons.close,
+                          color: Colors.blue[900],
+                        ),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          _folded = !_folded;
+                        });
+                      },
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+          Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
@@ -300,7 +398,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       followingclicked = true;
                     }
                   },
-                  child: Text('Following',
+                  child: Text('Following  ',
                       style: TextStyle(
                           fontSize: 17.0,
                           fontWeight: FontWeight.normal,
@@ -310,11 +408,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
                 SizedBox(
                   width: 3,
-                ),
-                Container(
-                  color: Colors.white70,
-                  height: 10,
-                  width: 1.0,
                 ),
                 SizedBox(
                   width: 3,
@@ -338,7 +431,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       });
                     }
                   },
-                  child: Text('NearMe',
+                  child: Text('NearMe  ',
                       style: TextStyle(
                           fontSize: 17.0,
                           fontWeight: FontWeight.normal,
@@ -347,11 +440,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
                 SizedBox(
                   width: 3,
-                ),
-                Container(
-                  color: Colors.white70,
-                  height: 10,
-                  width: 1.0,
                 ),
                 SizedBox(
                   width: 3,
@@ -374,52 +462,78 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       });
                     }
                   },
-                  child: Text('National',
-                      style: TextStyle(
-                          fontSize: 17.0,
-                          fontWeight: FontWeight.bold,
-                          color:
-                              nationalclicked ? Colors.white : Colors.white54)),
-                )
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                        border: Border.all(color: white),
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            image: AssetImage(
+                                "assets/images/icons8_india_48px.png"),
+                            fit: BoxFit.cover)),
+                  ),
+                ),
               ]),
-        ),
+        ]),
       ),
     ]);
-    // return StreamBuilder<QuerySnapshot>(
-    //     stream: stream,
-    //     builder: (BuildContext context, stream) {
-    //       if (stream.connectionState == ConnectionState.waiting) {
-    //         return Center(child: CircularProgressIndicator());
-    //       }
+  }
 
-    //       if (stream.hasError) {
-    //         return Center(child: Text(stream.error.toString()));
-    //       }
-    //       QuerySnapshot querySnapshot = stream.data;
-
-    //       return RotatedBox(
-    //         quarterTurns: 1,
-    //         child: TabBarView(
-    //           controller:
-    //               TabController(length: querySnapshot.size, vsync: this),
-    //           children: List.generate(querySnapshot.size, (index) {
-    //             return VideoPlayerItem(
-    //               videoUrl: querySnapshot.docs[index].data()['videoUrl'],
-    //               size: size,
-    //               name: querySnapshot.docs[index].data()['name'],
-    //               price: querySnapshot.docs[index].data()['price'],
-    //               caption: querySnapshot.docs[index].data()['description'],
-    //               offer: querySnapshot.docs[index].data()['offer'],
-    //               profileImg: querySnapshot.docs[index].data()['profileImg'],
-    //               likes: querySnapshot.docs[index].data()['likes'],
-    //               comments: querySnapshot.docs[index].data()['comments'],
-    //               shares: querySnapshot.docs[index].data()['shares'],
-    //               shopnow: querySnapshot.docs[index].data()['shopnow'],
-    //             );
-    //           }),
-    //         ),
-    //       );
-    //     });
+  Widget animatedSearchbar() {
+    bool _folded = true;
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 400),
+      width: _folded ? 56 : 200,
+      height: 56,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(32),
+        color: Colors.white,
+        boxShadow: kElevationToShadow[6],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.only(left: 16),
+              child: !_folded
+                  ? TextField(
+                      decoration: InputDecoration(
+                          hintText: 'Search',
+                          hintStyle: TextStyle(color: Colors.blue[300]),
+                          border: InputBorder.none),
+                    )
+                  : null,
+            ),
+          ),
+          Container(
+            child: Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(_folded ? 32 : 0),
+                  topRight: Radius.circular(32),
+                  bottomLeft: Radius.circular(_folded ? 32 : 0),
+                  bottomRight: Radius.circular(32),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Icon(
+                    _folded ? Icons.search : Icons.close,
+                    color: Colors.blue[900],
+                  ),
+                ),
+                onTap: () {
+                  setState(() {
+                    _folded = !_folded;
+                  });
+                },
+              ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Future<List<String>> getFollowing() async {
@@ -503,9 +617,8 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
 
   @override
   void dispose() {
-    super.dispose();
-
     videoController.dispose();
+    super.dispose();
   }
 
   Widget isPlaying() {
@@ -857,6 +970,11 @@ class _RightPanelState extends State<RightPanel> {
                   },
                 ),
                 getIconsthree(Icons.call, shares, 35.0, phonenumber),
+                getshare(
+                    Icons.share,
+                    "https://play.google.com/store/movies/details/Birds_Of_Prey_And_the_Fantabulous_Emancipation_of?id=svfR1MA0oDc.P",
+                    name + "at price" + price,
+                    35.0),
                 getshopnow(product, context)
               ],
             ))
@@ -865,65 +983,10 @@ class _RightPanelState extends State<RightPanel> {
       ),
     );
   }
-}
-/*
-class RightPanel extends StatelessWidget {
-  final String likes;
-  final String comments;
-  final String shares;
-  final String profileImg;
-  final String albumImg;
-  final String shopnow;
-  final String productuid;
-  const RightPanel(
-      {Key key,
-      @required this.size,
-      this.likes,
-      this.comments,
-      this.shares,
-      this.profileImg,
-      this.albumImg,
-      this.shopnow,
-      this.productuid})
-      : super(key: key);
-
-  final Size size;
 
   @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        height: size.height,
-        child: Column(
-          children: <Widget>[
-            Container(
-              height: size.height * 0.3,
-            ),
-            Expanded(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                getProfile(profileImg),
-                getIcons(TikTokIcons.heart, likes, 35.0, productuid, likes),
-                GestureDetector(
-                  child: getIconstwo(TikTokIcons.chat_bubble, comments, 35.0),
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (context) => Commentscreen(
-                                  productid: productuid,
-                                )));
-                  },
-                ),
-                getIconstwo(TikTokIcons.reply, shares, 25.0),
-                getshopnow(shopnow, context)
-              ],
-            ))
-          ],
-        ),
-      ),
-    );
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 }
-*/

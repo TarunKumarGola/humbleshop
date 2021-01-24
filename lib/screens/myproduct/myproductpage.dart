@@ -133,27 +133,14 @@ class _MyProductState extends State<MyProduct> {
                                                 SizedBox(
                                                   width: 1,
                                                 ),
-                                                /*  RaisedButton.icon(
-                                                  onPressed: () async {
-                        
-                                                  },
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                              Radius.circular(
-                                                                  10.0))),
-                                                  label: Text(
-                                                    'View',
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                  textColor: Colors.white,
-                                                  splashColor: Colors.red,
-                                                  color: kPrimaryColor,
-                                                ),*/
-
                                                 RaisedButton.icon(
                                                   onPressed: () async {
+                                                    FirebaseFirestore.instance
+                                                        .collection('PRODUCT')
+                                                        .doc(_card
+                                                            .get('productsuid'))
+                                                        .delete();
+
                                                     await FirebaseFirestore
                                                         .instance
                                                         .runTransaction((Transaction

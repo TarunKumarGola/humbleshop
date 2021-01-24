@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shop_app/screens/home/home_page.dart';
 import 'package:shop_app/screens/myproduct/myproductpage.dart';
 import 'package:shop_app/screens/orderrecievedpage/orderrecieved.dart';
 import 'package:shop_app/theme/colors.dart';
@@ -62,10 +63,15 @@ class _AddProductState extends State<AddProduct> {
 
   @override
   void dispose() {
-    super.dispose();
     _subscription.unsubscribe();
     _loadingStreamCtrl.close();
     _videoPlayerController.dispose();
+    controllerdescription.dispose();
+    controllername.dispose();
+    controlleroffer.dispose();
+    controllerprice.dispose();
+    controllerspeciality.dispose();
+    super.dispose();
   }
 
   void showInSnackBar(String value) {

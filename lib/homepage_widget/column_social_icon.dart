@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:shop_app/models/Product.dart';
 import 'package:shop_app/screens/addtocartpage/addtocart.dart';
 import 'package:shop_app/theme/colors.dart';
@@ -77,6 +78,24 @@ Widget getIconsthree(icon, count, size, phonenumber) {
   );
 }
 
+Widget getshare(icon, link, title, size) {
+  return InkWell(
+    onTap: () {
+      share(link, title);
+    },
+    child: Container(
+      child: Column(
+        children: <Widget>[
+          Icon(icon, color: white, size: size),
+          SizedBox(
+            height: 5,
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 Widget getProfile(img) {
   return Container(
     width: 50,
@@ -120,6 +139,14 @@ Future<void> makecall(String phonenumber) async {
     print('Tarun$phonenumber');
     throw 'could not call';
   }
+}
+
+Future<void> share(dynamic link, String title) async {
+  await FlutterShare.share(
+      title: "Humble Market App",
+      text: title,
+      linkUrl: link,
+      chooserTitle: 'Where you want to share');
 }
 
 // Here we will add Shopnow widget which will first if user has already resgistered or not

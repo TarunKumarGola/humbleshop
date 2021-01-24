@@ -6,15 +6,15 @@ import 'package:shop_app/theme/colors.dart';
 
 //import 'CheckOutPage.dart';
 
-class MyOrder extends StatefulWidget {
+class MyPlacedOrder extends StatefulWidget {
   @override
-  _MyOrderState createState() => _MyOrderState();
+  _MyPlacedOrderState createState() => _MyPlacedOrderState();
 }
 
-class _MyOrderState extends State<MyOrder> {
+class _MyPlacedOrderState extends State<MyPlacedOrder> {
   CollectionReference orders = FirebaseFirestore.instance
-      .collection("SELLERS")
-      .doc(sellerobj.selleruid)
+      .collection("USERS")
+      .doc(authobj.currentUser.uid)
       .collection("orderplaced");
 
   int getColorHexFromStr(String colorStr) {
@@ -59,14 +59,57 @@ class _MyOrderState extends State<MyOrder> {
           backgroundColor: Colors.grey.shade100,
           appBar: AppBar(
             centerTitle: true,
-            title: Text('Order Received'),
+            backgroundColor: Colors.white,
+            title: Text(
+              'Order Placed',
+              style: TextStyle(color: kPrimaryColor),
+            ),
+            shadowColor: kPrimaryColor,
+            actionsIconTheme: IconThemeData(color: kPrimaryColor),
           ),
           body: StreamBuilder(
               stream: orders.snapshots(),
               builder: (sContext, snapshot) {
-                if (!snapshot.hasData) {
-                  return Text(
-                    'No OrderYet...',
+                if (!snapshot.hasData || (snapshot.data.docs.length == 0)) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(top: 80),
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height * 0.4,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/images/splash_2.png'),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'No Order Placed!',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: kPrimaryColor,
+                              fontSize: 36,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Text(
+                        'Looks like you didn\'t \n add anything to your cart yet',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                    ],
                   );
                 } else {
                   print('tarun${snapshot.data.docs}');

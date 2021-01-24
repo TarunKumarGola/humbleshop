@@ -380,36 +380,26 @@ class _MyHomePageState extends State<MyHomePage> {
                               "productuid": widget.product.productuid,
                               "color": widget.product.colors[colorselect]
                                   .substring(10, 16),
+                              "selleruid": widget.product.selleruid,
                               "size": dropdownValue,
                               "speciality": widget.product.speciality,
                               "price": widget.product.price,
-                            });
-                            try {
-                              FirebaseFirestore.instance
-                                  .collection("SELLERS")
-                                  .doc(widget.product.selleruid)
-                                  .collection("orderplaced")
-                                  .doc()
-                                  .set({
-                                "name": widget.product.name,
-                                "productuid": widget.product.productuid,
-                                "color": widget.product.colors[colorselect]
-                                    .substring(10, 16),
-                                "size": dropdownValue,
-                                "speciality": widget.product.speciality,
-                              }).whenComplete(() {
-                                Navigator.push(
-                                    context,
-                                    new MaterialPageRoute(
-                                        builder: (context) => CartPage()));
-                              });
-                            } catch (e) {
-                              print("Error Occured$e");
-                            }
+                            }).whenComplete(() => {
+                                      Navigator.push(
+                                          context,
+                                          new MaterialPageRoute(
+                                              builder: (context) => CartPage()))
+                                    });
                           },
                         ))
                   ]))),
     );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 }
 
@@ -468,5 +458,11 @@ class _MyProductVideoState extends State<MyProductVideo> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    videoPlayerController.dispose();
+    super.dispose();
   }
 }
