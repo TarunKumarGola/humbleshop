@@ -5,7 +5,6 @@ import 'package:shop_app/constants.dart';
 import 'package:shop_app/messaging/messagingadmin.dart';
 import 'package:shop_app/screens/addproducts/addproduct.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
-import 'package:shop_app/screens/complete_profile/components/profilefirst.dart';
 import 'package:shop_app/screens/complete_profile/profilescreen.dart';
 import 'package:shop_app/screens/home/home_page.dart';
 import 'package:shop_app/theme/colors.dart';
@@ -59,28 +58,36 @@ class _RootAppState extends State<HomeScreen> {
               mainAxisSpacing: 12.0,
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               children: <Widget>[
+                myItems("assets/images/smartphonecategory.png", 'SmartPhones',
+                    0xffed622b),
                 myItems(
-                    "assets/images/smartphone.png", 'SmartPhones', 0xffed622b),
-                myItems("assets/images/laptops.png", 'Laptops', 0xff26cb3c),
-                myItems(
-                    "assets/images/electronics.png", 'Electronics', 0xff3399fe),
-                myItems("assets/images/men.png", 'Men Clothing', 0xffff3266),
-                myItems(
-                    "assets/images/women.png", 'Women Clothing', 0xfff4c83f),
-                myItems("assets/images/footwear.png", 'FootWear', 0xff622F74),
-                myItems(
-                    "assets/images/kitchen.png", 'Home & Kitchens', 0xff7297ff),
-                myItems("assets/images/toys.png", 'Toys', 0xff7297ff),
+                    "assets/images/laptopcategory.png", 'Laptops', 0xff26cb3c),
+                myItems("assets/images/ec.png", 'Electronics', 0xff3399fe),
+                myItems("assets/images/mc.png", 'Men Clothing', 0xffff3266),
+                myItems("assets/images/wc.png", 'Women Clothing', 0xfff4c83f),
+                myItems("assets/images/fc.png", 'FootWear', 0xff622F74),
+                myItems("assets/images/kc.png", 'Home & Kitchens', 0xff7297ff),
+                myItems("assets/images/tc.png", 'Toys', 0xff7297ff),
+                myItems("assets/images/bc.png", 'Beauty Product', 0xff7297ff),
+                myItems("assets/images/kfc.png", 'Kids Fashion', 0xff7297ff),
+                myItems("assets/images/ac.png", 'Appliances', 0xff7297ff),
+                myItems("assets/images/bbc.png", 'Books', 0xff7297ff),
+                myItems("assets/images/ddc.png", 'Doctor', 0xff7297ff),
               ],
               staggeredTiles: [
                 StaggeredTile.extent(1, 200.0),
                 StaggeredTile.extent(1, 200.0),
                 StaggeredTile.extent(1, 200.0),
                 StaggeredTile.extent(1, 200.0),
-                StaggeredTile.extent(1, 210.0),
                 StaggeredTile.extent(1, 200.0),
-                StaggeredTile.extent(2, 200.0),
                 StaggeredTile.extent(1, 200.0),
+                StaggeredTile.extent(1, 200.0),
+                StaggeredTile.extent(1, 200.0),
+                StaggeredTile.extent(1, 200.0),
+                StaggeredTile.extent(1, 200.0),
+                StaggeredTile.extent(1, 200.0),
+                StaggeredTile.extent(1, 200.0),
+                StaggeredTile.extent(1, 200.0)
               ],
             ),
           ),
@@ -88,7 +95,7 @@ class _RootAppState extends State<HomeScreen> {
         onplusbuttonpressed(),
         MessagingWidget(),
         Center(
-          child: Profile(),
+          child: Profile(context),
         ),
       ],
     );
@@ -251,47 +258,50 @@ class _RootAppState extends State<HomeScreen> {
   Material myItems(String path, String heading, int color) {
     return Material(
       child: InkWell(
-        child: Material(
-          color: Colors.white,
-          elevation: 14.0,
-          shadowColor: Color(0x802196F3),
-          borderRadius: BorderRadius.circular(24.0),
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      // Text
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          heading,
-                          style: TextStyle(
-                            color: new Color(color),
-                            fontSize: 13.0,
-                          ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    // Text
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        heading,
+                        style: TextStyle(
+                          color: new Color(color),
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
+                    ),
 
-                      //Icon
-                      Material(
-                        // color: new Color(color),
-                        borderRadius: BorderRadius.circular(24.0),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: new Image(
-                            image: new AssetImage(path),
-                          ),
-                        ),
+                    //Icon
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                              blurRadius: 1,
+                              color: Colors.blueAccent,
+                              spreadRadius: 1)
+                        ],
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                      child: CircleAvatar(
+                        // color: new Color(color),
+                        backgroundColor: Colors.transparent,
+                        backgroundImage: AssetImage(path),
+                        radius: 65,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),

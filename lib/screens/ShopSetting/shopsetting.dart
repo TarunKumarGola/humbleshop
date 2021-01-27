@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/homepage_widget/profile_list_item.dart';
+import 'package:shop_app/homepage_widget/shopsettingoptions.dart';
 import 'package:shop_app/screens/OrderPlacedPage/myplacedorder.dart';
 import 'package:shop_app/screens/ShopSetting/shopsetting.dart';
 import 'package:shop_app/screens/authenticate/authenticate.dart';
@@ -16,12 +17,7 @@ import 'package:shop_app/screens/cartpage/cartpage.dart';
 import 'package:shop_app/screens/complete_profile/components/profilefirst.dart';
 import 'package:toast/toast.dart';
 
-class Profile extends StatelessWidget {
-  BuildContext maincontext;
-  Profile(BuildContext context) {
-    maincontext = context;
-  }
-
+class ShopSetting extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -32,7 +28,7 @@ class Profile extends StatelessWidget {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: ThemeProvider.of(context),
-            home: ProfileScreen(maincontext),
+            home: ShopSettingScreen(),
           );
         },
       ),
@@ -40,65 +36,10 @@ class Profile extends StatelessWidget {
   }
 }
 
-class ProfileScreen extends StatelessWidget {
-  BuildContext maincontext;
-  ProfileScreen(BuildContext maincontext) {
-    this.maincontext = maincontext;
-  }
-
+class ShopSettingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(context, height: 896, width: 414, allowFontScaling: true);
-
-    var profileInfo = Expanded(
-      child: Column(
-        children: <Widget>[
-          Container(
-            height: kSpacingUnit.w * 10,
-            width: kSpacingUnit.w * 10,
-            margin: EdgeInsets.only(top: kSpacingUnit.w * 3),
-            child: Stack(
-              children: <Widget>[
-                CircleAvatar(
-                  radius: kSpacingUnit.w * 5,
-                  backgroundImage: AssetImage('assets/images/avatar.png'),
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Container(
-                    height: kSpacingUnit.w * 2.5,
-                    width: kSpacingUnit.w * 2.5,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).accentColor,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      heightFactor: kSpacingUnit.w * 1.5,
-                      widthFactor: kSpacingUnit.w * 1.5,
-                      child: Icon(
-                        LineAwesomeIcons.pen,
-                        color: kDarkPrimaryColor,
-                        size: ScreenUtil().setSp(kSpacingUnit.w * 1.5),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: kSpacingUnit.w * 2),
-          Text(
-            authobj.currentUser.name,
-            style: kTitleTextStyle,
-          ),
-          SizedBox(height: kSpacingUnit.w * 0.5),
-          Text(
-            authobj.currentUser.email,
-            style: kCaptionTextStyle,
-          ),
-        ],
-      ),
-    );
 
     var themeSwitcher = ThemeSwitcher(
       builder: (context) {
@@ -133,10 +74,6 @@ class ProfileScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         SizedBox(width: kSpacingUnit.w * 3),
-        SizedBox(
-          width: kSpacingUnit.w * 3,
-        ),
-        profileInfo,
         themeSwitcher,
         SizedBox(width: kSpacingUnit.w * 3),
       ],
@@ -154,28 +91,22 @@ class ProfileScreen extends StatelessWidget {
                   child: ListView(
                     children: <Widget>[
                       InkWell(
-                        child: ProfileListItem(
+                        child: ShopSettingListItem(
                           icon: ImageIcon(
-                            AssetImage("assets/images/privacy.png"),
+                            AssetImage("assets/images/shopaddress.png"),
                             size: 35,
                           ),
-                          text: 'Privacy',
+                          text: 'Shop Address',
                         ),
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                  builder: (context) =>
-                                      ProfilePage(maincontext)));
-                        },
+                        onTap: () {},
                       ),
                       InkWell(
-                        child: ProfileListItem(
+                        child: ShopSettingListItem(
                           icon: ImageIcon(
-                            AssetImage("assets/images/cart.png"),
+                            AssetImage("assets/images/shoplocation.png"),
                             size: 35,
                           ),
-                          text: 'Cart',
+                          text: 'Shop Location',
                         ),
                         onTap: () {
                           Navigator.push(
@@ -185,12 +116,12 @@ class ProfileScreen extends StatelessWidget {
                         },
                       ),
                       InkWell(
-                        child: ProfileListItem(
+                        child: ShopSettingListItem(
                           icon: ImageIcon(
-                            AssetImage("assets/images/orderhistory.png"),
+                            AssetImage("assets/images/time.png"),
                             size: 35,
                           ),
-                          text: 'Orders',
+                          text: 'Shop Timmings',
                         ),
                         onTap: () {
                           Navigator.push(
@@ -199,50 +130,78 @@ class ProfileScreen extends StatelessWidget {
                                   builder: (context) => MyPlacedOrder()));
                         },
                       ),
+                      SizedBox(
+                        height: 5,
+                      ),
                       InkWell(
-                        child: ProfileListItem(
+                        child: ShopSettingListItem(
                           icon: ImageIcon(
-                            AssetImage("assets/images/market.png"),
+                            AssetImage("assets/images/paymentoption.png"),
                             size: 35,
                           ),
-                          text: 'My Shop',
+                          text: 'Payment Option',
                         ),
-                        onTap: () {
-                          if (isSeller) {
-                            Navigator.push(
-                                context,
-                                new MaterialPageRoute(
-                                    builder: (context) => ShopSetting()));
-                          } else
-                            Toast.show("Please Register Your Shop", context);
-                        },
+                        onTap: () {},
                       ),
-                      ProfileListItem(
+                      ShopSettingListItem(
                         icon: ImageIcon(
-                          AssetImage("assets/images/invite.png"),
+                          AssetImage("assets/images/discount.png"),
                           size: 35,
                         ),
-                        text: 'Invite a Friend',
+                        text: 'Discount Coupons',
                       ),
                       InkWell(
-                        child: ProfileListItem(
+                        child: ShopSettingListItem(
                           icon: ImageIcon(
-                            AssetImage("assets/images/logout.png"),
+                            AssetImage("assets/images/taking.png"),
                             size: 35,
                           ),
-                          text: 'Logout',
-                          hasNavigation: false,
+                          text: 'Taking Orders Now',
                         ),
-                        onTap: () {
-                          FirebaseAuth.instance.signOut().whenComplete(() => {
-                                Navigator.pushAndRemoveUntil(
-                                    maincontext,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            Authenticate()),
-                                    (route) => false)
-                              });
-                        },
+                        onTap: () {},
+                      ),
+                      InkWell(
+                        child: ShopSettingListItem(
+                          icon: ImageIcon(
+                            AssetImage("assets/images/updown.png"),
+                            size: 35,
+                          ),
+                          text: 'Take Out/Pick Up',
+                        ),
+                        onTap: () {},
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      InkWell(
+                        child: ShopSettingListItem(
+                          icon: ImageIcon(
+                            AssetImage("assets/images/delivery.png"),
+                            size: 35,
+                          ),
+                          text: 'Delivery Available',
+                        ),
+                        onTap: () {},
+                      ),
+                      InkWell(
+                        child: ShopSettingListItem(
+                          icon: ImageIcon(
+                            AssetImage("assets/images/dlocation.png"),
+                            size: 35,
+                          ),
+                          text: 'Delivery Area',
+                        ),
+                        onTap: () {},
+                      ),
+                      InkWell(
+                        child: ShopSettingListItem(
+                          icon: ImageIcon(
+                            AssetImage("assets/images/money.png"),
+                            size: 35,
+                          ),
+                          text: 'Delivery Fee',
+                        ),
+                        onTap: () {},
                       ),
                     ],
                   ),

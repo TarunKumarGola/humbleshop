@@ -16,7 +16,7 @@ class Category {
 }
 
 List<Category> category = [
-   Category(
+  Category(
     id: 7,
     title: "Near Me",
     price: 234,
@@ -92,5 +92,44 @@ List<Category> category = [
     image: "assets/images/mobileaccessories.png",
     color: Colors.black, //Color(0xFFAEAEAE),
   ),
- 
+  Category(
+      id: 7,
+      title: "Kids Fashion",
+      price: 234,
+      size: 12,
+      // description: dummyText,
+      image: "assets/images/babytoy.png",
+      color: Color(0xFF3D82AE)),
+  Category(
+      id: 8,
+      title: "Beauty Product",
+      price: 234,
+      size: 12,
+      // description: dummyText,
+      image: "assets/images/babytoy.png",
+      color: Color(0xFF3D82AE)),
+  Category(
+      id: 9,
+      title: "Books",
+      price: 234,
+      size: 12,
+      // description: dummyText,
+      image: "assets/images/babytoy.png",
+      color: Color(0xFF3D82AE)),
+  Category(
+      id: 10,
+      title: "Appliance",
+      price: 234,
+      size: 12,
+      // description: dummyText,
+      image: "assets/images/babytoy.png",
+      color: Color(0xFF3D82AE)),
+  Category(
+      id: 11,
+      title: "Doctors",
+      price: 234,
+      size: 12,
+      // description: dummyText,
+      image: "assets/images/babytoy.png",
+      color: Color(0xFF3D82AE))
 ];

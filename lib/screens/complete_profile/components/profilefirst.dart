@@ -11,9 +11,12 @@ import 'dart:io';
 //import 'package:url_launcher/url_launcher.dart' as launcher;
 
 class ProfilePage extends StatefulWidget {
-  ProfilePage();
+  BuildContext maincontext;
+  ProfilePage(BuildContext context) {
+    maincontext = context;
+  }
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _ProfilePageState createState() => _ProfilePageState(maincontext);
 }
 
 class _ProfilePageState extends State<ProfilePage> {
@@ -24,6 +27,10 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController controller_email = new TextEditingController();
   // ignore: non_constant_identifier_names
   TextEditingController controller_address = new TextEditingController();
+  BuildContext maincontext;
+  _ProfilePageState(BuildContext maincontext) {
+    this.maincontext = maincontext;
+  }
   @override
   void dispose() {
     // TODO: implement dispose
@@ -39,19 +46,6 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 1,
-        actions: <Widget>[
-          PopupMenuButton<String>(
-            onSelected: handleClick,
-            itemBuilder: (BuildContext context) {
-              return {'Logout'}.map((String choice) {
-                return PopupMenuItem<String>(
-                  value: choice,
-                  child: Text(choice),
-                );
-              }).toList();
-            },
-          ),
-        ],
       ),
       body: Container(
         padding: EdgeInsets.only(left: 16, top: 25, right: 16),
@@ -353,19 +347,5 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       _image = File(image.path);
     });
-  }
-
-  Future<void> handleClick(String value) async {
-    switch (value) {
-      case 'Logout':
-        await FirebaseAuth.instance.signOut().whenComplete(() => {
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => Authenticate()),
-                  (route) => false)
-            });
-        break;
-    }
   }
 }

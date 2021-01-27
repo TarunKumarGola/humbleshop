@@ -3,12 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:shop_app/constants.dart';
 
-class ProfileListItem extends StatelessWidget {
+class ShopSettingListItem extends StatelessWidget {
   final ImageIcon icon;
   final String text;
   final bool hasNavigation;
 
-  const ProfileListItem({
+  const ShopSettingListItem({
     Key key,
     this.icon,
     this.text,
@@ -20,23 +20,18 @@ class ProfileListItem extends StatelessWidget {
     return Container(
       height: kSpacingUnit.w * 5.5,
       margin: EdgeInsets.symmetric(
-        horizontal: kSpacingUnit.w * 4,
+        horizontal: 0,
       ).copyWith(
-        bottom: kSpacingUnit.w * 2,
+        bottom: 0,
       ),
-      padding: EdgeInsets.symmetric(
-        horizontal: kSpacingUnit.w * 2,
-      ),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(kSpacingUnit.w * 3),
-          color: Theme.of(context).backgroundColor,
-          boxShadow: [
-            BoxShadow(
-              color: Color(0xFFF50057),
-              blurRadius: 4,
-              offset: Offset(0, 4),
-            )
-          ]),
+      decoration:
+          BoxDecoration(color: Theme.of(context).backgroundColor, boxShadow: [
+        BoxShadow(
+          color: Color(0xFFF50057),
+          blurRadius: 4,
+          offset: Offset(0, 4),
+        )
+      ]),
       child: Row(
         children: <Widget>[
           icon,
