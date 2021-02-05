@@ -68,7 +68,8 @@ class _SignFormState extends State<SignForm> {
                 try {
                   UserCredential userCredential = await FirebaseAuth.instance
                       .signInWithEmailAndPassword(
-                          email: email, password: password);
+                          email: email, password: password)
+                      .whenComplete(() => showAlertDialog(context));
                   print("user signed in");
 
                   getuser(userCredential.user.uid);
@@ -154,6 +155,17 @@ class _SignFormState extends State<SignForm> {
         // if you r using flutter less then 1.20.* then maybe this is not working properly
         floatingLabelBehavior: FloatingLabelBehavior.always,
         suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
+      ),
+    );
+  }
+
+  showAlertDialog(BuildContext context) {
+    AlertDialog alert = AlertDialog(
+      content: new Row(
+        children: [
+          CircularProgressIndicator(),
+          Container(margin: EdgeInsets.only(left: 5), child: Text("Loading")),
+        ],
       ),
     );
   }

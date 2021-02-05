@@ -331,7 +331,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(32),
               color: Colors.transparent,
-              boxShadow: kElevationToShadow[6],
             ),
             child: Row(
               children: [
@@ -972,7 +971,7 @@ class _RightPanelState extends State<RightPanel> {
                 getIconsthree(Icons.call, shares, 35.0, phonenumber),
                 getshare(
                     Icons.share,
-                    "https://play.google.com/store/movies/details/Birds_Of_Prey_And_the_Fantabulous_Emancipation_of?id=svfR1MA0oDc.P",
+                    "https://play.google.com/store/apps/details?id=com.humble.shop_app",
                     name + "at price" + price,
                     35.0),
                 getshopnow(product, context)

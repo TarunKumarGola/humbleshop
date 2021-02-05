@@ -116,7 +116,7 @@ class _MyOrderState extends State<MyOrder> {
                                                 CrossAxisAlignment.start,
                                             children: <Widget>[
                                               Text(
-                                                "Asus Gaming Laptop",
+                                                _card.get('name'),
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontFamily: 'Avenir',
@@ -124,7 +124,7 @@ class _MyOrderState extends State<MyOrder> {
                                                     fontSize: 20),
                                               ),
                                               Text(
-                                                "Ryzen 5 Hex Core Processor , 512 SDD , Windows 10 , 4GB Nividia Graphic Card, Color Keyled",
+                                                _card.get('speciality'),
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontFamily: 'Avenir',
@@ -143,7 +143,7 @@ class _MyOrderState extends State<MyOrder> {
                                                   ),
                                                   Flexible(
                                                     child: Text(
-                                                      "Tarun Kumar Gola",
+                                                      _card.get('buyername'),
                                                       style: TextStyle(
                                                         color: Colors.white,
                                                         fontFamily: 'Avenir',
@@ -154,7 +154,7 @@ class _MyOrderState extends State<MyOrder> {
                                                 ],
                                               ),
                                               Text(
-                                                "ece.tarun.2@gmail.com",
+                                                _card.get('buyeremailid'),
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontFamily: 'Avenir',
@@ -162,35 +162,28 @@ class _MyOrderState extends State<MyOrder> {
                                                 ),
                                               ),
                                               Text(
-                                                "+918076462208",
+                                                _card.get('buyerphonenumber'),
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontFamily: 'Avenir',
                                                     fontSize: 17),
                                               ),
                                               Text(
-                                                "Size : 15.6 inch max",
+                                                _card.get('size'),
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontFamily: 'Avenir',
                                                     fontSize: 17),
                                               ),
                                               Text(
-                                                "Color : Black Chrome",
+                                                _card.get('color'),
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontFamily: 'Avenir',
                                                     fontSize: 17),
                                               ),
                                               Text(
-                                                "Address : Hno. 298 Street No.5 Jharoda Burari Delhi 110084",
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontFamily: 'Avenir',
-                                                    fontSize: 17),
-                                              ),
-                                              Text(
-                                                "Time : 22:07 26 January 2021",
+                                                _card.get('buyeraddress'),
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontFamily: 'Avenir',
@@ -198,7 +191,7 @@ class _MyOrderState extends State<MyOrder> {
                                               ),
                                               SizedBox(height: 10),
                                               Text(
-                                                "Price : Rs. 50,000",
+                                                '₹${_card.get('price')}',
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontFamily: 'Avenir',
@@ -209,7 +202,7 @@ class _MyOrderState extends State<MyOrder> {
                                             ],
                                           ),
                                         ),
-                                        Expanded(
+                                        /*Expanded(
                                           flex: 2,
                                           child: Column(
                                             mainAxisSize: MainAxisSize.min,
@@ -270,7 +263,7 @@ class _MyOrderState extends State<MyOrder> {
                                               ),
                                             ],
                                           ),
-                                        ),
+                                        ),*/
                                       ],
                                     ),
                                   ),

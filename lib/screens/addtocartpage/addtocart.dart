@@ -344,18 +344,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                     ),
-                    InkWell(
-                      onTap: () {},
-                      child: Container(
-                        height: 50.0,
-                        width: 50.0,
-                        color: Colors.white,
-                        child: Icon(
-                          Icons.account_box,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
                     Container(
                         color: primary,
                         width: MediaQuery.of(context).size.width - 130.0,

@@ -23,10 +23,6 @@ class _BodyState extends State<Body> {
       "text": "We help people conect with store \nusing camera",
       "image": "assets/images/splash_2.png"
     },
-    {
-      "text": "We show the easy way to shop. \nJust stay at home with us",
-      "image": "assets/images/splash_3.png"
-    },
   ];
   @override
   Widget build(BuildContext context) {

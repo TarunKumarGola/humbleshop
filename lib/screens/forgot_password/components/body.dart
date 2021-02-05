@@ -5,7 +5,9 @@ import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/default_button.dart';
 import 'package:shop_app/components/form_error.dart';
 import 'package:shop_app/components/no_account_text.dart';
+import 'package:shop_app/screens/authenticate/authenticate.dart';
 import 'package:shop_app/size_config.dart';
+import 'package:toast/toast.dart';
 
 import '../../../constants.dart';
 
@@ -32,6 +34,7 @@ class Body extends StatelessWidget {
               Text(
                 "Please enter your email and we will send \nyou a reset link to your gmail",
                 textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: SizeConfig.screenHeight * 0.1),
               ForgotPassForm(),
@@ -72,6 +75,7 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
                   errors.remove(kInvalidEmailError);
                 });
               }
+              email = value;
               return null;
             },
             validator: (value) {
@@ -103,9 +107,15 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
             text: "Continue",
             press: () {
               if (_formKey.currentState.validate()) {
-                FirebaseAuth.instance
-                    .sendPasswordResetEmail(email: email)
-                    .then((value) => print("Check your mail"));
+                FirebaseAuth.instance.sendPasswordResetEmail(email: email).then(
+                    (value) =>
+                        {Toast.show("Please Check your mail Box", context)});
+
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => Authenticate()),
+                    (route) => false);
               }
             },
           ),

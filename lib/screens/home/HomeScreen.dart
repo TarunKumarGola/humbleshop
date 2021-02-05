@@ -296,7 +296,7 @@ class _RootAppState extends State<HomeScreen> {
                         // color: new Color(color),
                         backgroundColor: Colors.transparent,
                         backgroundImage: AssetImage(path),
-                        radius: 65,
+                        radius: 45,
                       ),
                     ),
                   ],

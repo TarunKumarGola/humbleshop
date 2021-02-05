@@ -7,7 +7,7 @@ import 'package:shop_app/homepage_widget/shopsettingoptions.dart';
 import 'package:shop_app/screens/OrderPlacedPage/myplacedorder.dart';
 import 'package:shop_app/screens/cartpage/cartpage.dart';
 
-class ShopSetting extends StatelessWidget {
+class Brands extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class ShopSetting extends StatelessWidget {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: ThemeProvider.of(context),
-            home: ShopSettingScreen(),
+            home: BrandScreen(),
           );
         },
       ),
@@ -26,7 +26,7 @@ class ShopSetting extends StatelessWidget {
   }
 }
 
-class ShopSettingScreen extends StatelessWidget {
+class BrandScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(context, height: 896, width: 414, allowFontScaling: true);

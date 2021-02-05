@@ -334,6 +334,23 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
                         ),
                       ),
                       sizedBoxSpace,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: TextFormField(
+                          cursorColor: cursorColor,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: "GST Number",
+                              hintText: "Please enter GST Number"),
+                          maxLength: 15,
+                          maxLines: 1,
+                          validator: validateAadhar,
+                          onSaved: (value) {
+                            seller.aadhar = value;
+                          },
+                        ),
+                      ),
                       // PasswordField(
                       //   helperText: "No more than 8 characters",
                       //   labelText: "Password*",

@@ -60,9 +60,10 @@ class ProfileScreen extends StatelessWidget {
             child: Stack(
               children: <Widget>[
                 CircleAvatar(
-                  radius: kSpacingUnit.w * 5,
-                  backgroundImage: AssetImage('assets/images/avatar.png'),
-                ),
+                    radius: kSpacingUnit.w * 5,
+                    backgroundImage: authobj.currentUser.imageurl == null
+                        ? AssetImage("assets/images/male_user.png")
+                        : NetworkImage(authobj.currentUser.imageurl)),
                 Align(
                   alignment: Alignment.bottomRight,
                   child: Container(
@@ -199,7 +200,7 @@ class ProfileScreen extends StatelessWidget {
                                   builder: (context) => MyPlacedOrder()));
                         },
                       ),
-                      InkWell(
+                      /*InkWell(
                         child: ProfileListItem(
                           icon: ImageIcon(
                             AssetImage("assets/images/market.png"),
@@ -216,7 +217,7 @@ class ProfileScreen extends StatelessWidget {
                           } else
                             Toast.show("Please Register Your Shop", context);
                         },
-                      ),
+                      ),*/
                       ProfileListItem(
                         icon: ImageIcon(
                           AssetImage("assets/images/invite.png"),
