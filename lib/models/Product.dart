@@ -15,6 +15,9 @@ class Product {
   final String price;
   final String selleruid;
   final String phonenumber;
+  final String imageurl1;
+  final String imageurl2;
+  final String imageurl3;
 
   Product(
       {this.name,
@@ -32,5 +35,8 @@ class Product {
       this.videourl,
       this.price,
       this.selleruid,
-      this.phonenumber});
+      this.phonenumber,
+      this.imageurl1,
+      this.imageurl2,
+      this.imageurl3});
 }

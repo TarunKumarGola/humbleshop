@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shop_app/screens/OrderPlacedPage/temp.dart';
-import 'package:shop_app/screens/home/home_page.dart';
 import 'package:shop_app/screens/myproduct/myproductpage.dart';
 import 'package:shop_app/screens/orderrecievedpage/orderreceived.dart';
 import 'package:shop_app/theme/colors.dart';
@@ -30,10 +30,18 @@ class _AddProductState extends State<AddProduct> {
   TextEditingController controllerprice = TextEditingController();
   TextEditingController controllerspeciality = TextEditingController();
   TextEditingController controlleroffer = TextEditingController();
+  TextEditingController controllerdiscount = TextEditingController();
+  int discount = 0;
+  int price = 0;
+  int finalprice = 0;
+  int humblecharges = 0;
+  String humblecharge = "0";
+  String finalprices = "0";
+
   Color _tempShadeColor;
   Color _shadeColor = Colors.blue[800];
   List colors = new List();
-
+  String brand = null;
   Subscription _subscription;
   File _video;
   String dropdownvalue = 'Category';
@@ -51,6 +59,75 @@ class _AddProductState extends State<AddProduct> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String videopath;
+  File _imagepathone;
+  File _imagepathtwo;
+  File _imagepaththree;
+  String imageurl1;
+  String imageurl2;
+  String imageurl3;
+  String useremailid = FirebaseAuth.instance.currentUser.email;
+  List brands = [
+    'Apple',
+    'OnePlus',
+    'Realme',
+    'Samsung',
+    'Asus',
+    'Lenevo',
+    'Oppo',
+    'Xiaomi',
+    'Apple MacBook',
+    'HP Laptops',
+    'Dell Laptops',
+    'Asus Laptops',
+    'Lenovo Laptops',
+    'Avita Laptops',
+    'Acer Laptops',
+    'Huawei Laptops',
+    'Samsung Laptops',
+    'Ethnic Wear',
+    'T-Shirts',
+    'Body Shape',
+    'Jackets',
+    'Jeans',
+    'Indian',
+    'Shirts',
+    'Tuxedo',
+    'Kargo Pants',
+    'Track Pants',
+    'Zara',
+    'Levis',
+    'Global Desi',
+    'Allen Solly',
+    'FabIndia',
+    'Biba',
+    'Globus',
+    'Bombay Selection',
+    'W for Woman',
+    'Arrow sports',
+    'Reebok',
+    'Adidas',
+    'Alan jones',
+    'Allen solly',
+    'American indigo',
+    'Antony morato',
+    'Arrow',
+    'Dcathleon',
+    'Gs',
+    'Gas',
+    'Being human',
+    'Bhumika fashion',
+    'Black coffee',
+    'Blue ice',
+    'Black berry',
+    'C. O. D',
+    'Calvin Klein',
+    'Caption America',
+    'Cargo tax',
+    'Celio',
+    'Cherry',
+    'U. S polo',
+  ];
+  var _suggestioncontroller = new TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -82,13 +159,106 @@ class _AddProductState extends State<AddProduct> {
     ));
   }
 
+  Future uploadImageToFirebaseone(BuildContext context, var id) async {
+    StorageReference firebaseStorageRef = FirebaseStorage.instance
+        .ref()
+        .child('uploads/${authobj.currentUser.uid}/$id' + "imageone");
+    StorageUploadTask uploadTask = firebaseStorageRef.putFile(_imagepathone);
+    StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+    taskSnapshot.ref.getDownloadURL().then(
+      (value) {
+        setState(() {
+          imageurl1 = value;
+        });
+        FirebaseFirestore.instance
+            .collection("PRODUCT")
+            .doc("${authobj.currentUser.uid}_$id")
+            .update(<String, String>{
+          'imageurl1': value,
+        });
+        FirebaseFirestore.instance
+            .collection("SELLERS")
+            .doc(authobj.currentUser.uid)
+            .collection("MyProduct")
+            .doc("${authobj.currentUser.uid}_$id")
+            .update(<String, String>{
+          'imageurl1': value,
+        });
+      },
+    );
+  }
+
+  Future uploadImageToFirebasetwo(BuildContext context, var id) async {
+    StorageReference firebaseStorageRef = FirebaseStorage.instance
+        .ref()
+        .child('uploads/${authobj.currentUser.uid}/$id' + "imagetwo");
+    StorageUploadTask uploadTask = firebaseStorageRef.putFile(_imagepathtwo);
+    StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+    taskSnapshot.ref.getDownloadURL().then(
+      (value) {
+        setState(() {
+          imageurl2 = value;
+        });
+        FirebaseFirestore.instance
+            .collection("PRODUCT")
+            .doc("${authobj.currentUser.uid}_$id")
+            .update(<String, String>{
+          'imageurl2': value,
+        });
+        FirebaseFirestore.instance
+            .collection("SELLERS")
+            .doc(authobj.currentUser.uid)
+            .collection("MyProduct")
+            .doc("${authobj.currentUser.uid}_$id")
+            .update(<String, String>{
+          'imageurl2': value,
+        });
+      },
+    );
+  }
+
+  Future uploadImageToFirebasethree(BuildContext context, var id) async {
+    StorageReference firebaseStorageRef = FirebaseStorage.instance
+        .ref()
+        .child('uploads/${authobj.currentUser.uid}/$id' + "imagethree");
+    StorageUploadTask uploadTask = firebaseStorageRef.putFile(_imagepaththree);
+    StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+    taskSnapshot.ref.getDownloadURL().then(
+      (value) {
+        setState(() {
+          imageurl3 = value;
+        });
+        FirebaseFirestore.instance
+            .collection("PRODUCT")
+            .doc("${authobj.currentUser.uid}_$id")
+            .update(<String, String>{
+          'imageurl3': value,
+        });
+        FirebaseFirestore.instance
+            .collection("SELLERS")
+            .doc(authobj.currentUser.uid)
+            .collection("MyProduct")
+            .doc("${authobj.currentUser.uid}_$id")
+            .update(<String, String>{
+          'imageurl3': value,
+        });
+      },
+    );
+  }
+
 // This funcion will helps you to pick a Video File
   _pickVideoFromGallery() async {
     PickedFile video = await ImagePicker().getVideo(
       source: ImageSource.gallery,
-      maxDuration: Duration(seconds: 15),
     );
+
     _video = File(video.path);
+    int sizeInBytes = _video.lengthSync();
+    double sizeInMb = sizeInBytes / (1024 * 1024);
+    if (sizeInMb > 20) {
+      showInSnackBar("Please Reduce the size of the video below 20 Mb");
+      return;
+    }
     videopath = video.path;
     _videoPlayerController = VideoPlayerController.file(_video)
       ..initialize().then((_) {
@@ -118,6 +288,31 @@ class _AddProductState extends State<AddProduct> {
     return null;
   }
 
+  final picker = ImagePicker();
+  Future pickImageone() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      _imagepathone = File(pickedFile.path);
+    });
+  }
+
+  Future pickImagetwo() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      _imagepathtwo = File(pickedFile.path);
+    });
+  }
+
+  Future pickImagethree() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      _imagepaththree = File(pickedFile.path);
+    });
+  }
+
   _addProduct() async {
     final form = _formKey.currentState;
     if (!form.validate()) {
@@ -125,8 +320,6 @@ class _AddProductState extends State<AddProduct> {
       showInSnackBar("please fix the errors in red before submitting");
     } else if (dropdownvalue == 'Category') {
       showInSnackBar("please select a valid category");
-    } else if (_video == null) {
-      showInSnackBar("please select a video from camera or gallery");
     } else if (controllerdescription.text == '' ||
         controllername.text == '' ||
         controlleroffer.text == '' ||
@@ -137,7 +330,17 @@ class _AddProductState extends State<AddProduct> {
       showInSnackBar("Please choose colors");
     } else if (countryvalue == 'Select Country') {
       showInSnackBar("Please Select Country");
-    } else {
+    } else if (_imagepathone == null)
+      showInSnackBar("Please Choose Image One");
+    else if (_imagepathtwo == null)
+      showInSnackBar("Please Choose Image Two");
+    else if (_imagepaththree == null)
+      showInSnackBar("Please Choose Image three");
+    else if (brand == null)
+      showInSnackBar("Please Choose brand");
+    else if (finalprice <= 0)
+      showInSnackBar("Please Choose Right price");
+    else {
       form.save();
       List<String> clist = new List();
       for (int i = 0; i < colors.length; i++) clist.add(colors[i].toString());
@@ -145,14 +348,110 @@ class _AddProductState extends State<AddProduct> {
       //now we are uploading our file to firebase storage
       var id = new DateTime.now().millisecondsSinceEpoch;
       //String fileName = "${authobj.currentUser.uid}_product_$id";
-      StorageReference firebaseStorageRef = FirebaseStorage.instance
-          .ref()
-          .child('${authobj.currentUser.uid}/$id');
-      StorageUploadTask uploadTask = firebaseStorageRef.putFile(_video);
-      StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
-      taskSnapshot.ref.getDownloadURL().then((value) async {
-        print("Done: $value");
-        videourl = value;
+      if (_video != null) {
+        StorageReference firebaseStorageRef = FirebaseStorage.instance
+            .ref()
+            .child('${authobj.currentUser.uid}/$id');
+        StorageUploadTask uploadTask = firebaseStorageRef.putFile(_video);
+        StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+        taskSnapshot.ref.getDownloadURL().then((value) async {
+          print("Done: $value");
+          videourl = value;
+          await FirebaseFirestore.instance
+              .collection("PRODUCT")
+              .doc("${authobj.currentUser.uid}_$id")
+              .set({
+            "likes": "0",
+            "comments": "0",
+            "profileImg": authobj.currentUser.imageurl,
+            "shopnow":
+                "https://images.unsplash.com/photo-1462804512123-465343c607ee?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=668&q=80",
+            "offer": controlleroffer.text,
+            "shares": "0",
+            "country": countryvalue,
+            "name": controllername.text,
+            "price": finalprice.toString(),
+            "speciality": controllerspeciality.text,
+            "description": controllerdescription.text,
+            "category": dropdownvalue,
+            "videoUrl": value,
+            "productsuid": "${authobj.currentUser.uid}_$id",
+            "colors": FieldValue.arrayUnion(clist),
+            "selleruid": FirebaseAuth.instance.currentUser.email,
+            "phonenumber": FirebaseAuth.instance.currentUser.phoneNumber,
+            "brand": brand
+          }).then((value) {
+            FirebaseFirestore.instance
+                .collection("SELLERS")
+                .doc(authobj.currentUser.email)
+                .collection("MyProduct")
+                .doc("${authobj.currentUser.uid}_$id")
+                .set({
+              "likes": "0",
+              "comments": "0",
+              "profileImg": authobj.currentUser.imageurl,
+              "shopnow":
+                  "https://images.unsplash.com/photo-1462804512123-465343c607ee?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=668&q=80",
+              "offer": controlleroffer.text,
+              "shares": "0",
+              "country": countryvalue,
+              "name": controllername.text,
+              "price": finalprice.toString(),
+              "speciality": controllerspeciality.text,
+              "description": controllerdescription.text,
+              "category": dropdownvalue,
+              "videoUrl": videourl,
+              "productsuid": "${authobj.currentUser.uid}_$id",
+              "colors": FieldValue.arrayUnion(clist),
+              "selleruid": FirebaseAuth.instance.currentUser.email,
+              "phonenumber": FirebaseAuth.instance.currentUser.phoneNumber,
+              "brand": brand
+            });
+            uploadImageToFirebaseone(context, id);
+            uploadImageToFirebasetwo(context, id);
+            uploadImageToFirebasethree(context, id);
+            print("debug product upload successful");
+            Navigator.pop(context);
+            showInSnackBar("Product upload successful");
+            setState(() {
+              videopath = null;
+              controllername.text = "";
+              _video = null;
+              controllerdescription.text = "";
+              dropdownvalue = 'Category';
+              controllerprice.text = "";
+              colors = new List();
+              _video = null;
+              controlleroffer.text = '';
+              controllerspeciality.text = '';
+              _imagepathone = null;
+              _imagepathtwo = null;
+              _imagepaththree = null;
+            });
+          }).catchError((error) {
+            print('debug unable to upload product');
+            print(error);
+            Navigator.pop(context);
+            showInSnackBar("Something went wrong Please try again");
+          });
+
+          await FirebaseFirestore.instance
+              .collection("SELLERS")
+              .doc(FirebaseAuth.instance.currentUser.email)
+              .update({
+            "productsuid":
+                FieldValue.arrayUnion(["${authobj.currentUser.uid}_$id"])
+          }).catchError((e) {
+            print(
+                "debug something went wrong while updation seller productsuid");
+          });
+        }).catchError((onError) {
+          Navigator.pop(context);
+          showInSnackBar("fail in upload error$onError");
+        });
+      } else {
+        videourl =
+            "https://firebasestorage.googleapis.com/v0/b/humble-market.appspot.com/o/paint-3d-2021-02-28-09-59-56_6sG9GUTI_SLxe.mp4?alt=media&token=850473fc-9379-4c3a-aa18-530e3d994ed8";
         await FirebaseFirestore.instance
             .collection("PRODUCT")
             .doc("${authobj.currentUser.uid}_$id")
@@ -170,18 +469,16 @@ class _AddProductState extends State<AddProduct> {
           "speciality": controllerspeciality.text,
           "description": controllerdescription.text,
           "category": dropdownvalue,
-          "videoUrl": value,
+          "videoUrl": videourl,
           "productsuid": "${authobj.currentUser.uid}_$id",
-          "shoplocation": GeoPoint(sellerobj.shoplocation.latitude,
-              sellerobj.shoplocation.longitude),
-          "position": sellerobj.position.data,
           "colors": FieldValue.arrayUnion(clist),
-          "selleruid": authobj.currentUser.uid,
+          "selleruid": FirebaseAuth.instance.currentUser.email,
           "phonenumber": FirebaseAuth.instance.currentUser.phoneNumber,
+          "brand": brand
         }).then((value) {
           FirebaseFirestore.instance
               .collection("SELLERS")
-              .doc(authobj.currentUser.uid)
+              .doc(FirebaseAuth.instance.currentUser.email)
               .collection("MyProduct")
               .doc("${authobj.currentUser.uid}_$id")
               .set({
@@ -200,14 +497,14 @@ class _AddProductState extends State<AddProduct> {
             "category": dropdownvalue,
             "videoUrl": videourl,
             "productsuid": "${authobj.currentUser.uid}_$id",
-            "shoplocation": GeoPoint(sellerobj.shoplocation.latitude,
-                sellerobj.shoplocation.longitude),
-            "position": sellerobj.position.data,
             "colors": FieldValue.arrayUnion(clist),
-            "selleruid": authobj.currentUser.uid,
+            "selleruid": FirebaseAuth.instance.currentUser.email,
             "phonenumber": FirebaseAuth.instance.currentUser.phoneNumber,
+            "brand": brand
           });
-
+          uploadImageToFirebaseone(context, id);
+          uploadImageToFirebasetwo(context, id);
+          uploadImageToFirebasethree(context, id);
           print("debug product upload successful");
           Navigator.pop(context);
           showInSnackBar("Product upload successful");
@@ -222,6 +519,9 @@ class _AddProductState extends State<AddProduct> {
             _video = null;
             controlleroffer.text = '';
             controllerspeciality.text = '';
+            _imagepathone = null;
+            _imagepathtwo = null;
+            _imagepaththree = null;
           });
         }).catchError((error) {
           print('debug unable to upload product');
@@ -232,17 +532,14 @@ class _AddProductState extends State<AddProduct> {
 
         await FirebaseFirestore.instance
             .collection("SELLERS")
-            .doc(authobj.currentUser.uid)
+            .doc(FirebaseAuth.instance.currentUser.email)
             .update({
           "productsuid":
               FieldValue.arrayUnion(["${authobj.currentUser.uid}_$id"])
         }).catchError((e) {
           print("debug something went wrong while updation seller productsuid");
         });
-      }).catchError((onError) {
-        Navigator.pop(context);
-        showInSnackBar("fail in upload error$onError");
-      });
+      }
     }
     // showInSnackBar("Registration successful");
   }
@@ -254,6 +551,8 @@ class _AddProductState extends State<AddProduct> {
     return MaterialApp(
       theme: ThemeData(primaryColor: primary),
       home: Scaffold(
+        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomPadding: false,
         appBar: AppBar(
           title: Text("Add New Product"),
           actions: <Widget>[
@@ -270,7 +569,6 @@ class _AddProductState extends State<AddProduct> {
             ),
           ],
         ),
-        resizeToAvoidBottomPadding: false,
         key: _scaffoldKey,
         body: Container(
           height: MediaQuery.of(context).size.height,
@@ -306,12 +604,82 @@ class _AddProductState extends State<AddProduct> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                               border: const OutlineInputBorder(),
+                              labelText: "Discount*",
+                              hintText: "Discount percentage (1%-100%)"),
+                          maxLength: 10,
+                          maxLines: 1,
+                          validator: validateName,
+                          controller: controllerdiscount,
+                          onChanged: (value) {
+                            discount = int.parse(value.toString());
+                            if (price > 0 && discount > 0) {
+                              finalprice =
+                                  price - ((price * discount) / 100).round();
+                              if (finalprice <= 100)
+                                humblecharges = 0;
+                              else if (finalprice > 100 && finalprice <= 500)
+                                humblecharges = 20;
+                              else if (finalprice > 500 && finalprice <= 1000)
+                                humblecharges = 50;
+                              else
+                                humblecharges = 100;
+                              setState(() {
+                                humblecharge = humblecharges.toString();
+                                finalprice = finalprice + humblecharges;
+                                finalprices = finalprice.toString();
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      sizedBoxSpace,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: TextFormField(
+                          cursorColor: cursorColor,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
                               labelText: "Price*",
                               hintText: "Enter the Price"),
                           maxLength: 10,
                           maxLines: 1,
                           validator: validateName,
                           controller: controllerprice,
+                          onChanged: (value) {
+                            price = int.parse(value.toString());
+                            if (price > 0 && discount > 0) {
+                              finalprice =
+                                  price - ((price * discount) / 100).round();
+                              if (finalprice <= 100)
+                                humblecharges = 0;
+                              else if (finalprice > 100 && finalprice <= 500)
+                                humblecharges = 20;
+                              else if (finalprice > 500 && finalprice <= 1000)
+                                humblecharges = 50;
+                              else
+                                humblecharges = 100;
+                              setState(() {
+                                humblecharge = humblecharges.toString();
+                                finalprice = finalprice + humblecharges;
+                                finalprices = finalprice.toString();
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      sizedBoxSpace,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Text(
+                          "Final Price RS.$finalprices",
+                        ),
+                      ),
+                      sizedBoxSpace,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Text(
+                          "Humble Market Charges RS.$humblecharge",
                         ),
                       ),
                       sizedBoxSpace,
@@ -357,7 +725,7 @@ class _AddProductState extends State<AddProduct> {
                             border: const OutlineInputBorder(),
                             hintText: "This will ve visible with Main video",
                             helperText: "Keep it short",
-                            labelText: "Offers",
+                            labelText: "Other Offers",
                           ),
                           controller: controlleroffer,
                           validator: validateName,
@@ -406,6 +774,47 @@ class _AddProductState extends State<AddProduct> {
                             child: Text(value),
                           );
                         }).toList(),
+                      ),
+                      sizedBoxSpace,
+                      AutoCompleteTextField(
+                        controller: _suggestioncontroller,
+                        suggestions: brands,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            hintText: "Brand Name"),
+                        itemFilter: (item, query) {
+                          return item
+                              .toLowerCase()
+                              .startsWith(query.toLowerCase());
+                        },
+                        itemSorter: (a, b) {
+                          return a.compareTo(b);
+                        },
+                        itemSubmitted: (item) {
+                          _suggestioncontroller.text = item;
+                          brand = item;
+                        },
+                        itemBuilder: (context, item) {
+                          return Container(
+                            padding: EdgeInsets.all(8),
+                            child: Row(
+                              children: <Widget>[
+                                Text(
+                                  item,
+                                  style: TextStyle(color: Colors.black),
+                                )
+                              ],
+                            ),
+                          );
+                        },
+                        clearOnSubmit: false,
+                        key: null,
                       ),
                       sizedBoxSpace,
                       DropdownButton<String>(
@@ -471,12 +880,12 @@ class _AddProductState extends State<AddProduct> {
                           _pickVideoFromGallery();
                         },
                         padding: EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Text("Pick Video From Gallery",
+                        child: Text("Pick Video From Gallery (Not compulsory)",
                             style: TextStyle(color: Colors.white)),
                         color: primary,
                       ),
                       sizedBoxSpace,
-                      RaisedButton(
+                      /* RaisedButton(
                         onPressed: () {
                           _pickVideoFromCamera();
                         },
@@ -484,6 +893,85 @@ class _AddProductState extends State<AddProduct> {
                         child: Text("Pick Video From Camera",
                             style: TextStyle(color: Colors.white)),
                         color: primary,
+                      ),
+                      sizedBoxSpace,
+                      */
+                      Container(
+                        height: 200,
+                        width: MediaQuery.of(context).size.width,
+                        margin: const EdgeInsets.only(
+                            left: 30.0, right: 30.0, top: 10.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(30.0),
+                          child: _imagepathone != null
+                              ? InkWell(
+                                  child: Image.file(_imagepathone),
+                                  onTap: () {
+                                    setState(() {
+                                      _imagepathone = null;
+                                    });
+                                  },
+                                )
+                              : FlatButton(
+                                  child: Icon(
+                                    Icons.add_a_photo,
+                                    size: 50,
+                                  ),
+                                  onPressed: pickImageone,
+                                ),
+                        ),
+                      ),
+                      sizedBoxSpace,
+                      Container(
+                        height: 200,
+                        width: MediaQuery.of(context).size.width,
+                        margin: const EdgeInsets.only(
+                            left: 30.0, right: 30.0, top: 10.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(30.0),
+                          child: _imagepathtwo != null
+                              ? InkWell(
+                                  child: Image.file(_imagepathtwo),
+                                  onTap: () {
+                                    setState(() {
+                                      _imagepathtwo = null;
+                                    });
+                                  },
+                                )
+                              : FlatButton(
+                                  child: Icon(
+                                    Icons.add_a_photo,
+                                    size: 50,
+                                  ),
+                                  onPressed: pickImagetwo,
+                                ),
+                        ),
+                      ),
+                      sizedBoxSpace,
+                      Container(
+                        height: 200,
+                        width: MediaQuery.of(context).size.width,
+                        margin: const EdgeInsets.only(
+                            left: 30.0, right: 30.0, top: 10.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(30.0),
+                          child: _imagepaththree != null
+                              ? InkWell(
+                                  child: Image.file(_imagepaththree),
+                                  onTap: () {
+                                    setState(() {
+                                      _imagepaththree = null;
+                                    });
+                                  },
+                                )
+                              : FlatButton(
+                                  child: Icon(
+                                    Icons.add_a_photo,
+                                    size: 50,
+                                  ),
+                                  onPressed: pickImagethree,
+                                ),
+                        ),
                       ),
                       sizedBoxSpace,
                       RaisedButton(
@@ -600,6 +1088,13 @@ class _AddProductState extends State<AddProduct> {
         break;
     }
   }
+}
+
+Future<int> getFileSize(String filepath) async {
+  var file = File(filepath);
+  int bytes = await file.length();
+  int size = (bytes / 1000000).round();
+  return size;
 }
 
 showAlertDialog(BuildContext context) {

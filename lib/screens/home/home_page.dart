@@ -22,7 +22,7 @@ List<DocumentSnapshot> products = [];
 bool isLoading = false;
 bool hasMore = true;
 Query query;
-
+GlobalKey _globalKey = GlobalKey();
 DocumentSnapshot lastDocument;
 StreamController<List<DocumentSnapshot>> controller =
     StreamController<List<DocumentSnapshot>>();
@@ -50,9 +50,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // List<DocumentSnapshot> products = [];
   // bool isLoading = false;
   // bool hasMore = true;
-  int documentLimit = 1;
+  int documentLimit = 1000;
   // DocumentSnapshot lastDocument;
-  ScrollController _scrollController = ScrollController();
+  final PageController _scrollController = PageController();
+  //ScrollController _scrollController = ScrollController();
 
   Stream<List<DocumentSnapshot>> get _streamController => controller.stream;
 
@@ -70,6 +71,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         if (nearmeclicked == false) getProducts(query);
       }
     });
+    global = context;
   }
 
   Query getQuery({String tag = 'Default'}) {
@@ -262,221 +264,232 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     // } else
     //   stream = null;
 
-    return Stack(children: [
-      Column(children: [
-        Expanded(
-          child: RotatedBox(
-            quarterTurns: 1,
-            child: StreamBuilder<List<DocumentSnapshot>>(
-              stream: _streamController,
-              builder: (sContext, snapshot) {
-                if (snapshot.hasData && snapshot.data.length > 0) {
-                  return ListView.builder(
-                    cacheExtent: 10000,
-                    scrollDirection: Axis.horizontal,
-                    controller: _scrollController,
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (context, index) {
-                      return VideoPlayerItem(
-                        videoUrl: snapshot.data[index].data()['videoUrl'],
-                        size: size,
-                        name: snapshot.data[index].data()['name'],
-                        price: snapshot.data[index].data()['price'],
-                        caption: snapshot.data[index].data()['description'],
-                        offer: snapshot.data[index].data()['offer'],
-                        profileImg: snapshot.data[index].data()['profileImg'],
-                        likes: snapshot.data[index].data()['likes'],
-                        comments: snapshot.data[index].data()['comments'],
-                        shares: snapshot.data[index].data()['shares'],
-                        shopnow: snapshot.data[index].data()['shopnow'],
-                        productsuid: snapshot.data[index].data()['productsuid'],
-                        colors: snapshot.data[index].data()['colors'],
-                        selleruid: snapshot.data[index].data()['selleruid'],
-                        description: snapshot.data[index].data()['description'],
-                        speciality: snapshot.data[index].data()['speciality'],
-                        phonenumber: snapshot.data[index].data()['phonenumber'],
-                      );
-                    },
-                  );
-                } else {
-                  return Center(
-                    child: Text('No Data...'),
-                  );
-                }
-              },
+    return RepaintBoundary(
+      key: _globalKey,
+      child: Stack(children: [
+        Column(children: [
+          Expanded(
+            child: RotatedBox(
+              quarterTurns: 1,
+              child: StreamBuilder<List<DocumentSnapshot>>(
+                stream: _streamController,
+                builder: (sContext, snapshot) {
+                  if (snapshot.hasData && snapshot.data.length > 0) {
+                    return PageView.builder(
+                      allowImplicitScrolling: true,
+                      scrollDirection: Axis.horizontal,
+                      controller: _scrollController,
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (context, index) {
+                        return VideoPlayerItem(
+                          videoUrl: snapshot.data[index].data()['videoUrl'],
+                          size: size,
+                          name: snapshot.data[index].data()['name'],
+                          price: snapshot.data[index].data()['price'],
+                          caption: snapshot.data[index].data()['description'],
+                          offer: snapshot.data[index].data()['offer'],
+                          profileImg: snapshot.data[index].data()['profileImg'],
+                          likes: snapshot.data[index].data()['likes'],
+                          comments: snapshot.data[index].data()['comments'],
+                          shares: snapshot.data[index].data()['shares'],
+                          shopnow: snapshot.data[index].data()['shopnow'],
+                          productsuid:
+                              snapshot.data[index].data()['productsuid'],
+                          colors: snapshot.data[index].data()['colors'],
+                          selleruid: snapshot.data[index].data()['selleruid'],
+                          description:
+                              snapshot.data[index].data()['description'],
+                          speciality: snapshot.data[index].data()['speciality'],
+                          phonenumber:
+                              snapshot.data[index].data()['phonenumber'],
+                          imageurl1: snapshot.data[index].data()['imageurl1'],
+                          imageurl2: snapshot.data[index].data()['imageurl2'],
+                          imageurl3: snapshot.data[index].data()['imageurl3'],
+                        );
+                      },
+                    );
+                  } else {
+                    return Center(
+                      child: Text('No Data...'),
+                    );
+                  }
+                },
+              ),
             ),
           ),
-        ),
-        isLoading
-            ? Container(
-                width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.all(5),
-                color: Colors.yellowAccent,
-                child: Text(
-                  'Loading',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              )
-            : Container()
-      ]),
-      SafeArea(
-        child: Column(children: <Widget>[
-          AnimatedContainer(
-            duration: Duration(milliseconds: 400),
-            width: _folded ? 56 : 400,
-            height: 56,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(32),
-              color: Colors.transparent,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.only(left: 16),
-                    child: !_folded
-                        ? TextField(
-                            decoration: InputDecoration(
-                                hintText: 'Search',
-                                hintStyle: TextStyle(color: Colors.blue[300]),
-                                border: InputBorder.none),
-                            style: TextStyle(color: Colors.blue[300]),
-                            onSubmitted: (value) {
-                              print("Yep we are here" + value);
-                              products.clear();
-                              controller.sink.add(products);
-                              print("debug products length ${products.length}");
-                              lastDocument = null;
-                              hasMore = true;
-                              getnames(value);
-                            },
-                          )
-                        : null,
-                  ),
-                ),
-                Container(
-                  child: Material(
-                    type: MaterialType.transparency,
-                    child: InkWell(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(_folded ? 32 : 0),
-                        topRight: Radius.circular(32),
-                        bottomLeft: Radius.circular(_folded ? 32 : 0),
-                        bottomRight: Radius.circular(32),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Icon(
-                          _folded ? Icons.search : Icons.close,
-                          color: Colors.blue[900],
-                        ),
-                      ),
-                      onTap: () {
-                        setState(() {
-                          _folded = !_folded;
-                        });
-                      },
+          isLoading
+              ? Container(
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.all(5),
+                  color: Colors.yellowAccent,
+                  child: Text(
+                    'Loading',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 )
-              ],
-            ),
-          ),
-          Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                GestureDetector(
-                  onTap: () {
-                    if (followingclicked == false) {
-                      nationalclicked = false;
-                      nearmeclicked = false;
-                      followingclicked = true;
-                    }
-                  },
-                  child: Text('Following  ',
-                      style: TextStyle(
-                          fontSize: 17.0,
-                          fontWeight: FontWeight.normal,
-                          color: followingclicked
-                              ? Colors.white
-                              : Colors.white54)),
-                ),
-                SizedBox(
-                  width: 3,
-                ),
-                SizedBox(
-                  width: 3,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    if (nearmeclicked == false) {
-                      setState(() {
-                        print('NearMe clicked');
-
-                        getQuery(tag: 'NearMe') as Query;
-                        products.clear();
-                        controller.sink.add(products);
-                        print("debug products length ${products.length}");
-                        lastDocument = null;
-                        hasMore = true;
-
-                        nationalclicked = false;
-                        nearmeclicked = true;
-                        followingclicked = false;
-                      });
-                    }
-                  },
-                  child: Text('NearMe  ',
-                      style: TextStyle(
-                          fontSize: 17.0,
-                          fontWeight: FontWeight.normal,
-                          color:
-                              nearmeclicked ? Colors.white : Colors.white54)),
-                ),
-                SizedBox(
-                  width: 3,
-                ),
-                SizedBox(
-                  width: 3,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    if (nationalclicked == false) {
-                      setState(() {
-                        print('National clicked');
-                        query = getQuery(tag: 'National') as Query;
-                        products.clear();
-                        controller.sink.add(products);
-                        print("debug products length ${products.length}");
-                        lastDocument = null;
-                        hasMore = true;
-                        getProducts(query);
-                        nationalclicked = true;
-                        nearmeclicked = false;
-                        followingclicked = false;
-                      });
-                    }
-                  },
-                  child: Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: white),
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                            image: AssetImage(
-                                "assets/images/icons8_india_48px.png"),
-                            fit: BoxFit.cover)),
-                  ),
-                ),
-              ]),
+              : Container()
         ]),
-      ),
-    ]);
+        SafeArea(
+          child: Column(children: <Widget>[
+            AnimatedContainer(
+              duration: Duration(milliseconds: 400),
+              width: _folded ? 56 : 400,
+              height: 56,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(32),
+                color: Colors.transparent,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.only(left: 16),
+                      child: !_folded
+                          ? TextField(
+                              decoration: InputDecoration(
+                                  hintText: 'Search',
+                                  hintStyle: TextStyle(color: Colors.blue[300]),
+                                  border: InputBorder.none),
+                              style: TextStyle(color: Colors.blue[300]),
+                              onSubmitted: (value) {
+                                print("Yep we are here" + value);
+                                products.clear();
+                                controller.sink.add(products);
+                                print(
+                                    "debug products length ${products.length}");
+                                lastDocument = null;
+                                hasMore = true;
+                                getnames(value);
+                              },
+                            )
+                          : null,
+                    ),
+                  ),
+                  Container(
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: InkWell(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(_folded ? 32 : 0),
+                          topRight: Radius.circular(32),
+                          bottomLeft: Radius.circular(_folded ? 32 : 0),
+                          bottomRight: Radius.circular(32),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Icon(
+                            _folded ? Icons.search : Icons.close,
+                            color: Colors.blue[900],
+                          ),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            _folded = !_folded;
+                          });
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  GestureDetector(
+                    onTap: () {
+                      if (followingclicked == false) {
+                        nationalclicked = false;
+                        nearmeclicked = false;
+                        followingclicked = true;
+                      }
+                    },
+                    child: Text('Following  ',
+                        style: TextStyle(
+                            fontSize: 17.0,
+                            fontWeight: FontWeight.normal,
+                            color: followingclicked
+                                ? Colors.white
+                                : Colors.white54)),
+                  ),
+                  SizedBox(
+                    width: 3,
+                  ),
+                  SizedBox(
+                    width: 3,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      if (nearmeclicked == false) {
+                        setState(() {
+                          print('NearMe clicked');
+
+                          getQuery(tag: 'NearMe') as Query;
+                          products.clear();
+                          controller.sink.add(products);
+                          print("debug products length ${products.length}");
+                          lastDocument = null;
+                          hasMore = true;
+
+                          nationalclicked = false;
+                          nearmeclicked = true;
+                          followingclicked = false;
+                        });
+                      }
+                    },
+                    child: Text('NearMe  ',
+                        style: TextStyle(
+                            fontSize: 17.0,
+                            fontWeight: FontWeight.normal,
+                            color:
+                                nearmeclicked ? Colors.white : Colors.white54)),
+                  ),
+                  SizedBox(
+                    width: 3,
+                  ),
+                  SizedBox(
+                    width: 3,
+                  ),
+                  /*
+                  GestureDetector(
+                    onTap: () {
+                      if (nationalclicked == false) {
+                        setState(() {
+                          print('National clicked');
+                          query = getQuery(tag: 'National') as Query;
+                          products.clear();
+                          controller.sink.add(products);
+                          print("debug products length ${products.length}");
+                          lastDocument = null;
+                          hasMore = true;
+                          getProducts(query);
+                          nationalclicked = true;
+                          nearmeclicked = false;
+                          followingclicked = false;
+                        });
+                      }
+                    },
+                    child: Container(
+                      width: 30,
+                      height: 30,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: white),
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              image: AssetImage(
+                                  "assets/images/icons8_india_48px.png"),
+                              fit: BoxFit.cover)),
+                    ),
+                  ),*/
+                ]),
+          ]),
+        ),
+      ]),
+    );
   }
 
   Widget animatedSearchbar() {
@@ -569,6 +582,9 @@ class VideoPlayerItem extends StatefulWidget {
   final List<dynamic> colors;
   final String selleruid;
   final String phonenumber;
+  final String imageurl1;
+  final String imageurl2;
+  final String imageurl3;
 
   VideoPlayerItem(
       {Key key,
@@ -588,7 +604,10 @@ class VideoPlayerItem extends StatefulWidget {
       this.speciality,
       this.colors,
       this.selleruid,
-      this.phonenumber})
+      this.phonenumber,
+      this.imageurl1,
+      this.imageurl2,
+      this.imageurl3})
       : super(key: key);
 
   final Size size;
@@ -597,7 +616,8 @@ class VideoPlayerItem extends StatefulWidget {
   _VideoPlayerItemState createState() => _VideoPlayerItemState();
 }
 
-class _VideoPlayerItemState extends State<VideoPlayerItem> {
+class _VideoPlayerItemState extends State<VideoPlayerItem>
+    with WidgetsBindingObserver {
   bool isShowPlaying = false;
   VideoPlayerController videoController;
 
@@ -620,6 +640,26 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
     super.dispose();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.paused:
+        videoController.pause();
+        print('paused state');
+        break;
+      case AppLifecycleState.resumed:
+        print('resumed state');
+        videoController.pause();
+        break;
+      case AppLifecycleState.inactive:
+        print('inactive state');
+        break;
+      case AppLifecycleState.detached:
+        break;
+    }
+  }
+
   Widget isPlaying() {
     return videoController.value.isPlaying && !isShowPlaying
         ? Container()
@@ -638,13 +678,13 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
           videoController.value.isPlaying
               ? videoController.pause()
               : videoController.play();
+          isPlaying();
         });
       },
       child: VisibilityDetector(
         key: Key("unique key"),
         onVisibilityChanged: (VisibilityInfo info) {
-          debugPrint("${info.visibleFraction} of my widget is visible");
-          if (info.visibleFraction == 0) {
+          if (info.visibleFraction == 0.0) {
             videoController.pause();
           } else {
             videoController.play();
@@ -710,6 +750,9 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                                   price: widget.price,
                                   phonenumber: widget.phonenumber,
                                   selleruid: widget.selleruid,
+                                  imageurl1: widget.imageurl1,
+                                  imageurl2: widget.imageurl2,
+                                  imageurl3: widget.imageurl3,
                                 )
                               ],
                             ))
@@ -743,6 +786,9 @@ class RightPanel extends StatefulWidget {
   final String price;
   final String phonenumber;
   final String selleruid;
+  final String imageurl1;
+  final String imageurl2;
+  final String imageurl3;
 
   const RightPanel(
       {Key key,
@@ -762,7 +808,10 @@ class RightPanel extends StatefulWidget {
       this.videourl,
       this.price,
       this.phonenumber,
-      this.selleruid})
+      this.selleruid,
+      this.imageurl1,
+      this.imageurl2,
+      this.imageurl3})
       : super(key: key);
 
   final Size size;
@@ -784,7 +833,10 @@ class RightPanel extends StatefulWidget {
       videourl: videourl,
       price: price,
       phonenumber: phonenumber,
-      selleruid: selleruid);
+      selleruid: selleruid,
+      imageurl1: imageurl1,
+      imageurl2: imageurl2,
+      imageurl3: imageurl3);
 }
 
 class _RightPanelState extends State<RightPanel> {
@@ -804,6 +856,9 @@ class _RightPanelState extends State<RightPanel> {
   String price;
   String phonenumber;
   String selleruid;
+  final String imageurl1;
+  final String imageurl2;
+  final String imageurl3;
 
   _RightPanelState(
       {Key key,
@@ -823,7 +878,10 @@ class _RightPanelState extends State<RightPanel> {
       this.videourl,
       this.price,
       this.phonenumber,
-      this.selleruid});
+      this.selleruid,
+      this.imageurl1,
+      this.imageurl2,
+      this.imageurl3});
 
   final Size size;
 
@@ -850,7 +908,10 @@ class _RightPanelState extends State<RightPanel> {
         videourl: videourl,
         price: price,
         phonenumber: phonenumber,
-        selleruid: selleruid);
+        selleruid: selleruid,
+        imageurl1: imageurl1,
+        imageurl2: imageurl2,
+        imageurl3: imageurl3);
     return Expanded(
       child: Container(
         height: size.height,
@@ -928,7 +989,8 @@ class _RightPanelState extends State<RightPanel> {
                       }
                     })
                     */
-                    updatelikes(authobj.currentUser.uid, productuid),
+                    updatelikes(
+                        FirebaseAuth.instance.currentUser.email, productuid),
                     if (liked.contains(productuid))
                       {
                         liked.remove(productuid),
@@ -972,8 +1034,10 @@ class _RightPanelState extends State<RightPanel> {
                 getshare(
                     Icons.share,
                     "https://play.google.com/store/apps/details?id=com.humble.shop_app",
-                    name + "at price" + price,
-                    35.0),
+                    name + "at price" + price.toString(),
+                    35.0,
+                    context,
+                    _globalKey),
                 getshopnow(product, context)
               ],
             ))

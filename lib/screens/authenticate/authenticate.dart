@@ -31,11 +31,13 @@ class _AuthenticateState extends State<Authenticate> {
     //final user = Provider.of<User>(context);
 
     if (FirebaseAuth.instance.currentUser == null) {
+      getImages();
       return SplashScreen();
     } else {
-      getuser(FirebaseAuth.instance.currentUser.uid);
+      getuser(FirebaseAuth.instance.currentUser.email);
+      getImages();
       return Scaffold(
-        body: state ? HomeScreen() : Loader(),
+        body: HomeScreen(),
       );
     }
   }

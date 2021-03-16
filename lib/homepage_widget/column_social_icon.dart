@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_share/flutter_share.dart';
+import 'package:share/share.dart';
 import 'package:shop_app/models/Product.dart';
 import 'package:shop_app/screens/addtocartpage/addtocart.dart';
 import 'package:shop_app/theme/colors.dart';
+import 'package:http/http.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share/share.dart';
+import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:url_launcher/url_launcher.dart';
 
 Widget getshopnow(Product product, context) {
@@ -78,10 +88,10 @@ Widget getIconsthree(icon, count, size, phonenumber) {
   );
 }
 
-Widget getshare(icon, link, title, size) {
+Widget getshare(icon, link, title, size, context, globalKey) {
   return InkWell(
     onTap: () {
-      share(link, title);
+      shareScreenshot(context, link, globalKey);
     },
     child: Container(
       child: Column(
@@ -130,6 +140,34 @@ Widget getProfile(img) {
   );
 }
 
+Future<Null> shareScreenshot(context, link, globalKey) async {
+  try {
+    RenderRepaintBoundary boundary =
+        globalKey.currentContext.findRenderObject();
+    if (boundary.debugNeedsPaint) {
+      Timer(Duration(seconds: 1),
+          () => shareScreenshot(context, link, globalKey));
+      return null;
+    }
+    ui.Image image = await boundary.toImage();
+    final directory = (await getExternalStorageDirectory()).path;
+    ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    Uint8List pngBytes = byteData.buffer.asUint8List();
+    File imgFile = new File('$directory/screenshot.png');
+    imgFile.writeAsBytes(pngBytes);
+    final RenderBox box = context.findRenderObject();
+    List<String> sharefiles = List();
+    sharefiles.add('$directory/screenshot.png');
+    Share.shareFiles(sharefiles,
+        subject: 'Humble Market',
+        text:
+            'Hello,Check out the Humble Market App to find latest deal! Please Visit Find Best Deals on the Products  $link',
+        sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+  } on PlatformException catch (e) {
+    print("Exception while taking screenshot:" + e.toString());
+  }
+}
+
 Future<void> makecall(String phonenumber) async {
   print(phonenumber);
   if (await canLaunch(phonenumber)) {
@@ -142,11 +180,10 @@ Future<void> makecall(String phonenumber) async {
 }
 
 Future<void> share(dynamic link, String title) async {
-  await FlutterShare.share(
-      title: "Humble Market App",
-      text: title,
-      linkUrl: link,
-      chooserTitle: 'Where you want to share');
+  List<String> sharefile = List();
+  sharefile.add("assets/icons/facebook-2.svg");
+  await Share.shareFiles(sharefile,
+      text: "Please Visit Find Best Deals on the Products  $link");
 }
 
 // Here we will add Shopnow widget which will first if user has already resgistered or not

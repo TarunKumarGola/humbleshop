@@ -32,7 +32,7 @@ class Body extends StatelessWidget {
                 ),
               ),
               Text(
-                "Please enter your email and we will send \nyou a reset link to your gmail",
+                "Please enter your email and we will send \nyou a reset link to your Mail Box",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
@@ -107,6 +107,7 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
             text: "Continue",
             press: () {
               if (_formKey.currentState.validate()) {
+                Toast.show("Reset Link Sent",context);
                 FirebaseAuth.instance.sendPasswordResetEmail(email: email).then(
                     (value) =>
                         {Toast.show("Please Check your mail Box", context)});
@@ -120,7 +121,10 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
             },
           ),
           SizedBox(height: SizeConfig.screenHeight * 0.1),
-          NoAccountText(),
+          Text("You Will Receive a reset link in your email id mail Box.\nUse that link to change Password and sign in with new Password",
+          textAlign: TextAlign.center,
+          style: TextStyle(fontWeight: FontWeight.bold),
+          ),
         ],
       ),
     );

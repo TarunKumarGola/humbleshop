@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/default_button.dart';
+import 'package:toast/toast.dart';
 import '../../../../constants.dart';
 import '../../../../size_config.dart';
 import '../../sign_in_screen.dart';
@@ -45,22 +46,22 @@ class _SignUpFormState extends State<SignUpForm> {
       child: Column(
         children: [
           buildFirstNameFormField(),
-          SizedBox(height: getProportionateScreenHeight(5)),
+          SizedBox(height: getProportionateScreenHeight(10)),
           buildEmailFormField(),
-          SizedBox(height: getProportionateScreenHeight(5)),
+          SizedBox(height: getProportionateScreenHeight(10)),
           buildPasswordFormField(),
-          SizedBox(height: getProportionateScreenHeight(5)),
+          SizedBox(height: getProportionateScreenHeight(10)),
           buildConformPassFormField(),
-          SizedBox(height: getProportionateScreenHeight(5)),
+          SizedBox(height: getProportionateScreenHeight(10)),
           buildPhoneNumberFormField(),
-          SizedBox(height: getProportionateScreenHeight(5)),
-          buildAddressFormField(),
-          SizedBox(height: getProportionateScreenHeight(5)),
+          SizedBox(height: getProportionateScreenHeight(10)),
           DefaultButton(
             text: "Verify Phone Number",
             press: () async {
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
+                Toast.show("We are Sending OTP please wait", context,
+                    duration: 10);
                 bool checkdata = false;
 
                 await FirebaseFirestore.instance
@@ -69,7 +70,10 @@ class _SignUpFormState extends State<SignUpForm> {
                     .get()
                     .then((DocumentSnapshot documentSnapshot) {
                   if (documentSnapshot.exists) {
-                    print("inside true block");
+                    Toast.show(
+                        "Phone Number Already Registered \nPlease Try Some Other phone Number",
+                        context,
+                        duration: 5);
                     checkdata = true;
                   } else {
                     print("this phone number does not exist");
@@ -99,7 +103,7 @@ class _SignUpFormState extends State<SignUpForm> {
                           "email": email,
                           "phonenumber": "+91$phoneNumber",
                           "password": password,
-                          "address": address,
+                          "address": "Manually add Address",
                           "follower": 0,
                           "following": 0,
                           "imageurl": "image",
@@ -124,7 +128,9 @@ class _SignUpFormState extends State<SignUpForm> {
                       },
                       verificationFailed: (FirebaseAuthException e) {
                         if (e.code == 'invalid-phone-number') {
-                          print('The provided phone number is not valid.');
+                          Toast.show(
+                              'The provided phone number is Invalid.', context,
+                              duration: 3);
                         } else {
                           print(e);
                         }
@@ -206,17 +212,20 @@ class _SignUpFormState extends State<SignUpForm> {
                     );
                   } on FirebaseAuthException catch (e) {
                     if (e.code == 'weak-password') {
-                      print('The password provided is too weak.');
+                      Toast.show('The password provided is too weak', context);
                     } else if (e.code == 'email-already-in-use') {
-                      print('The account already exists for that email.');
+                      Toast.show(
+                          'The account already exists for that email', context);
                       print("Email id already exist please go to sign in page");
                     }
                   } catch (e) {
                     print(e.toString());
                   }
                 } else {
-                  print(
-                      "Phone number already exits please try some other phone number");
+                  Toast.show(
+                      "Phone number already exits please try some other phone number",
+                      context,
+                      duration: 3);
                 }
               }
             },

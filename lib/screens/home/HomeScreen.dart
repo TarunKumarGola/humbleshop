@@ -7,6 +7,7 @@ import 'package:shop_app/screens/addproducts/addproduct.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/complete_profile/profilescreen.dart';
 import 'package:shop_app/screens/home/home_page.dart';
+import 'package:shop_app/screens/home/homepagetwo.dart';
 import 'package:shop_app/theme/colors.dart';
 import 'package:shop_app/screens/seller_registration/seller_registration_screen.dart';
 
@@ -93,7 +94,7 @@ class _RootAppState extends State<HomeScreen> {
           ),
         ),
         onplusbuttonpressed(),
-        MessagingWidget(),
+        HomeScreenTwo(),
         Center(
           child: Profile(context),
         ),
@@ -105,7 +106,7 @@ class _RootAppState extends State<HomeScreen> {
     List bottomItems = [
       {
         "icon": ImageIcon(
-          AssetImage("assets/images/market.png"),
+          AssetImage("assets/images/home.png"),
           color: Colors.white,
           size: 35,
         ),
@@ -124,11 +125,11 @@ class _RootAppState extends State<HomeScreen> {
       {"icon": "", "label": "", "isIcon": false},
       {
         "icon": ImageIcon(
-          AssetImage("assets/images/inbox.png"),
+          AssetImage("assets/images/market.png"),
           color: Colors.white,
           size: 35,
         ),
-        "label": "Inbox",
+        "label": "Market",
         "isIcon": true
       },
       {
@@ -172,6 +173,7 @@ class _RootAppState extends State<HomeScreen> {
                       selectedTab(index);
                       if (index != 0) {
                         //videoController.pause();
+
                         print("pausing videoplayer index$index");
                       } else {
                         // videoController.play();
@@ -296,7 +298,7 @@ class _RootAppState extends State<HomeScreen> {
                         // color: new Color(color),
                         backgroundColor: Colors.transparent,
                         backgroundImage: AssetImage(path),
-                        radius: 45,
+                        radius: 55,
                       ),
                     ),
                   ],

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
@@ -14,7 +15,7 @@ class MyProduct extends StatefulWidget {
 class _MyProductState extends State<MyProduct> {
   CollectionReference orders = FirebaseFirestore.instance
       .collection("SELLERS")
-      .doc(sellerobj.selleruid)
+      .doc(authobj.currentUser.email)
       .collection("MyProduct");
 
   int getColorHexFromStr(String colorStr) {

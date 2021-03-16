@@ -2,7 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:shop_app/components/default_button.dart';
+import 'package:shop_app/constants.dart';
+import 'package:shop_app/screens/addresspage/addresspage.dart';
 import 'package:shop_app/screens/authenticate/authenticate.dart';
+import 'package:shop_app/size_config.dart';
 import 'package:shop_app/theme/colors.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:image_picker/image_picker.dart';
@@ -119,8 +123,24 @@ class _ProfilePageState extends State<ProfilePage> {
               buildTextField(
                   "E-mail", authobj.currentUser.email, controller_email),
               // buildTextField("Password", "********", true),
-              buildTextField(
-                  "Address", authobj.currentUser.address, controller_address),
+              FlatButton(
+                splashColor: Colors.cyan,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                color: kPrimaryColor,
+                onPressed: () {
+                  Navigator.push(global,
+                      MaterialPageRoute(builder: (global) => AddressForm()));
+                },
+                child: Text(
+                  "Edit Address",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
               SizedBox(
                 height: 35,
               ),

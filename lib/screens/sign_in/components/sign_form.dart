@@ -6,6 +6,7 @@ import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/forgot_password/forgot_password_screen.dart';
 import 'package:shop_app/screens/login_success/login_success_screen.dart';
 import 'package:shop_app/services/auth.dart';
+import 'package:toast/toast.dart';
 
 import '../../../components/default_button.dart';
 import '../../../constants.dart';
@@ -64,7 +65,7 @@ class _SignFormState extends State<SignForm> {
             press: () async {
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
-
+                Toast.show("Signing in please wait", context, duration: 3);
                 try {
                   UserCredential userCredential = await FirebaseAuth.instance
                       .signInWithEmailAndPassword(
@@ -80,9 +81,10 @@ class _SignFormState extends State<SignForm> {
                           builder: (context) => LoginSuccessScreen()));
                 } on FirebaseAuthException catch (e) {
                   if (e.code == 'user-not-found') {
-                    print('No user found for that email.');
+                    Toast.show("Wrong Email id", context);
                   } else if (e.code == 'wrong-password') {
-                    print('Wrong password provided for that user.');
+                    Toast.show(
+                        'Wrong password provided for that user.', context);
                   }
                 }
               }

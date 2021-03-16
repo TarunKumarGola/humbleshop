@@ -15,6 +15,7 @@ import 'package:shop_app/screens/authenticate/getuser.dart';
 import 'package:shop_app/screens/cartpage/cartpage.dart';
 import 'package:shop_app/screens/complete_profile/components/profilefirst.dart';
 import 'package:toast/toast.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Profile extends StatelessWidget {
   BuildContext maincontext;
@@ -224,6 +225,25 @@ class ProfileScreen extends StatelessWidget {
                           size: 35,
                         ),
                         text: 'Invite a Friend',
+                      ),
+                      InkWell(
+                        child: ProfileListItem(
+                          icon: ImageIcon(
+                            AssetImage("assets/images/invite.png"),
+                            size: 35,
+                          ),
+                          text: 'HelpLine',
+                        ),
+                        onTap: () async {
+                          Toast.show("You will be directed to Whatsapp support",
+                              context);
+                          var whatsappUrl =
+                              "whatsapp://send?phone=${918076462208}";
+                          await canLaunch(whatsappUrl)
+                              ? launch(whatsappUrl)
+                              : Toast.show(
+                                  "There is no whatsapp installed", context);
+                        },
                       ),
                       InkWell(
                         child: ProfileListItem(

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
@@ -23,6 +24,16 @@ class _CartPageState extends State<CartPage> {
   String productuid = "";
   String size = "";
   String speciality = "";
+  final _formKey = GlobalKey<FormState>();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  String area = null;
+  String pincode = null;
+  String city = null;
+  String state = null;
+  String landmark = null;
+  String town = null;
+  String phonenumber = null;
   CollectionReference orders = FirebaseFirestore.instance
       .collection("USERS")
       .doc(authobj.currentUser.uid)
@@ -103,7 +114,8 @@ class _CartPageState extends State<CartPage> {
       "buyername": authobj.currentUser.name,
       "buyeremailid": authobj.currentUser.email,
       "buyeraddress": authobj.currentUser.address,
-      "buyerphonenumber": authobj.currentUser.phonenumber
+      "buyerphonenumber": authobj.currentUser.phonenumber,
+      "Date": DateTime.now().toString(),
     });
     FirebaseFirestore.instance
         .collection("USERS")
@@ -120,7 +132,8 @@ class _CartPageState extends State<CartPage> {
       "buyername": authobj.currentUser.name,
       "buyeremailid": authobj.currentUser.email,
       "buyeraddress": authobj.currentUser.address,
-      "buyerphonenumber": authobj.currentUser.phonenumber
+      "buyerphonenumber": authobj.currentUser.phonenumber,
+      "Date": DateTime.now().toString()
     });
     Navigator.push(
         context, new MaterialPageRoute(builder: (context) => MyPlacedOrder()));
@@ -332,21 +345,137 @@ class _CartPageState extends State<CartPage> {
                                                               .get('color');
                                                           price = _card
                                                               .get('price');
-                                                          checkout(
+                                                          /*checkout(
                                                               _card.get('name'),
                                                               _card.get(
-                                                                  'price'));
-                                                          await FirebaseFirestore
-                                                              .instance
-                                                              .runTransaction(
-                                                                  (Transaction
-                                                                      myTransaction) async {
-                                                            await myTransaction
-                                                                .delete(snapshot
-                                                                    .data
-                                                                    .documents[
-                                                                        index]
-                                                                    .reference);
+                                                                  'price'));*/
+                                                          print(
+                                                              "Tarun Payment Success");
+                                                          showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      mcontext) {
+                                                                return _buildForm(
+                                                                    mcontext);
+                                                              }).whenComplete(() async {
+                                                            if (area != null) {
+                                                              print("makicho");
+                                                              String address =
+                                                                  area +
+                                                                      "," +
+                                                                      town +
+                                                                      "," +
+                                                                      city +
+                                                                      "," +
+                                                                      state +
+                                                                      "," +
+                                                                      pincode;
+                                                              print("makicho" +
+                                                                  address +
+                                                                  " " +
+                                                                  selleruid);
+                                                              Toast.show(
+                                                                  "Payment SuccessFull",
+                                                                  context);
+                                                              FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      "SELLERS")
+                                                                  .doc(
+                                                                      selleruid)
+                                                                  .collection(
+                                                                      "orderplaced")
+                                                                  .doc()
+                                                                  .set({
+                                                                "name": pname,
+                                                                "price": price,
+                                                                "productuid":
+                                                                    productuid,
+                                                                "color": color,
+                                                                "size": size,
+                                                                "speciality":
+                                                                    speciality,
+                                                                "buyername": authobj
+                                                                    .currentUser
+                                                                    .name,
+                                                                "buyeremailid":
+                                                                    authobj
+                                                                        .currentUser
+                                                                        .email,
+                                                                "buyeraddress":
+                                                                    address,
+                                                                "buyerphonenumber":
+                                                                    phonenumber,
+                                                                "Date": DateTime
+                                                                        .now()
+                                                                    .toString(),
+                                                              });
+                                                              FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      "USERS")
+                                                                  .doc(FirebaseAuth
+                                                                      .instance
+                                                                      .currentUser
+                                                                      .email)
+                                                                  .collection(
+                                                                      "orderplaced")
+                                                                  .doc()
+                                                                  .set({
+                                                                "name": pname,
+                                                                "price": price,
+                                                                "productuid":
+                                                                    productuid,
+                                                                "color": color,
+                                                                "size": size,
+                                                                "speciality":
+                                                                    speciality,
+                                                                "buyername": authobj
+                                                                    .currentUser
+                                                                    .name,
+                                                                "buyeremailid":
+                                                                    authobj
+                                                                        .currentUser
+                                                                        .email,
+                                                                "buyeraddress":
+                                                                    address,
+                                                                "buyerphonenumber":
+                                                                    phonenumber,
+                                                                "Date": DateTime
+                                                                        .now()
+                                                                    .toString()
+                                                              });
+                                                              custumersendMail(
+                                                                  authobj
+                                                                      .currentUser
+                                                                      .email,
+                                                                  pname,
+                                                                  price);
+                                                              sellersendMail(
+                                                                  selleruid,
+                                                                  pname,
+                                                                  price);
+                                                              await FirebaseFirestore
+                                                                  .instance
+                                                                  .runTransaction(
+                                                                      (Transaction
+                                                                          myTransaction) async {
+                                                                await myTransaction
+                                                                    .delete(snapshot
+                                                                        .data
+                                                                        .documents[
+                                                                            index]
+                                                                        .reference);
+                                                              });
+
+                                                              Navigator.push(
+                                                                  context,
+                                                                  new MaterialPageRoute(
+                                                                      builder:
+                                                                          (context) =>
+                                                                              MyPlacedOrder()));
+                                                            }
                                                           });
                                                         },
                                                         child: Text(
@@ -421,6 +550,203 @@ class _CartPageState extends State<CartPage> {
                       });
                 }
               })),
+    );
+  }
+
+  Material _buildForm(BuildContext context) {
+    return Material(
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: <Widget>[
+            Text(
+              "Please Enter the Delivery Address",
+              style: TextStyle(fontSize: 20, color: Colors.black),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: TextFormField(
+                validator: (String value) {
+                  if (value.isEmpty) {
+                    return 'Address cannot be empty';
+                  } else if (value.length < 5) {
+                    return 'Enter a Valid Address';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  labelText: 'Area/Street/Block',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0)),
+                ),
+                onChanged: (value) {
+                  area = value;
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: TextFormField(
+                validator: (String value) {
+                  if (value.isEmpty) {
+                    return 'Cannot be empty';
+                  } else if (value.length < 5) {
+                    return 'Enter a Valid Address';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  labelText: 'Town/Village',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0)),
+                ),
+                onChanged: (value) {
+                  town = value;
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: TextFormField(
+                validator: (String value) {
+                  if (value.isEmpty) {
+                    return 'Address cannot be empty';
+                  } else if (value.length < 5) {
+                    return 'Enter a Valid Address';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  labelText: 'District/City',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0)),
+                ),
+                onChanged: (value) {
+                  city = value;
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: TextFormField(
+                validator: (String value) {
+                  if (value.isEmpty) {
+                    return 'Address cannot be empty';
+                  } else if (value.length < 5) {
+                    return 'Enter a Valid Address';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  labelText: 'State/UT',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0)),
+                ),
+                onChanged: (value) {
+                  state = value;
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: TextFormField(
+                validator: (String value) {
+                  if (value.isEmpty) {
+                    return 'Address cannot be empty';
+                  } else if (value.length < 5) {
+                    return 'Enter a Valid Address';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  labelText: 'Pincode',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0)),
+                ),
+                onChanged: (value) {
+                  pincode = value;
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: TextFormField(
+                validator: (String value) {
+                  if (value.isEmpty) {
+                    return 'Address cannot be empty';
+                  } else if (value.length < 5) {
+                    return 'Enter a Valid Address';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  labelText: 'LandMark',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0)),
+                ),
+                onChanged: (value) {
+                  landmark = value;
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: TextFormField(
+                validator: (String value) {
+                  if (value.isEmpty) {
+                    return 'PhoneNumber cannot be empty';
+                  } else if (value.length < 10) {
+                    return 'Enter a Phone Number';
+                  }
+                  return null;
+                },
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  labelText: 'Phone Number',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0)),
+                ),
+                onChanged: (value) {
+                  phonenumber = value;
+                },
+              ),
+            ),
+            FlatButton(
+              splashColor: Colors.cyan,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              color: kPrimaryColor,
+              onPressed: () {
+                if (_formKey.currentState.validate()) {
+                  FirebaseFirestore.instance
+                      .collection("USERS")
+                      .doc(FirebaseAuth.instance.currentUser.email)
+                      .update({
+                    "AreaBlock": area,
+                    "TownVillage": town,
+                    "StateUT": state,
+                    "DistrictCity": city,
+                    "PinCode": pincode,
+                    "landmark": landmark,
+                    "phonenumber": phonenumber
+                  }).whenComplete(
+                          () => {Toast.show("Address Updated", context)});
+
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Text(
+                "Save Address",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

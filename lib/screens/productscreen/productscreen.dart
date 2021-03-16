@@ -1,77 +1,27 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shop_app/constants.dart';
 import 'package:shop_app/models/Product.dart';
-import 'package:shop_app/screens/authenticate/getuser.dart';
-import 'package:shop_app/screens/cartpage/cartpage.dart';
-import 'package:shop_app/screens/commentspage/commentscreen2.dart';
-import 'package:shop_app/screens/reviewscreen/allreviewpage.dart';
-import 'package:shop_app/theme/colors.dart';
-import 'package:video_player/video_player.dart';
 
-class AddToCart extends StatelessWidget {
-  final Product product;
-
-  const AddToCart({Key key, this.product}) : super(key: key);
+class ProductPage extends StatefulWidget {
+  final Product p;
+  ProductPage(this.p);
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MyHomePage(product: product),
-    );
-  }
+  State<StatefulWidget> createState() => _ProductPageState(p);
 }
 
-class MyHomePage extends StatefulWidget {
-  final Product product;
-
-  const MyHomePage({Key key, this.product}) : super(key: key);
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState(product);
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int photoIndex = 0;
+class _ProductPageState extends State<ProductPage> {
   String dropdownValue = 'six';
-  final Product product;
-  int colorselect = 0;
-
-  _MyHomePageState(this.product);
-
-  int getColorHexFromStr(String colorStr) {
-    colorStr = "FF" + colorStr;
-    colorStr = colorStr.replaceAll("#", "");
-    int val = 0;
-    int len = colorStr.length;
-    for (int i = 0; i < len; i++) {
-      int hexDigit = colorStr.codeUnitAt(i);
-      if (hexDigit >= 48 && hexDigit <= 57) {
-        val += (hexDigit - 48) * (1 << (4 * (len - 1 - i)));
-      } else if (hexDigit >= 65 && hexDigit <= 70) {
-        // A..F
-        val += (hexDigit - 55) * (1 << (4 * (len - 1 - i)));
-      } else if (hexDigit >= 97 && hexDigit <= 102) {
-        // a..f
-        val += (hexDigit - 87) * (1 << (4 * (len - 1 - i)));
-      } else {
-        throw new FormatException("An error occurred when converting a color");
-      }
-    }
-    return val;
-  }
-
+  final Product p;
+  _ProductPageState(this.p);
   List<String> _imagePaths = new List<String>();
   @override
   Widget build(BuildContext context) {
-    _imagePaths.add(widget.product.imageurl1);
-    _imagePaths.add(widget.product.imageurl2);
-    _imagePaths.add(widget.product.imageurl3);
-    print(_imagePaths);
-    return Scaffold(
+    _imagePaths.add(p.imageurl1);
+    _imagePaths.add(p.imageurl2);
+    _imagePaths.add(p.imageurl3);
+    return MaterialApp(
+        home: Scaffold(
       body: ListView(
         shrinkWrap: true,
         children: <Widget>[
@@ -92,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Padding(
                 padding: EdgeInsets.only(left: 15.0),
                 child: Text(
-                  widget.product.name,
+                  p.name,
                   style: TextStyle(
                       fontFamily: 'Montserrat',
                       fontSize: 25.0,
@@ -122,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 MediaQuery.of(context).size.width / 2) -
                             50.0,
                         child: Text(
-                          widget.product.speciality,
+                          p.speciality,
                           style: TextStyle(
                             fontFamily: 'Montserrat',
                             fontSize: 15.0,
@@ -137,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           elevation: 5,
                           child: Center(
                             child: Text(
-                              '₹${widget.product.price}',
+                              '₹${p.price}',
                               style: TextStyle(
                                   fontFamily: 'Montserrat',
                                   fontSize: 15.0,
@@ -148,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          color: kPrimaryColor,
+                          color: Colors.pink,
                         ),
                       ),
                     ],
@@ -172,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Container(
                 padding: EdgeInsets.only(left: 15),
                 child: Text(
-                  widget.product.description,
+                  p.description,
                   style: TextStyle(
                     //  fontFamily: 'Montserrat',
                     fontSize: 17.0,
@@ -199,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Container(
                 padding: EdgeInsets.only(left: 15),
                 child: Text(
-                  widget.product.offer,
+                  p.offer,
                   style: TextStyle(
                     //  fontFamily: 'Montserrat',
                     fontSize: 17.0,
@@ -223,7 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               SizedBox(height: 5.0),
-              Container(
+              /*  Container(
                 height: 60,
                 child: ListView.builder(
                     padding: EdgeInsets.all(5),
@@ -250,7 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         },
                       );
                     }),
-              ),
+              ),*/
               Divider(
                 color: Colors.black,
               ),
@@ -266,7 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       fontWeight: FontWeight.bold),
                 ),
               ),
-              MaterialButton(
+              /*MaterialButton(
                 shape: CircleBorder(
                     side: BorderSide(
                         width: 3,
@@ -279,7 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Color(getColorHexFromStr(
                     widget.product.colors[colorselect].substring(10, 16))),
                 onPressed: () {},
-              ),
+              ),*/
               SizedBox(height: 5.0),
               Divider(
                 color: Colors.black,
@@ -328,12 +278,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   )),
               FlatButton(
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (context) => AllReviewPage(
-                                  productuid: product.productuid,
-                                )));
+                    print("Open Comment Sections");
                   },
                   child: Container(
                     color: Colors.pink,
@@ -374,16 +319,16 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           onTap: () {
                             print('Cart button pressed');
-                            Navigator.push(
+                            /* Navigator.push(
                                 context,
                                 new MaterialPageRoute(
-                                    builder: (context) => CartPage()));
+                                    builder: (context) => CartPage()));*/
                           },
                         ),
                       ),
                     ),
                     Container(
-                        color: primary,
+                        color: Colors.pink,
                         width: MediaQuery.of(context).size.width - 130.0,
                         child: GestureDetector(
                           child: Center(
@@ -396,9 +341,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                 fontWeight: FontWeight.bold),
                           )),
                           onTap: () {
-                            FirebaseFirestore.instance
+                            /* FirebaseFirestore.instance
                                 .collection("USERS")
-                                .doc(authobj.currentUser.email)
+                                .doc(authobj.currentUser.uid)
                                 .collection("orders")
                                 .doc()
                                 .set({
@@ -416,79 +361,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                           new MaterialPageRoute(
                                               builder: (context) => CartPage()))
                                     });
+                                    */
                           },
                         ))
                   ]))),
-    );
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-  }
-}
-
-class MyProductVideo extends StatefulWidget {
-  final Product product;
-
-  const MyProductVideo({Key key, this.product}) : super(key: key);
-
-  @override
-  _MyProductVideoState createState() => _MyProductVideoState();
-}
-
-class _MyProductVideoState extends State<MyProductVideo> {
-  VideoPlayerController videoPlayerController;
-
-  @override
-  void initState() {
-    super.initState();
-    videoPlayerController =
-        VideoPlayerController.network(widget.product.videourl)
-          ..initialize().then((value) => {});
-    videoPlayerController.setLooping(true);
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 275,
-      width: MediaQuery.of(context).size.width,
-      child: Center(
-        child: Scaffold(
-          body: Center(
-            child: videoPlayerController.value.initialized
-                ? AspectRatio(
-                    aspectRatio: videoPlayerController.value.aspectRatio,
-                    child: VideoPlayer(videoPlayerController),
-                  )
-                : Container(),
-          ),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: kPrimaryColor,
-            onPressed: () {
-              setState(() {
-                videoPlayerController.value.isPlaying
-                    ? videoPlayerController.pause()
-                    : videoPlayerController.play();
-              });
-            },
-            child: Icon(
-              videoPlayerController.value.isPlaying
-                  ? Icons.pause
-                  : Icons.play_arrow,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    videoPlayerController.dispose();
-    super.dispose();
+    ));
   }
 }

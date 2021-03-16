@@ -1,8 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
+import 'package:shop_app/screens/reviewscreen/review.dart';
 import 'package:shop_app/theme/colors.dart';
+import 'package:toast/toast.dart';
 
 //import 'CheckOutPage.dart';
 
@@ -14,7 +19,7 @@ class MyPlacedOrder extends StatefulWidget {
 class _MyPlacedOrderState extends State<MyPlacedOrder> {
   CollectionReference orders = FirebaseFirestore.instance
       .collection("USERS")
-      .doc(authobj.currentUser.uid)
+      .doc(authobj.currentUser.email)
       .collection("orderplaced");
 
   int getColorHexFromStr(String colorStr) {
@@ -213,6 +218,60 @@ class _MyPlacedOrderState extends State<MyPlacedOrder> {
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: <Widget>[
+                                                RaisedButton(
+                                                  onPressed: () async {
+                                                    FirebaseFirestore.instance
+                                                        .collection("Return")
+                                                        .doc()
+                                                        .set({
+                                                      "Buyerid": authobj
+                                                          .currentUser.uid,
+                                                      "Buyeremailid": authobj
+                                                          .currentUser.email,
+                                                      "productuid": _card
+                                                          .get('productuid')
+                                                    });
+                                                    custumersendMail(
+                                                        authobj
+                                                            .currentUser.email,
+                                                        authobj
+                                                            .currentUser.name,
+                                                        _card.get('price'));
+                                                    Toast.show(
+                                                        "Return Request Sent",
+                                                        context);
+                                                  },
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  24.0))),
+                                                  child: Text('Return'),
+                                                  textColor: Colors.white,
+                                                  splashColor: Colors.red,
+                                                  color: Colors.green,
+                                                ),
+                                                RaisedButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        new MaterialPageRoute(
+                                                            builder: (context) => ReviewPage(
+                                                                productuid: _card
+                                                                    .get(
+                                                                        'productuid')
+                                                                    .toString())));
+                                                  },
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  24.0))),
+                                                  child: Text('Review'),
+                                                  textColor: Colors.white,
+                                                  splashColor: Colors.red,
+                                                  color: Colors.green,
+                                                ),
                                                 Text(
                                                   '₹${_card.get('price')}',
                                                   style: TextStyle(
@@ -241,5 +300,40 @@ class _MyPlacedOrderState extends State<MyPlacedOrder> {
                 }
               })),
     );
+  }
+
+  custumersendMail(String email, String name, String price) async {
+    String username = 'humblemarketofficial@gmail.com';
+    String password = 'qwerty123qwertyK';
+
+    final smtpServer = gmail(username, password);
+    // Use the SmtpServer class to configure an SMTP server:
+    // final smtpServer = SmtpServer('smtp.domain.com');
+    // See the named arguments of SmtpServer for further configuration
+    // options.
+
+    // Create our message.
+    final message = Message()
+      ..from = Address(username, 'Your name')
+      ..recipients.add(email)
+      ..ccRecipients.addAll([email, email])
+      ..bccRecipients.add(Address(email))
+      ..subject =
+          'We are processing your return request :: 😀 :: ${DateTime.now()}'
+      ..text = 'We are processing your return request. You Ordered ' +
+          name +
+          "At price " +
+          price
+      ..html = "<h1>Test</h1>\n<p>Hey! Here's some HTML content</p>";
+
+    try {
+      final sendReport = await send(message, smtpServer);
+      print('Message sent: ' + sendReport.toString());
+    } on MailerException catch (e) {
+      print('Message not sent.');
+      for (var p in e.problems) {
+        print('Problem: ${p.code}: ${p.msg}');
+      }
+    }
   }
 }
