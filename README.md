@@ -36,4 +36,5 @@ a) kitchen Products b)Fashion c)Footwear
 -admin can charge some small amount on every transaction or order.
 - admin can delete and upload the video or images etc.
 
-Issues is in file homepage which is in lib/home/homepage
+#Issues is in file homepage which is in lib/home/homepage
+#facebook login not working
