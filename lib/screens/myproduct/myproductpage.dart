@@ -55,7 +55,6 @@ class _MyProductState extends State<MyProduct> {
     return MaterialApp(
       theme: ThemeData(primaryColor: primary, accentColor: Colors.pink[300]),
       home: Scaffold(
-          resizeToAvoidBottomPadding: false,
           resizeToAvoidBottomInset: false,
           backgroundColor: Colors.grey.shade100,
           appBar: AppBar(

@@ -627,8 +627,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
 
     videoController = VideoPlayerController.network(widget.videoUrl)
       ..initialize()
-      ..setLooping(true)
-      ..play().then((value) {
+      ..setLooping(true).then((value) {
         setState(() {});
       });
     getLiked();
@@ -647,10 +646,12 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
       case AppLifecycleState.paused:
         videoController.pause();
         print('paused state');
+        isPlaying();
         break;
       case AppLifecycleState.resumed:
         print('resumed state');
         videoController.pause();
+        isPlaying();
         break;
       case AppLifecycleState.inactive:
         print('inactive state');
@@ -686,8 +687,10 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
         onVisibilityChanged: (VisibilityInfo info) {
           if (info.visibleFraction == 0.0) {
             videoController.pause();
+            isPlaying();
           } else {
             videoController.play();
+            isPlaying();
           }
         },
         child: RotatedBox(

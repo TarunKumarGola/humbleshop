@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shop_app/screens/authenticate/getuser.dart';
+import 'package:shop_app/screens/commentspage/commentscreen2.dart';
 import 'package:toast/toast.dart';
 
 class ReviewPage extends StatefulWidget {
@@ -253,7 +254,7 @@ class _ReviewPageState extends State<ReviewPage> {
                               'Submit',
                               style: TextStyle(color: Color(0xffffffff)),
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               if (_imagepathone == null ||
                                   _imagepathtwo == null)
                                 showInSnackBar("Please choose the images");
@@ -262,22 +263,8 @@ class _ReviewPageState extends State<ReviewPage> {
                               else {
                                 showInSnackBar(
                                     "We are Posting your Review Please wait");
-                                uploadImageToFirebase()
-                                    .whenComplete(() => {
-                                          FirebaseFirestore.instance
-                                              .collection("PRODUCT")
-                                              .doc(productuid)
-                                              .collection("REVIEWS")
-                                              .doc()
-                                              .set({
-                                            "ratings": sliderValue,
-                                            "comments": comment,
-                                            "imageurl1": imageurl1,
-                                            "imageurl2": imageurl2,
-                                            "username":
-                                                authobj.currentUser.name,
-                                          })
-                                        })
+                                await uploadImageToFirebase(sliderValue,
+                                        comment, authobj.currentUser.name)
                                     .whenComplete(() => {
                                           setState(() {
                                             sliderValue = 0.0;
@@ -312,12 +299,12 @@ class _ReviewPageState extends State<ReviewPage> {
     ));
   }
 
-  Future uploadImageToFirebase() async {
+  Future uploadImageToFirebase(slidervalue, comment, name) async {
     String time = DateTime.now().toString();
 
     StorageReference firebaseStorageRef = FirebaseStorage.instance
         .ref()
-        .child('uploads/${authobj.currentUser.uid}/$time' + "imageone");
+        .child('uploads/${authobj.currentUser.email}/$time' + "imageone");
     StorageUploadTask uploadTask = firebaseStorageRef.putFile(_imagepathone);
     StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
     taskSnapshot.ref.getDownloadURL().then(
@@ -329,7 +316,7 @@ class _ReviewPageState extends State<ReviewPage> {
     );
     StorageReference firebaseStorageRef2 = FirebaseStorage.instance
         .ref()
-        .child('uploads/${authobj.currentUser.uid}/$time' + "imagetwo");
+        .child('uploads/${authobj.currentUser.email}/$time' + "imagetwo");
     StorageUploadTask uploadTask2 = firebaseStorageRef2.putFile(_imagepathtwo);
     StorageTaskSnapshot taskSnapshot2 = await uploadTask2.onComplete;
     taskSnapshot2.ref.getDownloadURL().then(
@@ -338,6 +325,20 @@ class _ReviewPageState extends State<ReviewPage> {
           imageurl2 = value;
         });
       },
-    );
+    ).whenComplete(() => {
+          FirebaseFirestore.instance
+        .collection("PRODUCT")
+        .doc(productuid)
+        .collection("REVIEWS")
+        .doc()
+        .set({
+      "ratings": sliderValue,
+      "comments": comment,
+      "imageurl1": imageurl1,
+      "imageurl2": imageurl2,
+      "username": authobj.currentUser.name,
+    })
+    });
+   
   }
 }

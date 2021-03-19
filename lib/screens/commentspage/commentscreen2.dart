@@ -166,7 +166,6 @@ class _CommentscreenState extends State<Commentscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(

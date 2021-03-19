@@ -14,13 +14,13 @@ import 'dart:convert' as JSON;
 //  class to work with firebase auth services
 class AuthServices {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final CollectionReference _usersCollectionReference =
+  final CollectionReference _usersCollectionReference = 
       FirebaseFirestore.instance.collection("USERS");
   UserModel currentUser = new UserModel();
   GoogleSignIn _googleSignIn = GoogleSignIn();
   bool isUserSignedIn = false;
   final facebooklogin = FacebookLogin();
-
+  var profile;
   AuthServices({this.currentUser});
   Future _populateCurrentUser(User user) async {
     if (user != null) {
@@ -56,14 +56,14 @@ class AuthServices {
     }
   }
 
-  logonwithfb() async {
+  logonwithfb(context) async {
     final result = await facebooklogin.logIn(['email']);
     switch (result.status) {
       case FacebookLoginStatus.loggedIn:
         final token = result.accessToken.token;
         final graphResponse = await http.get(
             'https://graph.facebook.com/v2.12/me?fields=name,picture,email&access_token=${token}');
-        final profile = JSON.jsonDecode(graphResponse.body);
+        profile = JSON.jsonDecode(graphResponse.body);
         print("olalala$profile");
         break;
 

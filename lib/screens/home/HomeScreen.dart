@@ -41,9 +41,9 @@ class _RootAppState extends State<HomeScreen> {
     return IndexedStack(
       index: pageIndex,
       children: <Widget>[
-        HomePage(category),
+        HomePage(category),  // first homepage // issues 
         Center(
-          child: Scaffold(
+          child: Scaffold(  // second category page 
             appBar: AppBar(
               backgroundColor: kPrimaryColor,
               title: Text(
@@ -93,10 +93,10 @@ class _RootAppState extends State<HomeScreen> {
             ),
           ),
         ),
-        onplusbuttonpressed(),
-        HomeScreenTwo(),
-        Center(
-          child: Profile(context),
+        onplusbuttonpressed(), // add product 
+        HomeScreenTwo(), // no issue 
+        Center(  
+          child: Profile(context),  // profile page 
         ),
       ],
     );

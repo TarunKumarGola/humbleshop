@@ -81,7 +81,6 @@ class _AllReviewPageState extends State<AllReviewPage> {
                     child: Stack(
                       children: <Widget>[
                         Container(
-                          height: 200,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(24),
                             gradient: LinearGradient(
@@ -96,8 +95,7 @@ class _AllReviewPageState extends State<AllReviewPage> {
                               ),
                             ],
                           ),
-                        ),
-                        Positioned.fill(
+                          child:  Positioned.fill(
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Row(
@@ -142,8 +140,25 @@ class _AllReviewPageState extends State<AllReviewPage> {
                                               ),
                                             ),
                                           ),
+                                          
                                         ],
                                       ),
+                                      Image(
+                                            image: NetworkImage(
+                                                document.data()['imageurl1']),
+                                            height: 300,
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                          ),
+                                          Image(
+                                            image: NetworkImage(
+                                                document.data()['imageurl2']),
+                                            height: 300,
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                          ),
                                     ],
                                   ),
                                 ),
@@ -151,6 +166,8 @@ class _AllReviewPageState extends State<AllReviewPage> {
                             ),
                           ),
                         ),
+                        ),
+                       
                       ],
                     ),
                   ),

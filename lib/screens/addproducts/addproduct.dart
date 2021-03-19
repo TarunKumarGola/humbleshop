@@ -255,7 +255,7 @@ class _AddProductState extends State<AddProduct> {
     _video = File(video.path);
     int sizeInBytes = _video.lengthSync();
     double sizeInMb = sizeInBytes / (1024 * 1024);
-    if (sizeInMb > 20) {
+    if (sizeInMb > 300) {
       showInSnackBar("Please Reduce the size of the video below 20 Mb");
       return;
     }
@@ -552,7 +552,6 @@ class _AddProductState extends State<AddProduct> {
       theme: ThemeData(primaryColor: primary),
       home: Scaffold(
         resizeToAvoidBottomInset: false,
-        resizeToAvoidBottomPadding: false,
         appBar: AppBar(
           title: Text("Add New Product"),
           actions: <Widget>[

@@ -201,7 +201,7 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
     const sizedBoxSpace = SizedBox(height: 24);
 
     return Scaffold(
-        resizeToAvoidBottomPadding: false,
+        resizeToAvoidBottomInset: false,
         key: _scaffoldKey,
         body: SingleChildScrollView(
           child: Padding(

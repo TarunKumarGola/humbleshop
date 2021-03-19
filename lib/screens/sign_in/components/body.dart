@@ -66,33 +66,15 @@ class Body extends StatelessWidget {
                         });
                       },
                     ),
-                  /*  SocalCard(
+                    SocalCard(
                       icon: "assets/icons/facebook-2.svg",
                       press: () {
                         // showAlertDialog(context);
                         AuthServices ob = new AuthServices();
-                        ob
-                            .logonwithfb()
-                            .whenComplete(() => {
-                                  if (FirebaseAuth.instance.currentUser != null)
-                                    {
-                                      Navigator.push(
-                                          context,
-                                          new MaterialPageRoute(
-                                              builder: (context) =>
-                                                  LoginSuccessScreen())),
-                                      custumersendMail(
-                                          authobj.currentUser.email)
-                                    }
-                                })
-                            .catchError((error) {
-                          // Navigator.pop(context);
-                          print("tarun$error");
-                        });
+                        ob.logonwithfb(context);
                       },
-                      */
                     ),
-
+                    
                     /* 
                     SocalCard(
                       icon: "assets/icons/twitter.svg",
