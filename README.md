@@ -1,4 +1,4 @@
-# This is a Project Created and coded by Tarun Kumar Gola Developer profile TarunKumarGola on github
+# This is a Project Created and coded by Tarun Kumar Gola and Shaksham Aggarwal .
 
 ### Note that: This is not complete yet
 This App has following futures
